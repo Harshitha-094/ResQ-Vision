@@ -1,0 +1,18 @@
+{
+  "short_name": "ResQ-Vision",
+  "name": "ResQ-Vision: Autonomous Emergency Response System",
+  "description": "Autonomous Multi-Modal Accident Triage & Emergency Response System for State Transport Authorities",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "192x192 512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#030712",
+  "theme_color": "#ef4444",
+  "display": "standalone",
+  "orientation": "portrait"
+}
