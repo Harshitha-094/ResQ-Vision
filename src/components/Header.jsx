@@ -76,13 +76,12 @@ export default function Header() {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
             </span>
-            <span className="hidden sm:inline">ALL 3 EDGE NODES OPERATIONAL</span>
-            <span className="sm:hidden">3 NODES ONLINE</span>
+            <span>ALL SENSOR POLES OPERATIONAL</span>
           </span>
           <span className="text-slate-700 hidden md:inline">|</span>
           <span className="text-slate-300 hidden md:inline-flex items-center gap-1">
             <Wifi className="w-3 h-3 text-cyan-400" />
-            5.9 GHz C-V2X MESH ACTIVE
+            SIMULATED NETWORK: 4G LTE / LoRaWAN FAILOVER ACTIVE
           </span>
         </div>
 
@@ -124,21 +123,21 @@ export default function Header() {
               <h1 className="text-base sm:text-lg font-black tracking-tight text-white flex items-center gap-1.5">
                 ResQ-Vision
                 <span className="text-[9px] sm:text-[10px] font-mono font-medium px-1.5 py-0.2 rounded bg-slate-800 border border-slate-700 text-slate-300">
-                  v2.6
+                  GovTech
                 </span>
               </h1>
             </div>
-            <p className="text-[10px] sm:text-[11px] text-slate-400 font-medium truncate max-w-[200px] sm:max-w-none">
-              Autonomous Accident Triage & Response
+            <p className="text-[10px] sm:text-[11px] text-slate-400 font-medium truncate max-w-[280px] sm:max-w-none">
+              Autonomous Multi-Modal Emergency Triage & Corridor System
             </p>
           </div>
         </div>
 
-        {/* Desktop Active Zone Quick Switcher */}
+        {/* Desktop Active Terrain / Operational Zone Selector */}
         <div className="hidden lg:flex items-center bg-slate-900/90 border border-slate-800 rounded-lg p-1 text-xs">
           <span className="px-2 py-1 text-slate-400 text-[11px] font-semibold flex items-center gap-1 uppercase tracking-wider">
             <MapPin className="w-3 h-3 text-red-400" />
-            Zone:
+            Terrain:
           </span>
           {Object.keys(ZONES).map((zKey) => {
             const isSelected = selectedZone === zKey
@@ -155,7 +154,7 @@ export default function Header() {
                     : 'text-slate-400 hover:text-slate-200'
                 }`}
               >
-                {zKey === 'highway' ? 'NH-275 Ramanagara' : zKey === 'urban' ? 'Silk Board BLR' : 'Charmadi Ghat'}
+                {zKey === 'highway' ? 'Highways (NH-275)' : zKey === 'urban' ? 'Urban (Silk Board)' : 'Ghats (Charmadi)'}
               </button>
             )
           })}
@@ -268,10 +267,10 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Mobile-Friendly Active Zone Scroll Strip (Visible on Mobile & Tablets) */}
+      {/* Mobile-Friendly Active Terrain Scroll Strip (Visible on Mobile & Tablets) */}
       <div className="lg:hidden px-3 py-1.5 bg-slate-900/60 border-t border-slate-900 flex items-center gap-1.5 overflow-x-auto no-scrollbar text-xs">
         <span className="text-slate-500 text-[10px] uppercase font-bold shrink-0 flex items-center gap-1">
-          <MapPin className="w-3 h-3 text-red-400" /> Zone:
+          <MapPin className="w-3 h-3 text-red-400" /> Terrain:
         </span>
         {Object.keys(ZONES).map((zKey) => {
           const isSelected = selectedZone === zKey
@@ -288,32 +287,14 @@ export default function Header() {
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              {zKey === 'highway' ? 'NH-275 Ramanagara' : zKey === 'urban' ? 'Silk Board BLR' : 'Charmadi Ghat'}
+              {zKey === 'highway' ? 'Highways (NH-275)' : zKey === 'urban' ? 'Urban (Silk Board)' : 'Ghats (Charmadi)'}
             </button>
           )
         })}
       </div>
 
-      {/* Responsive Navigation Tabs Bar */}
+      {/* Responsive Navigation Tabs Bar (4 Dedicated Consoles + AI Cam Demo) */}
       <div className="px-2 sm:px-4 bg-slate-950 border-t border-slate-900 flex overflow-x-auto no-scrollbar gap-1 text-xs">
-        <button
-          onClick={() => handleTabClick('camera')}
-          className={`flex items-center gap-1.5 sm:gap-2 py-2.5 px-3 sm:px-4 font-semibold border-b-2 transition-all whitespace-nowrap ${
-            activeTab === 'camera'
-              ? 'border-cyan-400 text-cyan-400 bg-cyan-950/20'
-              : 'border-transparent text-slate-400 hover:text-cyan-300'
-          }`}
-        >
-          <Camera className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-cyan-400" />
-          <span>
-            <span className="sm:hidden">AI Cam</span>
-            <span className="hidden sm:inline">Mobile AI Camera</span>
-          </span>
-          <span className="px-1.5 py-0.2 rounded text-[9px] bg-cyan-950 border border-cyan-800 text-cyan-300 font-mono font-bold animate-pulse">
-            LIVE
-          </span>
-        </button>
-
         <button
           onClick={() => handleTabClick('command')}
           className={`flex items-center gap-1.5 sm:gap-2 py-2.5 px-3 sm:px-4 font-semibold border-b-2 transition-all whitespace-nowrap ${
@@ -324,7 +305,7 @@ export default function Header() {
         >
           <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           <span>
-            <span className="sm:hidden">Command</span>
+            <span className="sm:hidden">ICCC</span>
             <span className="hidden sm:inline">ICCC Command Center</span>
           </span>
         </button>
@@ -342,7 +323,7 @@ export default function Header() {
             <span className="sm:hidden">Ambulance</span>
             <span className="hidden sm:inline">P0 Ambulance Console</span>
           </span>
-          {ambulanceStatus === 'alerted' && (
+          {(ambulanceStatus === 'alerted' || ambulanceStatus === 'escalated') && (
             <span className="flex h-2 w-2 relative">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
@@ -354,7 +335,7 @@ export default function Header() {
           onClick={() => handleTabClick('hospital')}
           className={`flex items-center gap-1.5 sm:gap-2 py-2.5 px-3 sm:px-4 font-semibold border-b-2 transition-all whitespace-nowrap ${
             activeTab === 'hospital'
-              ? 'border-red-500 text-red-400 bg-red-950/10'
+              ? 'border-blue-500 text-blue-400 bg-blue-950/10'
               : 'border-transparent text-slate-400 hover:text-slate-200'
           }`}
         >
@@ -388,6 +369,24 @@ export default function Header() {
               ACTIVE
             </span>
           )}
+        </button>
+
+        <button
+          onClick={() => handleTabClick('camera')}
+          className={`flex items-center gap-1.5 sm:gap-2 py-2.5 px-3 sm:px-4 font-semibold border-b-2 transition-all whitespace-nowrap ${
+            activeTab === 'camera'
+              ? 'border-cyan-400 text-cyan-400 bg-cyan-950/20'
+              : 'border-transparent text-slate-400 hover:text-cyan-300'
+          }`}
+        >
+          <Camera className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-cyan-400" />
+          <span>
+            <span className="sm:hidden">AI Cam</span>
+            <span className="hidden sm:inline">Mobile AI Cam</span>
+          </span>
+          <span className="px-1.5 py-0.2 rounded text-[9px] bg-cyan-950 border border-cyan-800 text-cyan-300 font-mono font-bold animate-pulse">
+            DEMO
+          </span>
         </button>
       </div>
     </header>

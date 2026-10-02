@@ -18,7 +18,8 @@ import {
   UserCheck,
   Truck,
   CheckSquare,
-  Square
+  Square,
+  ExternalLink
 } from 'lucide-react'
 import VideoReplayBuffer from './VideoReplayBuffer'
 import { useEmergencyStore } from '../store/emergencyStore'
@@ -57,10 +58,10 @@ export default function AmbulanceConsoleView() {
     <div className="max-w-7xl mx-auto space-y-6">
       {/* Mobile / Tablet MDT Frame Wrapper */}
       <div className="p-1 sm:p-2 rounded-xl sm:rounded-2xl bg-gradient-to-b from-slate-800 to-slate-950 border-2 sm:border-4 border-slate-700 shadow-2xl">
-        {/* Persistent Priority 0 Banner Across Top */}
+        {/* Header: PRIORITY 0 DISPATCH — IMMEDIATE ROLLOUT */}
         <div
-          className={`py-2.5 sm:py-3 px-3 sm:px-4 rounded-lg sm:rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 sm:gap-3 text-xs font-mono font-bold transition-all ${
-            ambulanceStatus === 'alerted'
+          className={`py-3 px-3 sm:px-4 rounded-lg sm:rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 sm:gap-3 text-xs font-mono font-bold transition-all ${
+            ambulanceStatus === 'alerted' || ambulanceStatus === 'escalated'
               ? 'bg-red-600 text-white p0-glow-pulse'
               : ambulanceStatus === 'en_route'
               ? 'bg-amber-600 text-white shadow-lg'
@@ -70,16 +71,16 @@ export default function AmbulanceConsoleView() {
           }`}
         >
           <div className="flex items-center gap-2.5 sm:gap-3">
-            <span className="p-1 sm:p-1.5 bg-black/30 rounded-lg flex items-center justify-center shrink-0">
-              <Radio className="w-4 h-4 sm:w-5 sm:h-5 animate-pulse" />
+            <span className="p-1.5 sm:p-2 bg-black/30 rounded-lg flex items-center justify-center shrink-0">
+              <Radio className="w-5 h-5 animate-pulse" />
             </span>
             <div>
               <div className="text-[9px] sm:text-[10px] tracking-widest uppercase opacity-90">
-                108 GVK-EMRI • CAD MDT-9000
+                108 GVK-EMRI • IN-CAB DRIVER MDT
               </div>
-              <div className="text-xs sm:text-sm font-black tracking-wide leading-tight">
+              <div className="text-sm sm:text-base font-black tracking-wide leading-tight">
                 {activeIncident
-                  ? `PRIORITY 0: IMMEDIATE ROLLOUT - UNIT ${zone.ambulanceBase.split(' ')[0]}`
+                  ? 'PRIORITY 0 DISPATCH — IMMEDIATE ROLLOUT'
                   : `UNIT ${zone.ambulanceBase.split(' ')[0]} READY • STANDBY`}
               </div>
             </div>
@@ -89,7 +90,8 @@ export default function AmbulanceConsoleView() {
             <div className="text-left sm:text-right">
               <div className="text-[9px] sm:text-[10px] opacity-80">DISPATCH STATUS</div>
               <div className="text-[11px] sm:text-xs uppercase font-extrabold tracking-wider">
-                {ambulanceStatus === 'alerted' && '⚠️ ALERTED - ACCEPT NOW'}
+                {ambulanceStatus === 'alerted' && '⚠️ ALERTED - PENDING DRIVER ACK'}
+                {ambulanceStatus === 'escalated' && '🚨 TICKET ESCALATED'}
                 {ambulanceStatus === 'accepted' && 'CONFIRMED'}
                 {ambulanceStatus === 'en_route' && '🚑 EN ROUTE (CODE 3)'}
                 {ambulanceStatus === 'arrived' && '✅ ON SCENE'}
@@ -104,7 +106,7 @@ export default function AmbulanceConsoleView() {
                   <button
                     key={st}
                     onClick={() => updateAmbulanceStatus(st)}
-                    className={`px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-[9px] sm:text-[10px] font-mono uppercase transition-all ${
+                    className={`min-h-[32px] px-2 py-1 rounded text-[9px] sm:text-[10px] font-mono uppercase transition-all ${
                       ambulanceStatus === st
                         ? 'bg-white text-black font-extrabold'
                         : 'text-white/70 hover:text-white'
@@ -122,45 +124,76 @@ export default function AmbulanceConsoleView() {
         <div className="p-3 sm:p-6 bg-slate-950 rounded-lg sm:rounded-xl mt-2 space-y-4 sm:space-y-6">
           {/* Audio-Visual Pulsing Alert & 15-Second Driver Acknowledgement Countdown */}
           {ambulanceStatus === 'alerted' && (
-            <div className="p-3.5 sm:p-5 rounded-xl bg-red-950/70 border-2 border-red-500 shadow-2xl p0-glow-pulse flex flex-col md:flex-row items-center justify-between gap-4 sm:gap-6">
+            <div className="p-4 sm:p-5 rounded-xl bg-red-950/70 border-2 border-red-500 shadow-2xl p0-glow-pulse flex flex-col md:flex-row items-center justify-between gap-4 sm:gap-6">
               <div className="flex items-center gap-3 sm:gap-4 w-full md:w-auto">
                 {/* 15s Countdown Ring */}
-                <div className="relative flex items-center justify-center w-14 h-14 sm:w-20 sm:h-20 rounded-full border-3 sm:border-4 border-red-500 bg-red-950 shadow-inner shrink-0">
+                <div className="relative flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-full border-4 border-red-500 bg-red-950 shadow-inner shrink-0">
                   <div className="text-center font-mono">
-                    <span className="text-lg sm:text-2xl font-black text-white">{countdown}</span>
+                    <span className="text-xl sm:text-2xl font-black text-white">{countdown}</span>
                     <span className="text-[8px] sm:text-[9px] block text-red-300 font-bold uppercase">SEC</span>
                   </div>
-                  <span className="absolute -top-1 -right-1 flex h-3 w-3 sm:h-4 sm:w-4">
+                  <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5 sm:h-4 sm:w-4">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-80"></span>
-                    <span className="relative inline-flex rounded-full h-3 w-3 sm:h-4 sm:w-4 bg-red-500"></span>
+                    <span className="relative inline-flex rounded-full h-3.5 w-3.5 sm:h-4 sm:w-4 bg-red-500"></span>
                   </span>
                 </div>
 
                 <div className="flex-1">
                   <div className="flex items-center gap-1.5 sm:gap-2">
-                    <span className="px-1.5 py-0.2 rounded bg-red-600 text-white font-mono text-[9px] sm:text-[10px] font-extrabold tracking-wider uppercase">
-                      DRIVER TIMEOUT
+                    <span className="px-2 py-0.5 rounded bg-red-600 text-white font-mono text-[9px] sm:text-[10px] font-extrabold tracking-wider uppercase">
+                      PRIORITY 0
                     </span>
-                    <span className="text-[11px] sm:text-xs font-mono text-red-300">
-                      CAD TIMEOUT IN {countdown}s
+                    <span className="text-[11px] sm:text-xs font-mono text-amber-300 font-bold">
+                      Driver Acknowledgement Required ({countdown}s)
                     </span>
                   </div>
-                  <h3 className="text-sm sm:text-lg font-black text-white mt-0.5 leading-snug">
-                    COLLISION: {activeIncident?.code}
+                  <h3 className="text-sm sm:text-base font-black text-white mt-1 leading-snug">
+                    {activeIncident?.title}
                   </h3>
-                  <p className="text-[10px] sm:text-xs text-slate-300 font-mono line-clamp-2">
-                    High-energy mechanism. Automatic dispatch to secondary unit if not accepted.
+                  <p className="text-[10px] sm:text-xs text-slate-300 font-mono">
+                    Auto-escalating to secondary unit if unacknowledged within 15 seconds.
                   </p>
                 </div>
               </div>
 
-              {/* Big Glowing ACCEPT DISPATCH Button */}
+              {/* Oversized Green CTA Button: ACCEPT DISPATCH & NAVIGATE (Min 48px height) */}
               <button
                 onClick={acceptDispatch}
-                className="w-full md:w-auto px-5 sm:px-8 py-3 sm:py-4 rounded-xl bg-gradient-to-r from-red-600 via-rose-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white font-black text-xs sm:text-sm tracking-wider uppercase shadow-2xl shadow-red-950/80 border-2 border-white/30 transform active:scale-95 transition-all flex items-center justify-center gap-2.5 animate-bounce"
+                className="w-full md:w-auto min-h-[56px] sm:min-h-[64px] px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs sm:text-sm tracking-wider uppercase shadow-2xl shadow-emerald-950/80 border-2 border-emerald-400/50 transform active:scale-95 transition-all flex items-center justify-center gap-2.5 animate-pulse shrink-0"
               >
-                <Zap className="w-4 h-4 sm:w-5 sm:h-5 fill-white" />
-                <span>ACCEPT DISPATCH & ENGAGE SIREN</span>
+                <Zap className="w-5 h-5 fill-white" />
+                <span>ACCEPT DISPATCH & NAVIGATE</span>
+              </button>
+            </div>
+          )}
+
+          {/* Ticket Escalated to Secondary Unit Banner */}
+          {ambulanceStatus === 'escalated' && (
+            <div className="p-4 sm:p-5 rounded-xl bg-amber-950/80 border-2 border-amber-500 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 bg-amber-600/30 rounded-xl border border-amber-500 text-amber-400 shrink-0">
+                  <AlertTriangle className="w-6 h-6 animate-bounce" />
+                </div>
+                <div>
+                  <span className="px-2 py-0.5 rounded bg-amber-600 text-black font-mono font-black text-[10px] tracking-wider uppercase">
+                    TIMEOUT EXPIRED
+                  </span>
+                  <h3 className="text-sm sm:text-base font-black text-amber-200 mt-1">
+                    TICKET ESCALATED TO SECONDARY UNIT
+                  </h3>
+                  <p className="text-[11px] text-slate-300 font-mono">
+                    15s acknowledgement timer lapsed. EMRI CAD routed ticket to dual-responder unit KA-02-ALS-99.
+                  </p>
+                </div>
+              </div>
+
+              {/* Driver Override Button */}
+              <button
+                onClick={acceptDispatch}
+                className="w-full md:w-auto min-h-[48px] px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs sm:text-sm uppercase tracking-wider shadow-lg border border-emerald-400 transition-all flex items-center justify-center gap-2 active:scale-95 shrink-0"
+              >
+                <CheckCircle2 className="w-4 h-4" />
+                <span>OVERRIDE & ACCEPT AS PRIMARY UNIT</span>
               </button>
             </div>
           )}
@@ -175,15 +208,15 @@ export default function AmbulanceConsoleView() {
               <div className="text-xs sm:text-sm font-bold text-white mt-0.5 truncate">
                 {activeIncident ? activeIncident.zoneDetails.name : zone.name}
               </div>
-              <div className="text-[9px] sm:text-[10px] text-slate-400 truncate">
-                {activeIncident ? activeIncident.zoneDetails.subTitle : zone.subTitle}
+              <div className="text-[9px] sm:text-[10px] text-cyan-400 font-bold truncate">
+                {activeIncident ? activeIncident.zoneDetails.curveMarker : zone.curveMarker}
               </div>
             </div>
 
             <div className="p-2.5 sm:p-3.5 rounded-xl bg-slate-900 border border-slate-800 font-mono">
               <span className="text-[9px] sm:text-[10px] text-slate-400 uppercase flex items-center gap-1">
                 <Clock className="w-3 h-3 text-amber-400" />
-                ETA
+                Ambulance ETA
               </span>
               <div className="text-base sm:text-xl font-black text-amber-400 mt-0.5">
                 {ambulanceStatus === 'arrived' ? '00:00 (ON SITE)' : formatEta(ambulanceEtaSeconds)}
@@ -202,17 +235,17 @@ export default function AmbulanceConsoleView() {
                 {ambulanceStatus === 'en_route' ? '88 km/h' : ambulanceStatus === 'arrived' ? '0 km/h' : '0 km/h'}
               </div>
               <div className="text-[9px] sm:text-[10px] text-emerald-400 font-bold truncate">
-                {ambulanceStatus === 'en_route' ? 'GREEN WAVE' : 'STANDBY'}
+                {ambulanceStatus === 'en_route' ? 'GREEN WAVE (250m)' : 'STANDBY'}
               </div>
             </div>
 
             <div className="p-2.5 sm:p-3.5 rounded-xl bg-slate-900 border border-slate-800 font-mono">
               <span className="text-[9px] sm:text-[10px] text-slate-400 uppercase flex items-center gap-1">
                 <Shield className="w-3 h-3 text-red-400" />
-                Severity
+                Crash Severity
               </span>
               <div className="text-base sm:text-xl font-black text-red-400 mt-0.5">
-                CSI: {activeIncident ? activeIncident.csi : '0.0'}
+                CSI: {activeIncident ? `${activeIncident.csi} / 5.0` : '0.0'}
               </div>
               <div className="text-[9px] sm:text-[10px] text-red-300 truncate">
                 {activeIncident ? `${activeIncident.trappedVictims} TRAPPED` : 'STANDBY'}
@@ -220,11 +253,35 @@ export default function AmbulanceConsoleView() {
             </div>
           </div>
 
-          {/* Center Split: 5-Second Video Replay Buffer (Left) + Paramedic Clinical Checklist (Right) */}
+          {/* Incident Intelligence Panel */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            {/* Left 7 Cols: 5-Second Simulated Video Replay Buffer */}
+            {/* Left 7 Cols: 5-Second Simulated Video Replay Buffer & Location Marker */}
             <div className="lg:col-span-7 space-y-4">
               <VideoReplayBuffer scenarioKey={selectedZone} />
+
+              {/* Exact Coordinates, Curve Marker & Direct Google Maps Link */}
+              <div className="p-3.5 sm:p-4 rounded-xl bg-slate-900 border border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs font-mono">
+                <div>
+                  <span className="text-slate-500 text-[10px] uppercase block">Location Marker & GIS Coordinates</span>
+                  <div className="text-white font-bold text-xs sm:text-sm mt-0.5">
+                    {zone.curveMarker}
+                  </div>
+                  <div className="text-slate-400 text-[11px]">
+                    GPS: <span className="text-cyan-400">{zone.coordinates.lat.toFixed(4)}° N, {zone.coordinates.lng.toFixed(4)}° E</span>
+                  </div>
+                </div>
+
+                <a
+                  href={zone.mapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="min-h-[48px] px-4 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center gap-2 shadow-lg shadow-blue-950/60 transition-all shrink-0 w-full sm:w-auto justify-center active:scale-95"
+                >
+                  <Navigation className="w-4 h-4" />
+                  <span>OPEN GOOGLE MAPS NAVIGATION</span>
+                  <ExternalLink className="w-3.5 h-3.5 opacity-80" />
+                </a>
+              </div>
 
               {/* Crash Dynamics Breakdown */}
               <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-3 font-mono text-xs">

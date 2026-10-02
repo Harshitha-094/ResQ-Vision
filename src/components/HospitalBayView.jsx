@@ -45,46 +45,28 @@ export default function HospitalBayView() {
 
   const resources = [
     {
-      key: 'bedReserved',
-      title: 'Reserve Trauma Resuscitation Bay 1 (Red Zone)',
-      description: 'Dedicated negative-pressure critical resuscitation suite with crash cart & multi-parameter monitor.',
+      key: 'bayReserved',
+      title: 'Trauma Bay 1 Reserved',
+      subtitle: 'Critical Resuscitation Red Zone Suite',
+      description: 'Dedicated negative-pressure suite with crash cart, defibrillator, & arterial line monitor.',
       icon: Bed,
-      urgent: true,
+      color: 'text-rose-400',
     },
     {
       key: 'bloodCrossMatched',
-      title: 'O-Negative Blood Cross-Matched (4 Units PRBC)',
-      description: 'Massive Transfusion Protocol (MTP) level 1 standby at Central Blood Bank with rapid blood warmer.',
+      title: 'O-Negative Blood Units Cross-Matched',
+      subtitle: 'Emergency Blood Bank Rapid Release',
+      description: '4 units PRBC cross-matched and loaded into blood warmer for incoming polytrauma.',
       icon: Droplet,
-      urgent: true,
+      color: 'text-red-400',
     },
     {
-      key: 'ctScanReady',
-      title: 'Emergency Whole-Body Pan-Scan CT Primed',
-      description: '128-slice CT scanner cleared of elective cases; contrast injector & radiologist on trauma standby.',
-      icon: Scan,
-      urgent: true,
-    },
-    {
-      key: 'traumaTeamMobilized',
-      title: 'Trauma Surgery & Neurotrauma On-Call Team',
-      description: 'Trauma Team Leader, Neurosurgeon, Orthopedic On-Call, and Anesthesiologist mobilized via pager.',
+      key: 'surgicalTeamNotified',
+      title: 'Surgical Team Notified',
+      subtitle: 'On-Call Trauma & Neurotrauma Surgeons',
+      description: 'Trauma surgery chief, orthopedic surgeon, and anesthesiologist mobilized to trauma bay.',
       icon: Users,
-      urgent: true,
-    },
-    {
-      key: 'otStandby',
-      title: 'Emergency Surgical OT Suite 2 On Standby',
-      description: 'Laparotomy and thoracotomy surgical trays prepped with cell-saver autotransfusion.',
-      icon: Stethoscope,
-      urgent: false,
-    },
-    {
-      key: 'ventilatorPrimed',
-      title: 'Mechanical Ventilator #4 Calibrated & In-Line',
-      description: 'Hamilton-G5 ventilator primed with lung-protective ARDS trauma parameters.',
-      icon: Wind,
-      urgent: false,
+      color: 'text-blue-400',
     },
   ]
 
@@ -92,17 +74,26 @@ export default function HospitalBayView() {
   const totalCount = resources.length
   const readinessPercent = Math.round((securedCount / totalCount) * 100)
 
+  // Color-coded CSI meter helper
+  const getCsiColor = (csi) => {
+    if (!csi || csi < 3.0) return { bg: 'bg-emerald-500', text: 'text-emerald-400', border: 'border-emerald-500' }
+    if (csi < 4.0) return { bg: 'bg-amber-500', text: 'text-amber-400', border: 'border-amber-500' }
+    return { bg: 'bg-red-500', text: 'text-red-400', border: 'border-red-500' }
+  }
+
+  const csiColors = getCsiColor(activeIncident?.csi)
+
   return (
     <div className="space-y-6">
-      {/* Top Header: Hospital Identification & Golden Hour Banner */}
+      {/* Top Header: Hospital Identification & Regional Hub Banner */}
       <div className="p-3.5 sm:p-4 rounded-xl bg-slate-900 border border-slate-800 shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-3 sm:gap-4">
         <div>
           <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs font-mono">
-            <span className="px-2 py-0.5 rounded bg-rose-950/80 border border-rose-800 text-rose-400 font-bold">
-              TRAUMA INTAKE DESK
+            <span className="px-2 py-0.5 rounded bg-blue-950/80 border border-blue-800 text-blue-400 font-bold">
+              REGIONAL TRAUMA CENTER (ER INTAKE DESK)
             </span>
             <span className="text-slate-400 truncate">
-              HEALTH & FAMILY WELFARE DEPT, KARNATAKA
+              GOVERNMENT OF KARNATAKA HEALTH SYSTEM
             </span>
           </div>
           <h2 className="text-base sm:text-lg font-black text-white mt-1 flex flex-wrap items-center gap-2">
@@ -112,7 +103,7 @@ export default function HospitalBayView() {
             </span>
           </h2>
           <p className="text-[11px] sm:text-xs text-slate-400 font-mono truncate">
-            Receiving Unit: <span className="text-cyan-400 font-bold">{zone.ambulanceBase}</span> • Channel: 108 EMRI EHR Sync
+            Receiving Unit: <span className="text-cyan-400 font-bold">{zone.ambulanceBase}</span> • Channel: 108 GVK-EMRI EHR Hook
           </p>
         </div>
 
@@ -121,7 +112,7 @@ export default function HospitalBayView() {
           <div className="bg-slate-950 border border-slate-800 rounded-xl px-2.5 sm:px-4 py-2 sm:py-2.5 text-center font-mono">
             <div className="text-[9px] sm:text-[10px] text-slate-500 uppercase flex items-center justify-center gap-1">
               <Clock className="w-3 h-3 text-amber-400" />
-              Patient ETA
+              Ambulance ETA
             </div>
             <div className="text-base sm:text-2xl font-black text-amber-400 truncate">
               {ambulanceStatus === 'arrived' ? 'ON SITE' : formatEta(ambulanceEtaSeconds)}
@@ -133,84 +124,102 @@ export default function HospitalBayView() {
 
           <div className="bg-slate-950 border border-slate-800 rounded-xl px-2.5 sm:px-4 py-2 sm:py-2.5 text-center font-mono">
             <div className="text-[9px] sm:text-[10px] text-slate-500 uppercase">Readiness</div>
-            <div className={`text-base sm:text-2xl font-black ${readinessPercent >= 80 ? 'text-emerald-400' : 'text-amber-400'}`}>
+            <div className={`text-base sm:text-2xl font-black ${readinessPercent === 100 ? 'text-emerald-400' : 'text-blue-400'}`}>
               {readinessPercent}%
             </div>
             <div className="text-[9px] sm:text-[10px] text-slate-400 truncate">
-              {securedCount}/{totalCount} Secured
+              {securedCount}/{totalCount} Reserved
             </div>
           </div>
         </div>
       </div>
 
-      {/* Main Grid: Triage Ticket (Left) + Interactive Resource Toggles (Right) */}
+      {/* Main Grid: Triage Ticket Card (Left) + One-Click Readiness Toggles (Right) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left 5 Cols: Electronic Trauma Admission Ticket */}
+        {/* Left 5 Cols: Triage Ticket Card */}
         <div className="lg:col-span-5 space-y-4">
           <div className="p-5 rounded-xl bg-slate-900 border border-slate-800 shadow-xl space-y-4 font-mono text-xs">
             <div className="flex items-center justify-between pb-3 border-b border-slate-800">
               <div className="flex items-center gap-2">
                 <FileText className="w-4 h-4 text-rose-500" />
                 <h3 className="font-bold text-white uppercase tracking-wider">
-                  Emergency Bay Triage Ticket
+                  Trauma Triage Ticket Card
                 </h3>
               </div>
               <span className="px-2 py-0.5 rounded bg-red-600 text-white font-extrabold text-[10px]">
-                TRIAGE: RED (P0)
+                PRIORITY 0 (P0)
               </span>
             </div>
 
-            {/* Incident & Patient Metrics */}
+            {/* CSI Color-Coded Risk Meter */}
+            <div className="p-3 rounded-lg bg-slate-950 border border-slate-800 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-slate-400 text-xs">Crash Severity Index (CSI 1-5):</span>
+                <span className={`text-sm font-black ${csiColors.text}`}>
+                  {activeIncident ? `${activeIncident.csi} / 5.0` : '1.0 / 5.0'}
+                </span>
+              </div>
+
+              {/* Color-Coded Risk Meter Bar */}
+              <div className="w-full bg-slate-900 rounded-full h-3 overflow-hidden border border-slate-800">
+                <div
+                  className={`h-full transition-all duration-700 ${csiColors.bg}`}
+                  style={{ width: `${Math.min(100, ((activeIncident?.csi || 1.0) / 5) * 100)}%` }}
+                />
+              </div>
+
+              <div className="flex justify-between text-[10px] text-slate-500 font-mono">
+                <span className="text-emerald-400">Low (1-2.9)</span>
+                <span className="text-amber-400">Moderate (3.0-3.9)</span>
+                <span className="text-red-400 font-bold">Critical (4.0-5.0)</span>
+              </div>
+            </div>
+
+            {/* Casualty Count & Injury Risk Profile */}
             <div className="space-y-3 bg-slate-950 p-3.5 rounded-lg border border-slate-800/80">
               <div className="flex justify-between">
-                <span className="text-slate-500">Incident Code:</span>
+                <span className="text-slate-500">Incident Reference:</span>
                 <span className="text-white font-bold">{activeIncident ? activeIncident.code : 'STANDBY'}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">Crash Severity Index:</span>
-                <span className="text-red-400 font-extrabold">{activeIncident ? `${activeIncident.csi} / 5.0` : '0.0'}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-500">Injury Severity Score (ISS):</span>
-                <span className="text-amber-400 font-bold">{activeIncident ? activeIncident.issEstimate : '--'} (Polytrauma)</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-500">Expected Incoming Casualties:</span>
-                <span className="text-white font-bold">{activeIncident ? `${activeIncident.casualtiesCount} Victims` : 'None'}</span>
+                <span className="text-slate-500">Estimated Casualties:</span>
+                <span className="text-white font-bold text-sm">
+                  {activeIncident ? `${activeIncident.casualtiesCount} Casualties` : '0'}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-500">Casualty Breakdown:</span>
-                <span className="text-red-300">
+                <span className="text-red-300 font-semibold">
                   {activeIncident
-                    ? `${activeIncident.casualtyBreakdown.criticalP0} Critical P0, ${activeIncident.casualtyBreakdown.seriousP1} P1`
+                    ? `${activeIncident.casualtyBreakdown.criticalP0} Critical P0, ${activeIncident.casualtyBreakdown.seriousP1} Serious P1`
                     : 'None'}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">Trapped / Extrication:</span>
+                <span className="text-slate-500">Entrapment / Extrication:</span>
                 <span className={activeIncident?.trappedVictims > 0 ? 'text-red-400 font-bold' : 'text-slate-300'}>
-                  {activeIncident ? `${activeIncident.trappedVictims} Victims (Hydraulic Jaws In Use)` : 'No'}
+                  {activeIncident ? `${activeIncident.trappedVictims} Victims Trapped (Hydraulics Active)` : 'No entrapment'}
                 </span>
               </div>
             </div>
 
-            {/* Trauma Mechanism & Organ System Risk */}
+            {/* Primary Injury Risk Profile */}
             <div className="space-y-2 pt-1">
               <h4 className="text-[11px] font-bold text-slate-300 uppercase tracking-wider">
-                Predicted Organ System Trauma Risks
+                Primary Injury Risk Profile
               </h4>
               <div className="space-y-1.5 text-[11px]">
-                <div className="p-2 rounded bg-slate-950 border border-slate-850 flex justify-between">
-                  <span className="text-slate-400">Head / TBI:</span>
-                  <span className="text-red-400 font-semibold">{activeIncident?.clinicalAssessment.headTraumaRisk || 'Nominal'}</span>
+                <div className="p-2.5 rounded bg-slate-950 border border-slate-850 flex justify-between items-center">
+                  <span className="text-slate-400">Head Trauma / TBI:</span>
+                  <span className="text-red-400 font-bold">{activeIncident?.clinicalAssessment.headTraumaRisk || 'Nominal'}</span>
                 </div>
-                <div className="p-2 rounded bg-slate-950 border border-slate-850 flex justify-between">
-                  <span className="text-slate-400">C-Spine / Spinal:</span>
-                  <span className="text-amber-400 font-semibold">{activeIncident?.clinicalAssessment.cervicalSpineRisk || 'Nominal'}</span>
+                <div className="p-2.5 rounded bg-slate-950 border border-slate-850 flex justify-between items-center">
+                  <span className="text-slate-400">Polytrauma & C-Spine:</span>
+                  <span className="text-amber-400 font-bold">{activeIncident?.clinicalAssessment.cervicalSpineRisk || 'Nominal'}</span>
                 </div>
-                <div className="p-2 rounded bg-slate-950 border border-slate-850 flex justify-between">
-                  <span className="text-slate-400">Thoracic / Hemothorax:</span>
-                  <span className="text-yellow-400 font-semibold">{activeIncident?.clinicalAssessment.chestAbdomenRisk || 'Nominal'}</span>
+                <div className="p-2.5 rounded bg-slate-950 border border-slate-850 flex justify-between items-center">
+                  <span className="text-slate-400">Fractures & Internal Trauma:</span>
+                  <span className="text-yellow-400 font-bold">{activeIncident?.clinicalAssessment.chestAbdomenRisk || 'Nominal'}</span>
                 </div>
               </div>
             </div>
@@ -228,26 +237,26 @@ export default function HospitalBayView() {
           </div>
         </div>
 
-        {/* Right 7 Cols: Interactive Resource Readiness Toggles */}
+        {/* Right 7 Cols: One-Click Hospital Readiness Toggles */}
         <div className="lg:col-span-7 space-y-4">
           <div className="p-5 rounded-xl bg-slate-900 border border-slate-800 shadow-xl space-y-4">
             <div className="flex flex-wrap items-center justify-between pb-3 border-b border-slate-800 gap-2">
               <div>
                 <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-white flex items-center gap-2">
-                  <HeartPulse className="w-4 h-4 text-emerald-400" />
-                  Trauma Bay Resource Reservation & Checklist
+                  <HeartPulse className="w-4 h-4 text-blue-400" />
+                  One-Click Hospital Readiness Toggles
                 </h3>
                 <p className="text-xs text-slate-400 mt-0.5">
-                  Click to pre-allocate hospital resources before ambulance touchdown. Syncs via HL7 / FHIR.
+                  Pre-allocate critical hospital resources prior to ambulance touchdown. Client-side FHIR/HL7 dispatch.
                 </p>
               </div>
               <span className="px-2.5 py-1 rounded bg-slate-950 text-cyan-300 font-mono text-xs border border-slate-800">
-                FHIR v4 / HL7 v2.5.1
+                FHIR / HL7 v2.5.1
               </span>
             </div>
 
-            {/* Resource Cards */}
-            <div className="space-y-2.5 sm:space-y-3">
+            {/* 3 Explicit Readiness Toggles */}
+            <div className="space-y-3">
               {resources.map((res) => {
                 const Icon = res.icon
                 const isSecured = hospitalStatus[res.key]
@@ -256,45 +265,51 @@ export default function HospitalBayView() {
                   <div
                     key={res.key}
                     onClick={() => handleToggle(res.key)}
-                    className={`p-3 sm:p-3.5 rounded-xl border cursor-pointer transition-all flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 ${
+                    className={`min-h-[56px] p-4 rounded-xl border cursor-pointer transition-all flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 active:scale-[0.99] ${
                       isSecured
-                        ? 'bg-emerald-950/30 border-emerald-500/80 shadow-md shadow-emerald-950/40'
+                        ? 'bg-blue-950/30 border-blue-500 shadow-lg shadow-blue-950/40'
                         : 'bg-slate-950 border-slate-800 hover:border-slate-700'
                     }`}
                   >
-                    <div className="flex items-start gap-3">
+                    <div className="flex items-start gap-3.5">
+                      {/* Checkbox / Toggle Icon */}
                       <div
-                        className={`p-2 sm:p-2.5 rounded-lg shrink-0 transition-colors ${
-                          isSecured ? 'bg-emerald-600/30 text-emerald-400' : 'bg-slate-900 text-slate-500'
+                        className={`w-7 h-7 rounded-lg border-2 flex items-center justify-center shrink-0 mt-0.5 transition-all ${
+                          isSecured
+                            ? 'bg-blue-600 border-blue-400 text-white shadow-md'
+                            : 'bg-slate-900 border-slate-700 text-transparent'
                         }`}
                       >
-                        <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
+                        <CheckCircle2 className="w-4 h-4 text-white" />
                       </div>
+
                       <div className="flex-1">
-                        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-                          <h4 className="text-xs font-bold text-slate-200">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <h4 className="text-sm font-bold text-white">
                             {res.title}
                           </h4>
-                          {res.urgent && (
-                            <span className="text-[9px] px-1.5 py-0.2 rounded bg-red-950 text-red-400 border border-red-800 font-mono">
-                              PRIORITY
-                            </span>
-                          )}
+                          <span className={`text-[10px] px-1.5 py-0.2 rounded font-mono font-bold ${
+                            isSecured
+                              ? 'bg-blue-900/80 text-blue-200 border border-blue-700'
+                              : 'bg-slate-900 text-slate-400 border border-slate-800'
+                          }`}>
+                            {isSecured ? 'READY' : 'STANDBY'}
+                          </span>
                         </div>
-                        <p className="text-[11px] text-slate-400 mt-0.5 leading-snug">
+                        <p className="text-xs text-slate-400 mt-1 leading-snug">
                           {res.description}
                         </p>
                       </div>
                     </div>
 
                     <button
-                      className={`w-full sm:w-auto px-3.5 py-2 sm:py-1.5 rounded-lg text-xs font-mono font-bold shrink-0 transition-all text-center ${
+                      className={`min-h-[48px] px-4 py-2 rounded-lg text-xs font-mono font-bold shrink-0 transition-all text-center flex items-center justify-center gap-1.5 ${
                         isSecured
-                          ? 'bg-emerald-600 text-white shadow-sm'
-                          : 'bg-slate-800 hover:bg-slate-700 text-slate-300'
+                          ? 'bg-blue-600 text-white shadow-md border border-blue-400'
+                          : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700'
                       }`}
                     >
-                      {isSecured ? 'SECURED' : 'RESERVE'}
+                      {isSecured ? 'CONFIRMED' : 'RESERVE NOW'}
                     </button>
                   </div>
                 )

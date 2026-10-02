@@ -3,21 +3,18 @@ import { ZONES, SCENARIOS } from '../data/mockScenarios'
 import { playAlertBeep, playCountdownTick, playAcceptChime, playRadioSquelch } from '../utils/audio'
 
 const INITIAL_CHECKLIST = [
+  { id: 'spinal', label: 'Prep Spinal Board & Head Immobilizer Straps', checked: false, critical: true },
+  { id: 'extrication', label: 'Vehicle Extrication Tools (Hydraulic Cutter & Spreader)', checked: false, critical: true },
+  { id: 'burn', label: 'Burn Dressings Required & Sterile Trauma Gel Packs', checked: false, critical: true },
   { id: 'cervical', label: 'Cervical Collar & Kendrick Extrication Device (KED)', checked: false, critical: true },
-  { id: 'hydraulic', label: 'Hydraulic Extrication Cutter & Spreader (Trapped Victim Protocol)', checked: false, critical: true },
   { id: 'o2', label: 'Portable High-Flow Oxygen & Bag-Valve-Mask Resuscitator', checked: false, critical: true },
-  { id: 'lucas', label: 'LUCAS-3 Automated Chest Compression Device', checked: false, critical: false },
-  { id: 'airway', label: 'Video Laryngoscope & Endotracheal Intubation Kit', checked: false, critical: false },
   { id: 'hemostatic', label: 'Combat Application Tourniquet (CAT) & Hemostatic Gauze', checked: false, critical: true },
 ]
 
 const INITIAL_HOSPITAL_STATUS = {
-  bedReserved: false,
+  bayReserved: false,
   bloodCrossMatched: false,
-  ctScanReady: false,
-  traumaTeamMobilized: false,
-  otStandby: false,
-  ventilatorPrimed: false,
+  surgicalTeamNotified: false,
 }
 
 function getFormattedTime() {
@@ -29,7 +26,7 @@ export const useEmergencyStore = create((set, get) => ({
   // Core State
   activeIncident: null,
   selectedZone: 'highway',
-  ambulanceStatus: 'idle', // 'idle' | 'alerted' | 'accepted' | 'en_route' | 'arrived'
+  ambulanceStatus: 'idle', // 'idle' | 'alerted' | 'accepted' | 'en_route' | 'arrived' | 'escalated'
   countdown: 15,
   ambulanceEtaSeconds: 240, // 4 mins
   distanceKm: 4.2,
@@ -43,7 +40,7 @@ export const useEmergencyStore = create((set, get) => ({
       timestamp: '00:00:01.000',
       channel: 'MQTT',
       title: 'Edge AI Telemetry Mesh Initialized',
-      message: 'Monitoring 3 critical accident zones in Karnataka (NH-275 KM 42, Silk Board B-TRAC, Charmadi Hairpin #8).',
+      message: '[SIMULATED MQTT PACKET]: { csi: 1.0, delta_v: "0 km/h", acoustic_spike: false, zone: "nh275_km42", status: "ALL SENSOR POLES OPERATIONAL" }',
       rawPayload: { status: 'ONLINE', nodes: 3, latency_ms: 12, sync: 'NTP_IST' },
       level: 'info',
     },
@@ -52,12 +49,12 @@ export const useEmergencyStore = create((set, get) => ({
       timestamp: '00:00:02.150',
       channel: 'C-V2X',
       title: 'ITMS Signal Preemption Service Connected',
-      message: 'Bengaluru Traffic Police B-TRAC & NHAI corridor preemption radio standby on 5.9 GHz DSRC band.',
+      message: '[SIMULATED NTCIP 1211]: Signal ID #14 preemption standby on 5.9 GHz DSRC band.',
       rawPayload: { cv2x_mesh: 'READY', radius_m: 250, auto_override: true },
       level: 'info',
     },
   ],
-  activeTab: 'camera', // 'camera' | 'command' | 'ambulance' | 'hospital' | 'corridor'
+  activeTab: 'command', // 'command' | 'ambulance' | 'hospital' | 'corridor' | 'camera'
   soundEnabled: true,
   outboundDrawerOpen: false,
   userGps: {
@@ -86,12 +83,9 @@ export const useEmergencyStore = create((set, get) => ({
     const current = get().hospitalStatus[key]
     const nextVal = !current
     const keyLabels = {
-      bedReserved: 'Trauma Resuscitation Bay 1 (Red Zone)',
-      bloodCrossMatched: 'O-Negative Blood Units (4 Units PRBC)',
-      ctScanReady: 'Emergency Whole-Body CT Scanner',
-      traumaTeamMobilized: 'Trauma Surgery & Neurotrauma On-Call Team',
-      otStandby: 'Emergency Surgical OT 2',
-      ventilatorPrimed: 'Mechanical Ventilator #4',
+      bayReserved: 'Trauma Bay 1 Reserved',
+      bloodCrossMatched: 'O-Negative Blood Units Cross-Matched',
+      surgicalTeamNotified: 'Surgical Team Notified',
     }
 
     set((state) => ({
@@ -102,9 +96,9 @@ export const useEmergencyStore = create((set, get) => ({
       id: `hosp-${Date.now()}`,
       timestamp: getFormattedTime(),
       channel: 'FHIR/HL7',
-      title: `Trauma Bay Resource ${nextVal ? 'SECURED' : 'RELEASED'}: ${keyLabels[key] || key}`,
-      message: `HL7 ADT/ORM update broadcasted to Ramanagara District Hospital / NIMHANS Clinical EHR.`,
-      rawPayload: { resource: key, status: nextVal ? 'RESERVED' : 'AVAILABLE', updated_by: 'TRAUMA_CHIEF_MD' },
+      title: `Trauma Bay Readiness: ${keyLabels[key] || key}`,
+      message: `[SIMULATED FHIR/HL7]: ${keyLabels[key] || key} status set to ${nextVal ? 'CONFIRMED' : 'UNCHECKED'}.`,
+      rawPayload: { resource: key, status: nextVal ? 'RESERVED' : 'AVAILABLE', updated_by: 'ER_TRIAGE_DESK' },
       level: nextVal ? 'success' : 'warning',
     }
     get().addLog(logEntry)
@@ -116,11 +110,11 @@ export const useEmergencyStore = create((set, get) => ({
       const log = {
         id: `cv2x-${Date.now()}`,
         timestamp: getFormattedTime(),
-        channel: 'C-V2X',
+        channel: 'NTCIP 1211',
         title: `Green Wave Corridor ${nextVal ? 'OVERRIDE ACTIVE' : 'RETURNED TO NORMAL CYCLING'}`,
         message: nextVal
-          ? 'Emergency signal preemption lock engaged 250m ahead of Ambulance KA-01-EA-108.'
-          : 'Signal timing reverted to standard fixed-time / actuated urban cycle.',
+          ? '[SIMULATED NTCIP 1211]: Signal ID #14 preemption granted (Green Wave Active).'
+          : '[SIMULATED NTCIP 1211]: Signal ID #14 preemption released (Normal Cycling Restored).',
         rawPayload: { green_corridor: nextVal, override_mode: 'PRIORITY_0_PREEMPTION' },
         level: nextVal ? 'critical' : 'info',
       }
@@ -168,14 +162,14 @@ export const useEmergencyStore = create((set, get) => ({
       paramedicChecklist: [...INITIAL_CHECKLIST],
     })
 
-    // Generate comprehensive simulated telemetry & outbound communication logs
+    // Exact specified simulated outbound telemetry & gateway logs
     const newLogs = [
       {
         id: `log-sms-${Date.now()}`,
         timestamp: nowTime,
         channel: 'SMS (108 DISPATCH)',
-        title: `CRITICAL P0 DISPATCH: ${zone.ambulanceBase}`,
-        message: `[SIMULATED SMS to 108 Dispatcher]: P0 CRASH DETECTED at ${zone.name} (${zone.subTitle}). Ambulance ${zone.ambulanceBase} alerted. Delta-V: ${scenario.telemetry.deltaV} km/h, CSI: ${scenario.csi}/5.0. Immediate rollout required.`,
+        title: `CRITICAL P0 DISPATCH: ${zone.ambulanceBase.split(' ')[0]}`,
+        message: `[SIMULATED SMS to 108 GVK-EMRI Dispatcher]: Incident at ${zone.name} (${zone.curveMarker}). Ambulance ${zone.ambulanceBase.split(' ')[0]} dispatched.`,
         rawPayload: {
           to: '+91-108-EMRI-DISPATCH',
           priority: 'P0_URGENT',
@@ -189,8 +183,8 @@ export const useEmergencyStore = create((set, get) => ({
         id: `log-erss-${Date.now() + 1}`,
         timestamp: nowTime,
         channel: 'ERSS 112 (POLICE)',
-        title: `Police Interceptor Deployment: ${zone.policeUnit}`,
-        message: `[SIMULATED ERSS 112 Police]: Traffic Interceptor alerted for upstream diversion & lane clearance. Suspected casualties: ${scenario.casualtiesCount}, Trapped: ${scenario.trappedVictims}.`,
+        title: `Highway Patrol Interceptor Deployed`,
+        message: `[SIMULATED ERSS 112 Police Alert]: Highway patrol interceptor dispatched for traffic diversion.`,
         rawPayload: {
           erss_call_id: `ERSS-KA-2026-${Math.floor(Math.random() * 9000)}`,
           police_cad_unit: zone.policeUnit,
@@ -202,26 +196,25 @@ export const useEmergencyStore = create((set, get) => ({
         id: `log-mqtt-${Date.now() + 2}`,
         timestamp: nowTime,
         channel: 'MQTT',
-        title: `Multi-Modal Edge Sensor Fusion Spike: ${zone.sensorNode}`,
-        message: `[MQTT Telemetry]: { csi: ${scenario.csi}, delta_v: ${scenario.telemetry.deltaV}, acoustic_peak_db: ${scenario.telemetry.acousticPeakDb}, optical_conf: "${scenario.telemetry.opticalConfidence}", zone: "${zone.id}" }`,
+        title: `Multi-Modal Edge Sensor Fusion: ${zone.sensorNode}`,
+        message: `[SIMULATED MQTT PACKET]: { csi: ${scenario.csi}, delta_v: "${scenario.telemetry.deltaV} km/h", acoustic_spike: true, zone: "${zone.id === 'ghat' ? 'ghat_hairpin_8' : zone.id === 'highway' ? 'nh275_km42' : 'silk_board_junction'}" }`,
         rawPayload: {
           node_id: zone.sensorNode,
           csi: scenario.csi,
-          delta_v: scenario.telemetry.deltaV,
-          g_force: scenario.telemetry.gForce,
-          acoustic_db: scenario.telemetry.acousticPeakDb,
-          vehicles: scenario.vehicles,
-          trapped_victims: scenario.trappedVictims,
-          mesh_protocol: zone.id === 'ghat' ? 'LoRaWAN_865_IN' : '5G_SA_URLLC',
+          delta_v: `${scenario.telemetry.deltaV} km/h`,
+          acoustic_spike: true,
+          zone: zone.id === 'ghat' ? 'ghat_hairpin_8' : zone.id === 'highway' ? 'nh275_km42' : 'silk_board_junction',
+          road_surface: zone.roadSurface,
+          weather: zone.weatherCondition,
         },
         level: 'critical',
       },
       {
         id: `log-cv2x-${Date.now() + 3}`,
         timestamp: nowTime,
-        channel: 'C-V2X',
-        title: `Dynamic Green Corridor Armed (Preemption 250m)`,
-        message: `[C-V2X Signal Preemption]: Signal node ${scenario.signals[0]?.id || 'SIG-01'} (${scenario.signals[0]?.name}) preemption locked to GREEN WAVE. Cross-traffic yellow-to-red cycle triggered.`,
+        channel: 'NTCIP 1211',
+        title: `Signal Preemption Granted (Green Wave Active)`,
+        message: `[SIMULATED NTCIP 1211]: Signal ID #14 preemption granted (Green Wave Active).`,
         rawPayload: {
           corridor_id: `GC-${scenarioKey.toUpperCase()}`,
           active_signals: scenario.signals.map((s) => s.id),
@@ -234,8 +227,8 @@ export const useEmergencyStore = create((set, get) => ({
         id: `log-fhir-${Date.now() + 4}`,
         timestamp: nowTime,
         channel: 'FHIR/HL7',
-        title: `Trauma Bay Electronic Notification: ${zone.nearestHospital}`,
-        message: `[FHIR HL7 v2.5.1]: Incoming polytrauma alert. Recommended reservation: ${scenario.clinicalAssessment.recommendedBed}. Blood protocol: ${scenario.clinicalAssessment.bloodCrossMatch}.`,
+        title: `Trauma Bay Admission Notification: ${zone.nearestHospital}`,
+        message: `[SIMULATED FHIR/HL7]: Incoming trauma ticket generated for ${zone.nearestHospital}. Recommended: Bay 1 Reserved, O-Negative Blood Units Cross-Matched.`,
         rawPayload: {
           destination_facility: zone.nearestHospital,
           clinical_triage_category: 'RED_IMMEDIATE',
@@ -428,15 +421,15 @@ export const useEmergencyStore = create((set, get) => ({
       // Driver timeout auto-escalation!
       set({
         countdown: 0,
-        ambulanceStatus: 'accepted', // Auto-escalated or confirmed
+        ambulanceStatus: 'escalated',
       })
       const timeoutLog = {
         id: `timeout-${Date.now()}`,
         timestamp: getFormattedTime(),
         channel: 'SMS (108 DISPATCH)',
-        title: 'DRIVER ACKNOWLEDGEMENT TIMEOUT (15s): Auto-Confirmed with EMRI Central MDT',
-        message: `15-second driver response timer expired. CAD auto-locked ticket to Primary Unit KA-01-EA-108 and dispatched backup dual-responder.`,
-        rawPayload: { event: 'DRIVER_TIMEOUT_OVERRIDE', action: 'FORCE_LOCK_TICKET', secondary_alerted: true },
+        title: 'TICKET ESCALATED TO SECONDARY UNIT',
+        message: `[SIMULATED SMS to 108 GVK-EMRI Dispatcher]: Driver acknowledgement timeout (15s). TICKET ESCALATED TO SECONDARY UNIT KA-02-ALS-99. Primary unit flagged unacknowledged.`,
+        rawPayload: { event: 'DRIVER_TIMEOUT_AUTO_ESCALATION', ticket_escalated: true, backup_dispatched: 'KA-02-ALS-99' },
         level: 'warning',
       }
       get().addLog(timeoutLog)

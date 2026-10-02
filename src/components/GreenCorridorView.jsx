@@ -245,7 +245,7 @@ export default function GreenCorridorView() {
                         : 'bg-slate-800 text-slate-400'
                     }`}
                   >
-                    {isPreempted ? 'GREEN WAVE' : 'STANDARD'}
+                    {isPreempted ? 'EMERGENCY OVERRIDE (GREEN WAVE)' : 'NORMAL CYCLING'}
                   </span>
                 </div>
 

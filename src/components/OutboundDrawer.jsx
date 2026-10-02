@@ -34,14 +34,14 @@ export default function OutboundDrawer() {
     setOutboundDrawerOpen(!outboundDrawerOpen)
   }
 
-  const channels = ['ALL', 'SMS', 'ERSS', 'MQTT', 'C-V2X', 'FHIR/HL7']
+  const channels = ['ALL', 'SMS 108', 'ERSS 112', 'MQTT', 'NTCIP 1211', 'FHIR/HL7']
 
   const filteredLogs = simulatedLogs.filter((log) => {
     if (activeChannelFilter === 'ALL') return true
-    if (activeChannelFilter === 'SMS') return log.channel.includes('SMS')
-    if (activeChannelFilter === 'ERSS') return log.channel.includes('ERSS')
+    if (activeChannelFilter === 'SMS 108') return log.channel.includes('SMS')
+    if (activeChannelFilter === 'ERSS 112') return log.channel.includes('ERSS')
     if (activeChannelFilter === 'MQTT') return log.channel.includes('MQTT')
-    if (activeChannelFilter === 'C-V2X') return log.channel.includes('C-V2X')
+    if (activeChannelFilter === 'NTCIP 1211') return log.channel.includes('NTCIP') || log.channel.includes('C-V2X')
     if (activeChannelFilter === 'FHIR/HL7') return log.channel.includes('FHIR') || log.channel.includes('HL7')
     return true
   })
@@ -69,7 +69,7 @@ export default function OutboundDrawer() {
 
   return (
     <aside
-      aria-label="Simulated Outbound Communications & Hardware Feeds"
+      aria-label="Simulated Outbound Telemetry & Gateway Logs (Client-Side Simulation)"
       className={`fixed bottom-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out border-t border-slate-800 bg-slate-950/98 backdrop-blur-xl shadow-2xl ${
         outboundDrawerOpen ? 'h-[65vh] sm:h-96 max-h-[500px]' : 'h-11'
       }`}
@@ -83,10 +83,10 @@ export default function OutboundDrawer() {
           <div className="flex items-center gap-1.5 sm:gap-2 font-bold text-slate-200 truncate">
             <Terminal className="w-4 h-4 text-cyan-400 shrink-0" />
             <span className="tracking-wide hidden sm:inline truncate">
-              Simulated Outbound Communications & Hardware Feeds
+              Simulated Outbound Telemetry & Gateway Logs (Client-Side Simulation)
             </span>
             <span className="tracking-wide sm:hidden truncate">
-              Outbound Feeds
+              Gateway Logs (Simulation)
             </span>
           </div>
 
@@ -95,7 +95,7 @@ export default function OutboundDrawer() {
           </span>
           <span className="text-slate-500 hidden md:inline">|</span>
           <span className="text-[11px] text-slate-400 hidden lg:inline truncate">
-            SMS (108 EMRI) • ERSS 112 Police CAD • MQTT Telemetry • C-V2X V2I • FHIR HL7
+            SMS (108 GVK-EMRI) • ERSS 112 Police Alert • MQTT Telemetry • NTCIP 1211 Preemption
           </span>
         </div>
 
