@@ -57,7 +57,7 @@ export const useEmergencyStore = create((set, get) => ({
       level: 'info',
     },
   ],
-  activeTab: 'command', // 'camera' | 'command' | 'ambulance' | 'hospital' | 'corridor'
+  activeTab: 'camera', // 'camera' | 'command' | 'ambulance' | 'hospital' | 'corridor'
   soundEnabled: true,
   outboundDrawerOpen: false,
   userGps: {

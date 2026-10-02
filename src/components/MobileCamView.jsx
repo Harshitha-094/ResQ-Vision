@@ -124,20 +124,26 @@ export default function MobileCamView() {
         streamRef.current.getTracks().forEach((track) => track.stop())
       }
 
-      const constraints = {
-        video: {
-          facingMode: mode,
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
-        },
-        audio: false,
+      let stream = null
+      try {
+        const constraints = {
+          video: {
+            facingMode: { ideal: mode },
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
+          },
+          audio: false,
+        }
+        stream = await navigator.mediaDevices.getUserMedia(constraints)
+      } catch (conErr) {
+        // Fallback to basic video constraint if overconstrained
+        stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false })
       }
 
-      const stream = await navigator.mediaDevices.getUserMedia(constraints)
       streamRef.current = stream
       if (videoRef.current) {
         videoRef.current.srcObject = stream
-        videoRef.current.play()
+        videoRef.current.play().catch(() => {})
       }
       setCameraActive(true)
     } catch (err) {
@@ -330,6 +336,15 @@ export default function MobileCamView() {
   // Step 2: Trigger Accident Detection
   const handleTriggerCrashDetection = () => {
     if (soundEnabled) playAlertBeep()
+
+    // Haptic vibration feedback for mobile phone demos
+    if ('vibrate' in navigator) {
+      try {
+        navigator.vibrate([200, 100, 200])
+      } catch {
+        // Ignore if unsupported
+      }
+    }
 
     // Grab live camera frame snapshot from video or canvas
     try {
