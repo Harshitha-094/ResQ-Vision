@@ -15,7 +15,8 @@ import {
   CheckCircle2,
   Flame,
   Radio,
-  ExternalLink
+  ExternalLink,
+  Camera
 } from 'lucide-react'
 import TacticalMap from './TacticalMap'
 import { useEmergencyStore } from '../store/emergencyStore'
@@ -95,24 +96,30 @@ export default function CommandCenterView() {
           </div>
         </div>
       ) : (
-        <div className="p-3.5 rounded-xl bg-slate-900/60 border border-slate-800 flex items-center justify-between text-xs font-mono">
+        <div className="p-3.5 sm:p-4 rounded-xl bg-gradient-to-r from-cyan-950/40 via-slate-900 to-slate-900 border border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 text-xs font-mono shadow-lg">
           <div className="flex items-center gap-2.5">
-            <span className="flex h-2.5 w-2.5 relative">
+            <span className="flex h-2.5 w-2.5 relative shrink-0">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
             </span>
-            <span className="text-slate-200 font-semibold">
-              ICCC AUTOMATED TRIAGE ENGINE STANDBY
-            </span>
-            <span className="text-slate-500">•</span>
-            <span className="text-slate-400">
-              Karnataka State Police Traffic Management & 108 EMRI Live Hook
-            </span>
+            <div>
+              <span className="text-slate-200 font-bold block sm:inline">
+                ICCC AUTOMATED TRIAGE ENGINE STANDBY
+              </span>
+              <span className="text-slate-500 hidden sm:inline"> • </span>
+              <span className="text-slate-400 text-[11px] block sm:inline">
+                Karnataka State Police Traffic Management & 108 EMRI Live Hook
+              </span>
+            </div>
           </div>
 
-          <div className="text-slate-400 text-[11px] hidden sm:block">
-            Trigger a crash simulation below to initiate autonomous P0 dispatch chain.
-          </div>
+          <button
+            onClick={() => setActiveTab('camera')}
+            className="w-full md:w-auto px-3.5 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white font-bold flex items-center justify-center gap-2 shadow-lg shadow-cyan-950/60 transition-all text-xs active:scale-95 shrink-0"
+          >
+            <Camera className="w-4 h-4" />
+            <span>LAUNCH MOBILE CAMERA DEMO</span>
+          </button>
         </div>
       )}
 

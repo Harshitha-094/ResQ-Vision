@@ -278,6 +278,42 @@ export default function TacticalMap() {
             )
           })}
 
+          {/* Live Mobile Camera GPS Accident Locus */}
+          {activeIncident?.isMobileCam && (
+            <g transform="translate(580, 220)" className="cursor-pointer">
+              {/* Expanding Radar Ping Waves */}
+              <circle cx="0" cy="0" r="45" fill="none" stroke="#ef4444" strokeWidth="2.5" opacity="0.9">
+                <animate attributeName="r" from="15" to="65" dur="1.5s" repeatCount="indefinite" />
+                <animate attributeName="opacity" from="1" to="0" dur="1.5s" repeatCount="indefinite" />
+              </circle>
+              <circle cx="0" cy="0" r="28" fill="#ef4444" fillOpacity="0.3" stroke="#ef4444" strokeWidth="2" />
+              <circle cx="0" cy="0" r="8" fill="#ef4444" stroke="#ffffff" strokeWidth="2" />
+
+              {/* Callout Label HUD */}
+              <g transform="translate(-90, -48)">
+                <rect
+                  width="180"
+                  height="28"
+                  rx="6"
+                  fill="rgba(69, 10, 10, 0.95)"
+                  stroke="#ef4444"
+                  strokeWidth="1.5"
+                />
+                <text
+                  x="90"
+                  y="18"
+                  textAnchor="middle"
+                  fill="#fecaca"
+                  fontSize="9.5"
+                  fontFamily="monospace"
+                  fontWeight="bold"
+                >
+                  📱 PHONE GPS LOCUS (P0)
+                </text>
+              </g>
+            </g>
+          )}
+
           {/* Real-time Ambulance Navigation Breadcrumb (if incident active and en route) */}
           {activeIncident && ambulanceStatus === 'en_route' && (
             <g>

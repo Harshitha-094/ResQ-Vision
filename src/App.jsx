@@ -4,6 +4,7 @@ import CommandCenterView from './components/CommandCenterView'
 import AmbulanceConsoleView from './components/AmbulanceConsoleView'
 import HospitalBayView from './components/HospitalBayView'
 import GreenCorridorView from './components/GreenCorridorView'
+import MobileCamView from './components/MobileCamView'
 import OutboundDrawer from './components/OutboundDrawer'
 import { useEmergencyStore } from './store/emergencyStore'
 
@@ -81,6 +82,7 @@ export default function App() {
         }`}
       >
         <div className="max-w-7xl mx-auto w-full">
+          {activeTab === 'camera' && <MobileCamView />}
           {activeTab === 'command' && <CommandCenterView />}
           {activeTab === 'ambulance' && <AmbulanceConsoleView />}
           {activeTab === 'hospital' && <HospitalBayView />}

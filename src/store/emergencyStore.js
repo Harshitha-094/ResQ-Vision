@@ -57,9 +57,17 @@ export const useEmergencyStore = create((set, get) => ({
       level: 'info',
     },
   ],
-  activeTab: 'command', // 'command' | 'ambulance' | 'hospital' | 'corridor'
+  activeTab: 'command', // 'camera' | 'command' | 'ambulance' | 'hospital' | 'corridor'
   soundEnabled: true,
   outboundDrawerOpen: false,
+  userGps: {
+    lat: 12.9716,
+    lng: 77.5946,
+    accuracy: 4.2,
+    address: 'Bengaluru Smart City Urban Corridor',
+    isLive: false,
+  },
+  setUserGps: (gps) => set((state) => ({ userGps: { ...state.userGps, ...gps } })),
 
   // Actions
   setActiveTab: (tab) => set({ activeTab: tab }),
@@ -234,6 +242,169 @@ export const useEmergencyStore = create((set, get) => ({
           iss_score_predicted: scenario.issEstimate,
           extrication_eta: '6-8 mins',
         },
+        level: 'info',
+      },
+    ]
+
+    set((state) => ({
+      simulatedLogs: [...newLogs, ...state.simulatedLogs].slice(0, 50),
+    }))
+  },
+
+  triggerMobileIncident: ({
+    snapshotUrl,
+    coords,
+    hospital,
+    ambulance,
+    address,
+    csi = 4.7,
+    deltaV = 76,
+    gForce = '17.8 G',
+    opticalConf = '99.6%',
+  } = {}) => {
+    const nowTime = getFormattedTime()
+    const customGps = coords || get().userGps
+    const hospitalName = hospital || 'Victoria Hospital Emergency Trauma Center'
+    const ambulanceName = ambulance || 'KA-01-EA-108 (ALS Unit - Central Hub)'
+    const locationName = address || `Mobile Camera Field Point (${customGps.lat.toFixed(4)}°N, ${customGps.lng.toFixed(4)}°E)`
+
+    const incidentObj = {
+      isMobileCam: true,
+      snapshotUrl: snapshotUrl || null,
+      title: 'Live Mobile Camera YOLO Crash Detection (Verified P0)',
+      code: 'P0-MOBI-CAM-LIVE',
+      severity: 'CRITICAL P0',
+      csi: csi,
+      issEstimate: 32,
+      goldenHourMinutes: 40,
+      vehicles: 'Live Mobile Visual Target (Crushed Vehicle Structure)',
+      casualtiesCount: 2,
+      casualtyBreakdown: {
+        criticalP0: 1,
+        seriousP1: 1,
+        minorP2: 0,
+      },
+      trappedVictims: 1,
+      extricationRequired: true,
+      incidentId: `RESQ-MOB-${Math.floor(100000 + Math.random() * 900000)}`,
+      timestamp: nowTime,
+      date: new Date().toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' }),
+      status: 'ACTIVE_P0',
+      zoneDetails: {
+        id: 'mobile',
+        name: locationName,
+        subTitle: `Live GPS: ${customGps.lat.toFixed(4)}° N, ${customGps.lng.toFixed(4)}° E (±${Math.round(customGps.accuracy || 4)}m)`,
+        district: 'Citizen/Field Smartphone Optical Feed',
+        type: 'Live Mobile Camera Stream',
+        speedLimit: '50 km/h',
+        cameraNode: 'PHONE-CAM-LIVE-STREAM',
+        sensorNode: 'MOBILE-EDGE-YOLOv10',
+        coordinates: { lat: customGps.lat, lng: customGps.lng },
+        nearestHospital: hospitalName,
+        secondaryHospital: 'NIMHANS Neurotrauma Emergency Bay',
+        ambulanceBase: ambulanceName,
+        policeUnit: 'City Traffic Patrol Interceptor 03',
+        networkStatus: '5G Mobile Uplink + GPS RTK',
+        loraStatus: 'Direct Geolocation Hook Active',
+        ambientDb: 72,
+      },
+      telemetry: {
+        preImpactSpeed: '68 km/h',
+        postImpactSpeed: '0 km/h in 110ms',
+        deltaV: deltaV,
+        gForce: gForce,
+        acousticPeakDb: 128.4,
+        acousticDurationMs: 340,
+        opticalConfidence: `${opticalConf} (Live Mobile YOLOv10)`,
+        impactAngle: 'Frontal Kinetic Deformation',
+        hazmatRisk: 'Fuel Vapor Monitoring Armed',
+        fireRisk: 'Low (Thermal Nominal)',
+      },
+      clinicalAssessment: {
+        mechanism: 'Severe kinetic deceleration identified via mobile camera feed & optical flow.',
+        headTraumaRisk: 'High (Immediate CT Protocol)',
+        cervicalSpineRisk: 'Severe (C-Spine immobilization required)',
+        chestAbdomenRisk: 'Blunt force trauma profile detected',
+        recommendedBed: 'Trauma Resuscitation Bay 1 (Red Zone)',
+        bloodCrossMatch: '4 Units O-Negative PRBC',
+        ctScanType: 'Whole-Body Pan-Scan CT',
+      },
+      signals: [
+        { id: 'SIG-MOB-01', name: 'Nearest Intersection Signal', distance: '400 m', state: 'GREEN_PREEMPTED', timer: '0:35' },
+        { id: 'SIG-MOB-02', name: 'Corridor Transit Signal', distance: '1.2 km', state: 'ARMED_PREEMPTION', timer: '1:10' },
+        { id: 'SIG-MOB-03', name: 'Hospital Approach Signal', distance: '2.5 km', state: 'HOLD_CYCLE', timer: '2:15' },
+      ],
+    }
+
+    if (get().soundEnabled) {
+      playAlertBeep()
+    }
+
+    set({
+      activeIncident: incidentObj,
+      selectedZone: 'urban', // default map anchor to urban or closest
+      ambulanceStatus: 'alerted',
+      countdown: 15,
+      ambulanceEtaSeconds: 210,
+      distanceKm: 2.8,
+      hospitalStatus: { ...INITIAL_HOSPITAL_STATUS },
+      greenCorridorActive: true,
+      corridorProgress: 12,
+      paramedicChecklist: [...INITIAL_CHECKLIST],
+    })
+
+    // Simulated emergency communications logs
+    const newLogs = [
+      {
+        id: `log-mob-sms-${Date.now()}`,
+        timestamp: nowTime,
+        channel: 'SMS (108 DISPATCH)',
+        title: `LIVE MOBILE CAM P0 DISPATCH: ${ambulanceName}`,
+        message: `[SIMULATED SMS to 108 Dispatcher]: P0 CRASH CONFIRMED via live phone camera feed at GPS ${customGps.lat.toFixed(5)}, ${customGps.lng.toFixed(5)} (${locationName}). Auto-dispatched ambulance ${ambulanceName}. Nearest trauma bay: ${hospitalName}.`,
+        rawPayload: {
+          source: 'MOBILE_PHONE_CAMERA_YOLO',
+          to: '+91-108-EMRI-DISPATCH',
+          gps: { lat: customGps.lat, lng: customGps.lng, acc_m: customGps.accuracy },
+          nearest_hospital: hospitalName,
+          assigned_unit: ambulanceName,
+          priority: 'P0_IMMEDIATE_ROLLOUT',
+          ticket: incidentObj.incidentId,
+        },
+        level: 'critical',
+      },
+      {
+        id: `log-mob-erss-${Date.now() + 1}`,
+        timestamp: nowTime,
+        channel: 'ERSS 112 (POLICE)',
+        title: `Police CAD Alert: Mobile Incident Dispatched`,
+        message: `[SIMULATED ERSS 112]: Live citizen/field phone camera crash report verified. Location coordinates broadcast to mobile patrol units.`,
+        rawPayload: {
+          call_type: 'MOBILE_EDGE_AI_CRASH',
+          police_cad_channel: '112_TRAFFIC_DIV',
+          coordinates: `${customGps.lat}, ${customGps.lng}`,
+        },
+        level: 'warning',
+      },
+      {
+        id: `log-mob-fhir-${Date.now() + 2}`,
+        timestamp: nowTime,
+        channel: 'FHIR/HL7',
+        title: `Hospital Trauma Bay Intake Alert: ${hospitalName}`,
+        message: `[FHIR HL7 v2.5.1]: Electronic Trauma Admission Ticket opened for incoming casualty from Mobile Camera alert. Resuscitation Bay 1 armed.`,
+        rawPayload: {
+          destination_hospital: hospitalName,
+          triage_class: 'RED_P0',
+          predicted_iss: 32,
+        },
+        level: 'info',
+      },
+      {
+        id: `log-mob-cv2x-${Date.now() + 3}`,
+        timestamp: nowTime,
+        channel: 'C-V2X',
+        title: `Dynamic Green Wave Corridor Initialized for ${ambulanceName}`,
+        message: `[C-V2X Signal Preemption]: Route from base to GPS (${customGps.lat.toFixed(4)}, ${customGps.lng.toFixed(4)}) locked to Green Wave cycle.`,
+        rawPayload: { corridor: 'MOBILE_ORIGIN_ROUTE', preemption_active: true },
         level: 'info',
       },
     ]

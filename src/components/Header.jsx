@@ -14,7 +14,8 @@ import {
   AlertTriangle,
   Server,
   Wifi,
-  Navigation
+  Navigation,
+  Camera
 } from 'lucide-react'
 import { useEmergencyStore } from '../store/emergencyStore'
 import { ZONES } from '../data/mockScenarios'
@@ -181,6 +182,25 @@ export default function Header() {
                 </div>
                 <div className="p-1 space-y-1">
                   <button
+                    onClick={() => {
+                      setShowTriggerMenu(false)
+                      setActiveTab('camera')
+                    }}
+                    className="w-full text-left p-2 rounded-lg bg-cyan-950/40 hover:bg-cyan-900/50 border border-cyan-700/80 transition-all group mb-1.5"
+                  >
+                    <div className="flex items-center justify-between font-bold text-cyan-300 group-hover:text-cyan-200">
+                      <span className="flex items-center gap-1.5">
+                        <Camera className="w-3.5 h-3.5 text-cyan-400" />
+                        0. Live Mobile Camera Demo
+                      </span>
+                      <span className="text-[9px] px-1.5 py-0.2 rounded bg-cyan-900 border border-cyan-600 text-cyan-200 font-mono">
+                        PHONE CAM
+                      </span>
+                    </div>
+                    <p className="text-[10px] text-slate-300 mt-0.5">Stream phone camera, YOLO crash detection & GPS lock</p>
+                  </button>
+
+                  <button
                     onClick={() => handleTrigger('highway')}
                     className="w-full text-left p-2 rounded-lg hover:bg-slate-800 border border-transparent hover:border-slate-700 transition-all group"
                   >
@@ -276,6 +296,24 @@ export default function Header() {
 
       {/* Responsive Navigation Tabs Bar */}
       <div className="px-2 sm:px-4 bg-slate-950 border-t border-slate-900 flex overflow-x-auto no-scrollbar gap-1 text-xs">
+        <button
+          onClick={() => handleTabClick('camera')}
+          className={`flex items-center gap-1.5 sm:gap-2 py-2.5 px-3 sm:px-4 font-semibold border-b-2 transition-all whitespace-nowrap ${
+            activeTab === 'camera'
+              ? 'border-cyan-400 text-cyan-400 bg-cyan-950/20'
+              : 'border-transparent text-slate-400 hover:text-cyan-300'
+          }`}
+        >
+          <Camera className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-cyan-400" />
+          <span>
+            <span className="sm:hidden">AI Cam</span>
+            <span className="hidden sm:inline">Mobile AI Camera</span>
+          </span>
+          <span className="px-1.5 py-0.2 rounded text-[9px] bg-cyan-950 border border-cyan-800 text-cyan-300 font-mono font-bold animate-pulse">
+            LIVE
+          </span>
+        </button>
+
         <button
           onClick={() => handleTabClick('command')}
           className={`flex items-center gap-1.5 sm:gap-2 py-2.5 px-3 sm:px-4 font-semibold border-b-2 transition-all whitespace-nowrap ${
