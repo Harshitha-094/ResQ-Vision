@@ -15,7 +15,8 @@ import {
   Server,
   Wifi,
   Navigation,
-  Camera
+  Camera,
+  X
 } from 'lucide-react'
 import { useEmergencyStore } from '../store/emergencyStore'
 import { ZONES } from '../data/mockScenarios'
@@ -174,65 +175,82 @@ export default function Header() {
             </button>
 
             {showTriggerMenu && (
-              <div className="absolute right-0 mt-2 w-72 sm:w-80 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl z-50 p-2 text-xs">
-                <div className="px-3 py-2 border-b border-slate-800 font-bold text-slate-300 flex items-center justify-between">
-                  <span>DISPATCH SIMULATION TRIGGER</span>
-                  <span className="text-[10px] text-red-400 font-mono">P0 PROTOCOL</span>
+              <>
+                {/* Backdrop to prevent click-through and close when tapped outside */}
+                <div
+                  className="fixed inset-0 z-40 bg-black/60 backdrop-blur-[2px] sm:bg-transparent sm:backdrop-blur-none"
+                  onClick={() => setShowTriggerMenu(false)}
+                />
+
+                <div className="fixed inset-x-3 top-24 sm:absolute sm:inset-auto sm:right-0 sm:top-full sm:mt-2 w-auto sm:w-80 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl z-50 p-2 text-xs">
+                  <div className="px-3 py-2 border-b border-slate-800 font-bold text-slate-300 flex items-center justify-between">
+                    <span>DISPATCH SIMULATION TRIGGER</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] text-red-400 font-mono">P0 PROTOCOL</span>
+                      <button
+                        onClick={() => setShowTriggerMenu(false)}
+                        className="sm:hidden text-slate-400 hover:text-white p-0.5"
+                        aria-label="Close"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="p-1 space-y-1">
+                    <button
+                      onClick={() => {
+                        setShowTriggerMenu(false)
+                        setActiveTab('camera')
+                      }}
+                      className="w-full text-left p-2 rounded-lg bg-cyan-950/40 hover:bg-cyan-900/50 border border-cyan-700/80 transition-all group mb-1.5"
+                    >
+                      <div className="flex items-center justify-between font-bold text-cyan-300 group-hover:text-cyan-200">
+                        <span className="flex items-center gap-1.5">
+                          <Camera className="w-3.5 h-3.5 text-cyan-400" />
+                          0. Live Mobile Camera Demo
+                        </span>
+                        <span className="text-[9px] px-1.5 py-0.2 rounded bg-cyan-900 border border-cyan-600 text-cyan-200 font-mono">
+                          PHONE CAM
+                        </span>
+                      </div>
+                      <p className="text-[10px] text-slate-300 mt-0.5">Stream phone camera, YOLO crash detection & GPS lock</p>
+                    </button>
+
+                    <button
+                      onClick={() => handleTrigger('highway')}
+                      className="w-full text-left p-2 rounded-lg hover:bg-slate-800 border border-transparent hover:border-slate-700 transition-all group"
+                    >
+                      <div className="flex items-center justify-between font-semibold text-slate-200 group-hover:text-red-400">
+                        <span>1. Highway Pileup (&gt;100 km/h)</span>
+                        <span className="text-[9px] px-1.5 py-0.2 rounded bg-red-950/60 border border-red-800 text-red-400">NH-275</span>
+                      </div>
+                      <p className="text-[10px] text-slate-400 mt-0.5">3 vehicles, trapped victims, high-speed impact</p>
+                    </button>
+
+                    <button
+                      onClick={() => handleTrigger('urban')}
+                      className="w-full text-left p-2 rounded-lg hover:bg-slate-800 border border-transparent hover:border-slate-700 transition-all group"
+                    >
+                      <div className="flex items-center justify-between font-semibold text-slate-200 group-hover:text-amber-400">
+                        <span>2. Urban Two-Wheeler / Pedestrian</span>
+                        <span className="text-[9px] px-1.5 py-0.2 rounded bg-amber-950/60 border border-amber-800 text-amber-400">Silk Board</span>
+                      </div>
+                      <p className="text-[10px] text-slate-400 mt-0.5">Critical head trauma, high congestion grid</p>
+                    </button>
+
+                    <button
+                      onClick={() => handleTrigger('ghat')}
+                      className="w-full text-left p-2 rounded-lg hover:bg-slate-800 border border-transparent hover:border-slate-700 transition-all group"
+                    >
+                      <div className="flex items-center justify-between font-semibold text-slate-200 group-hover:text-blue-400">
+                        <span>3. Ghat Fog Crash (LoRaWAN)</span>
+                        <span className="text-[9px] px-1.5 py-0.2 rounded bg-blue-950/60 border border-blue-800 text-blue-400">Charmadi</span>
+                      </div>
+                      <p className="text-[10px] text-slate-400 mt-0.5">Zero cellular signal, acoustic guardrail breach</p>
+                    </button>
+                  </div>
                 </div>
-                <div className="p-1 space-y-1">
-                  <button
-                    onClick={() => {
-                      setShowTriggerMenu(false)
-                      setActiveTab('camera')
-                    }}
-                    className="w-full text-left p-2 rounded-lg bg-cyan-950/40 hover:bg-cyan-900/50 border border-cyan-700/80 transition-all group mb-1.5"
-                  >
-                    <div className="flex items-center justify-between font-bold text-cyan-300 group-hover:text-cyan-200">
-                      <span className="flex items-center gap-1.5">
-                        <Camera className="w-3.5 h-3.5 text-cyan-400" />
-                        0. Live Mobile Camera Demo
-                      </span>
-                      <span className="text-[9px] px-1.5 py-0.2 rounded bg-cyan-900 border border-cyan-600 text-cyan-200 font-mono">
-                        PHONE CAM
-                      </span>
-                    </div>
-                    <p className="text-[10px] text-slate-300 mt-0.5">Stream phone camera, YOLO crash detection & GPS lock</p>
-                  </button>
-
-                  <button
-                    onClick={() => handleTrigger('highway')}
-                    className="w-full text-left p-2 rounded-lg hover:bg-slate-800 border border-transparent hover:border-slate-700 transition-all group"
-                  >
-                    <div className="flex items-center justify-between font-semibold text-slate-200 group-hover:text-red-400">
-                      <span>1. Highway Pileup (&gt;100 km/h)</span>
-                      <span className="text-[9px] px-1.5 py-0.2 rounded bg-red-950/60 border border-red-800 text-red-400">NH-275</span>
-                    </div>
-                    <p className="text-[10px] text-slate-400 mt-0.5">3 vehicles, trapped victims, high-speed impact</p>
-                  </button>
-
-                  <button
-                    onClick={() => handleTrigger('urban')}
-                    className="w-full text-left p-2 rounded-lg hover:bg-slate-800 border border-transparent hover:border-slate-700 transition-all group"
-                  >
-                    <div className="flex items-center justify-between font-semibold text-slate-200 group-hover:text-amber-400">
-                      <span>2. Urban Two-Wheeler / Pedestrian</span>
-                      <span className="text-[9px] px-1.5 py-0.2 rounded bg-amber-950/60 border border-amber-800 text-amber-400">Silk Board</span>
-                    </div>
-                    <p className="text-[10px] text-slate-400 mt-0.5">Critical head trauma, high congestion grid</p>
-                  </button>
-
-                  <button
-                    onClick={() => handleTrigger('ghat')}
-                    className="w-full text-left p-2 rounded-lg hover:bg-slate-800 border border-transparent hover:border-slate-700 transition-all group"
-                  >
-                    <div className="flex items-center justify-between font-semibold text-slate-200 group-hover:text-blue-400">
-                      <span>3. Ghat Fog Crash (LoRaWAN)</span>
-                      <span className="text-[9px] px-1.5 py-0.2 rounded bg-blue-950/60 border border-blue-800 text-blue-400">Charmadi</span>
-                    </div>
-                    <p className="text-[10px] text-slate-400 mt-0.5">Zero cellular signal, acoustic guardrail breach</p>
-                  </button>
-                </div>
-              </div>
+              </>
             )}
           </div>
 
