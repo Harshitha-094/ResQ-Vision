@@ -44,52 +44,52 @@ export default function CommandCenterView() {
     <div className="space-y-6">
       {/* Top Banner: Incident Alert if Active, else Readiness Status */}
       {activeIncident ? (
-        <div className="p-4 rounded-xl bg-gradient-to-r from-red-950/90 via-slate-900 to-red-950/70 border-2 border-red-500/80 p0-glow-pulse shadow-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-red-600/30 rounded-xl border border-red-500 flex items-center justify-center animate-pulse">
-              <AlertTriangle className="w-8 h-8 text-red-400" />
+        <div className="p-3.5 sm:p-4 rounded-xl bg-gradient-to-r from-red-950/90 via-slate-900 to-red-950/70 border-2 border-red-500/80 p0-glow-pulse shadow-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-3 sm:gap-4">
+          <div className="flex items-start sm:items-center gap-3">
+            <div className="p-2 sm:p-3 bg-red-600/30 rounded-xl border border-red-500 flex items-center justify-center animate-pulse shrink-0 mt-1 sm:mt-0">
+              <AlertTriangle className="w-6 h-6 sm:w-8 sm:h-8 text-red-400" />
             </div>
             <div>
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="px-2.5 py-0.5 rounded bg-red-600 text-white font-mono font-extrabold text-xs tracking-wider">
-                  PRIORITY 0 ACTIVE CRASH
+              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                <span className="px-2 py-0.5 rounded bg-red-600 text-white font-mono font-extrabold text-[10px] sm:text-xs tracking-wider">
+                  P0 ACTIVE CRASH
                 </span>
-                <span className="text-xs font-mono text-red-300">
-                  TICKET: {activeIncident.incidentId}
+                <span className="text-[11px] sm:text-xs font-mono text-red-300">
+                  {activeIncident.incidentId}
                 </span>
-                <span className="text-xs font-mono text-slate-400">
-                  EST: {activeIncident.timestamp} IST
+                <span className="text-[11px] sm:text-xs font-mono text-slate-400">
+                  {activeIncident.timestamp}
                 </span>
               </div>
-              <h2 className="text-lg font-bold text-white mt-1">
+              <h2 className="text-sm sm:text-lg font-bold text-white mt-1 leading-snug">
                 {activeIncident.title}
               </h2>
-              <p className="text-xs text-slate-300 font-mono">
-                Location: <span className="text-white font-semibold">{activeIncident.zoneDetails.name}</span> ({activeIncident.zoneDetails.subTitle})
+              <p className="text-[11px] sm:text-xs text-slate-300 font-mono mt-0.5">
+                <span className="text-white font-semibold">{activeIncident.zoneDetails.name}</span> ({activeIncident.zoneDetails.subTitle})
               </p>
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="bg-slate-900/90 border border-slate-800 rounded-lg px-3 py-2 text-center">
-              <div className="text-[10px] text-slate-400 font-mono uppercase">Severity Index</div>
-              <div className="text-lg font-black text-red-400 font-mono">
-                {activeIncident.csi} <span className="text-xs text-slate-500">/ 5.0</span>
+          <div className="w-full md:w-auto grid grid-cols-2 sm:flex sm:items-center gap-2 sm:gap-3">
+            <div className="bg-slate-900/90 border border-slate-800 rounded-lg px-2.5 sm:px-3 py-1.5 sm:py-2 text-center">
+              <div className="text-[9px] sm:text-[10px] text-slate-400 font-mono uppercase">Severity</div>
+              <div className="text-base sm:text-lg font-black text-red-400 font-mono">
+                {activeIncident.csi} <span className="text-[10px] text-slate-500">/ 5.0</span>
               </div>
             </div>
 
-            <div className="bg-slate-900/90 border border-slate-800 rounded-lg px-3 py-2 text-center">
-              <div className="text-[10px] text-slate-400 font-mono uppercase">Victims / Trapped</div>
-              <div className="text-lg font-black text-amber-400 font-mono">
-                {activeIncident.casualtiesCount} <span className="text-xs text-red-400">({activeIncident.trappedVictims} trapped)</span>
+            <div className="bg-slate-900/90 border border-slate-800 rounded-lg px-2.5 sm:px-3 py-1.5 sm:py-2 text-center">
+              <div className="text-[9px] sm:text-[10px] text-slate-400 font-mono uppercase">Victims</div>
+              <div className="text-base sm:text-lg font-black text-amber-400 font-mono">
+                {activeIncident.casualtiesCount} <span className="text-[10px] text-red-400">({activeIncident.trappedVictims} trapped)</span>
               </div>
             </div>
 
             <button
               onClick={() => setActiveTab('ambulance')}
-              className="px-4 py-2.5 rounded-lg bg-red-600 hover:bg-red-500 text-white font-bold text-xs flex items-center gap-2 shadow-lg shadow-red-950/60 transition-all active:scale-95"
+              className="col-span-2 sm:col-span-1 w-full sm:w-auto px-3.5 py-2.5 rounded-lg bg-red-600 hover:bg-red-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-red-950/60 transition-all active:scale-95"
             >
-              <span>IN-CAB AMBULANCE CONSOLE</span>
+              <span>IN-CAB CONSOLE</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>

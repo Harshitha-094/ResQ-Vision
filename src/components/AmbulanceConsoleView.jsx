@@ -56,10 +56,10 @@ export default function AmbulanceConsoleView() {
   return (
     <div className="max-w-7xl mx-auto space-y-6">
       {/* Mobile / Tablet MDT Frame Wrapper */}
-      <div className="p-1 sm:p-2 rounded-2xl bg-gradient-to-b from-slate-800 to-slate-950 border-4 border-slate-700 shadow-2xl">
+      <div className="p-1 sm:p-2 rounded-xl sm:rounded-2xl bg-gradient-to-b from-slate-800 to-slate-950 border-2 sm:border-4 border-slate-700 shadow-2xl">
         {/* Persistent Priority 0 Banner Across Top */}
         <div
-          className={`py-3 px-4 rounded-xl flex flex-wrap items-center justify-between gap-3 text-xs font-mono font-bold transition-all ${
+          className={`py-2.5 sm:py-3 px-3 sm:px-4 rounded-lg sm:rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 sm:gap-3 text-xs font-mono font-bold transition-all ${
             ambulanceStatus === 'alerted'
               ? 'bg-red-600 text-white p0-glow-pulse'
               : ambulanceStatus === 'en_route'
@@ -69,48 +69,48 @@ export default function AmbulanceConsoleView() {
               : 'bg-slate-900 border border-slate-800 text-slate-400'
           }`}
         >
-          <div className="flex items-center gap-3">
-            <span className="p-1.5 bg-black/30 rounded-lg flex items-center justify-center">
-              <Radio className="w-5 h-5 animate-pulse" />
+          <div className="flex items-center gap-2.5 sm:gap-3">
+            <span className="p-1 sm:p-1.5 bg-black/30 rounded-lg flex items-center justify-center shrink-0">
+              <Radio className="w-4 h-4 sm:w-5 sm:h-5 animate-pulse" />
             </span>
             <div>
-              <div className="text-[10px] tracking-widest uppercase opacity-90">
-                108 GVK-EMRI • STATE EMERGENCY AMBULANCE CAD MDT-9000
+              <div className="text-[9px] sm:text-[10px] tracking-widest uppercase opacity-90">
+                108 GVK-EMRI • CAD MDT-9000
               </div>
-              <div className="text-sm font-black tracking-wide">
+              <div className="text-xs sm:text-sm font-black tracking-wide leading-tight">
                 {activeIncident
                   ? `PRIORITY 0: IMMEDIATE ROLLOUT - UNIT ${zone.ambulanceBase.split(' ')[0]}`
-                  : `UNIT ${zone.ambulanceBase.split(' ')[0]} READY • STANDBY AT RAMANAGARA BASE`}
+                  : `UNIT ${zone.ambulanceBase.split(' ')[0]} READY • STANDBY`}
               </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className="text-right">
-              <div className="text-[10px] opacity-80">DISPATCH STATUS</div>
-              <div className="text-xs uppercase font-extrabold tracking-wider">
-                {ambulanceStatus === 'alerted' && '⚠️ ALERTED - PENDING DRIVER ACCEPT'}
-                {ambulanceStatus === 'accepted' && 'CONFIRMED - PRE-ROUTE'}
-                {ambulanceStatus === 'en_route' && '🚑 EN ROUTE (CODE 3 SIREN)'}
-                {ambulanceStatus === 'arrived' && '✅ ARRIVED ON SCENE'}
-                {ambulanceStatus === 'idle' && 'IDLE STANDBY'}
+          <div className="w-full sm:w-auto flex items-center justify-between sm:justify-end gap-3 pt-1 sm:pt-0 border-t sm:border-t-0 border-white/20">
+            <div className="text-left sm:text-right">
+              <div className="text-[9px] sm:text-[10px] opacity-80">DISPATCH STATUS</div>
+              <div className="text-[11px] sm:text-xs uppercase font-extrabold tracking-wider">
+                {ambulanceStatus === 'alerted' && '⚠️ ALERTED - ACCEPT NOW'}
+                {ambulanceStatus === 'accepted' && 'CONFIRMED'}
+                {ambulanceStatus === 'en_route' && '🚑 EN ROUTE (CODE 3)'}
+                {ambulanceStatus === 'arrived' && '✅ ON SCENE'}
+                {ambulanceStatus === 'idle' && 'STANDBY'}
               </div>
             </div>
 
             {/* Quick Status Override Stepper */}
             {activeIncident && (
-              <div className="flex items-center bg-black/40 rounded-lg p-1 gap-1">
+              <div className="flex items-center bg-black/40 rounded-lg p-0.5 sm:p-1 gap-0.5 sm:gap-1">
                 {['alerted', 'en_route', 'arrived'].map((st) => (
                   <button
                     key={st}
                     onClick={() => updateAmbulanceStatus(st)}
-                    className={`px-2 py-1 rounded text-[10px] font-mono uppercase transition-all ${
+                    className={`px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-[9px] sm:text-[10px] font-mono uppercase transition-all ${
                       ambulanceStatus === st
                         ? 'bg-white text-black font-extrabold'
                         : 'text-white/70 hover:text-white'
                     }`}
                   >
-                    {st.replace('_', ' ')}
+                    {st === 'en_route' ? 'ROUTE' : st.replace('_', ' ')}
                   </button>
                 ))}
               </div>
@@ -119,37 +119,37 @@ export default function AmbulanceConsoleView() {
         </div>
 
         {/* Inner Cockpit Grid */}
-        <div className="p-4 sm:p-6 bg-slate-950 rounded-xl mt-2 space-y-6">
+        <div className="p-3 sm:p-6 bg-slate-950 rounded-lg sm:rounded-xl mt-2 space-y-4 sm:space-y-6">
           {/* Audio-Visual Pulsing Alert & 15-Second Driver Acknowledgement Countdown */}
           {ambulanceStatus === 'alerted' && (
-            <div className="p-5 rounded-xl bg-red-950/70 border-2 border-red-500 shadow-2xl p0-glow-pulse flex flex-col md:flex-row items-center justify-between gap-6">
-              <div className="flex items-center gap-4">
+            <div className="p-3.5 sm:p-5 rounded-xl bg-red-950/70 border-2 border-red-500 shadow-2xl p0-glow-pulse flex flex-col md:flex-row items-center justify-between gap-4 sm:gap-6">
+              <div className="flex items-center gap-3 sm:gap-4 w-full md:w-auto">
                 {/* 15s Countdown Ring */}
-                <div className="relative flex items-center justify-center w-20 h-20 rounded-full border-4 border-red-500 bg-red-950 shadow-inner">
+                <div className="relative flex items-center justify-center w-14 h-14 sm:w-20 sm:h-20 rounded-full border-3 sm:border-4 border-red-500 bg-red-950 shadow-inner shrink-0">
                   <div className="text-center font-mono">
-                    <span className="text-2xl font-black text-white">{countdown}</span>
-                    <span className="text-[9px] block text-red-300 font-bold uppercase">SEC</span>
+                    <span className="text-lg sm:text-2xl font-black text-white">{countdown}</span>
+                    <span className="text-[8px] sm:text-[9px] block text-red-300 font-bold uppercase">SEC</span>
                   </div>
-                  <span className="absolute -top-1 -right-1 flex h-4 w-4">
+                  <span className="absolute -top-1 -right-1 flex h-3 w-3 sm:h-4 sm:w-4">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-80"></span>
-                    <span className="relative inline-flex rounded-full h-4 w-4 bg-red-500"></span>
+                    <span className="relative inline-flex rounded-full h-3 w-3 sm:h-4 sm:w-4 bg-red-500"></span>
                   </span>
                 </div>
 
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 rounded bg-red-600 text-white font-mono text-[10px] font-extrabold tracking-wider uppercase">
-                      CRITICAL DRIVER TIMEOUT
+                <div className="flex-1">
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <span className="px-1.5 py-0.2 rounded bg-red-600 text-white font-mono text-[9px] sm:text-[10px] font-extrabold tracking-wider uppercase">
+                      DRIVER TIMEOUT
                     </span>
-                    <span className="text-xs font-mono text-red-300">
-                      CAD AUTO-ESCALATION IN {countdown}s
+                    <span className="text-[11px] sm:text-xs font-mono text-red-300">
+                      CAD TIMEOUT IN {countdown}s
                     </span>
                   </div>
-                  <h3 className="text-lg font-black text-white mt-0.5">
-                    CRITICAL COLLISION TICKET: {activeIncident?.code}
+                  <h3 className="text-sm sm:text-lg font-black text-white mt-0.5 leading-snug">
+                    COLLISION: {activeIncident?.code}
                   </h3>
-                  <p className="text-xs text-slate-300 font-mono">
-                    High-energy mechanism confirmed. Automatic dispatch to secondary unit if not accepted within 15 seconds.
+                  <p className="text-[10px] sm:text-xs text-slate-300 font-mono line-clamp-2">
+                    High-energy mechanism. Automatic dispatch to secondary unit if not accepted.
                   </p>
                 </div>
               </div>
@@ -157,65 +157,65 @@ export default function AmbulanceConsoleView() {
               {/* Big Glowing ACCEPT DISPATCH Button */}
               <button
                 onClick={acceptDispatch}
-                className="w-full md:w-auto px-8 py-4 rounded-xl bg-gradient-to-r from-red-600 via-rose-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white font-black text-sm tracking-wider uppercase shadow-2xl shadow-red-950/80 border-2 border-white/30 transform active:scale-95 transition-all flex items-center justify-center gap-3 animate-bounce"
+                className="w-full md:w-auto px-5 sm:px-8 py-3 sm:py-4 rounded-xl bg-gradient-to-r from-red-600 via-rose-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white font-black text-xs sm:text-sm tracking-wider uppercase shadow-2xl shadow-red-950/80 border-2 border-white/30 transform active:scale-95 transition-all flex items-center justify-center gap-2.5 animate-bounce"
               >
-                <Zap className="w-5 h-5 fill-white" />
+                <Zap className="w-4 h-4 sm:w-5 sm:h-5 fill-white" />
                 <span>ACCEPT DISPATCH & ENGAGE SIREN</span>
               </button>
             </div>
           )}
 
           {/* Active Navigation & Telemetry HUD Bar */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 font-mono">
-              <span className="text-[10px] text-slate-400 uppercase flex items-center gap-1.5">
-                <Navigation className="w-3.5 h-3.5 text-cyan-400" />
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4">
+            <div className="p-2.5 sm:p-3.5 rounded-xl bg-slate-900 border border-slate-800 font-mono">
+              <span className="text-[9px] sm:text-[10px] text-slate-400 uppercase flex items-center gap-1">
+                <Navigation className="w-3 h-3 text-cyan-400" />
                 Target Locus
               </span>
-              <div className="text-sm font-bold text-white mt-1 truncate">
+              <div className="text-xs sm:text-sm font-bold text-white mt-0.5 truncate">
                 {activeIncident ? activeIncident.zoneDetails.name : zone.name}
               </div>
-              <div className="text-[10px] text-slate-400 truncate">
+              <div className="text-[9px] sm:text-[10px] text-slate-400 truncate">
                 {activeIncident ? activeIncident.zoneDetails.subTitle : zone.subTitle}
               </div>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 font-mono">
-              <span className="text-[10px] text-slate-400 uppercase flex items-center gap-1.5">
-                <Clock className="w-3.5 h-3.5 text-amber-400" />
-                Estimated Arrival (ETA)
+            <div className="p-2.5 sm:p-3.5 rounded-xl bg-slate-900 border border-slate-800 font-mono">
+              <span className="text-[9px] sm:text-[10px] text-slate-400 uppercase flex items-center gap-1">
+                <Clock className="w-3 h-3 text-amber-400" />
+                ETA
               </span>
-              <div className="text-xl font-black text-amber-400 mt-1">
+              <div className="text-base sm:text-xl font-black text-amber-400 mt-0.5">
                 {ambulanceStatus === 'arrived' ? '00:00 (ON SITE)' : formatEta(ambulanceEtaSeconds)}
               </div>
-              <div className="text-[10px] text-slate-400">
-                Distance: <strong className="text-white">{distanceKm} km</strong>
+              <div className="text-[9px] sm:text-[10px] text-slate-400">
+                Dist: <strong className="text-white">{distanceKm} km</strong>
               </div>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 font-mono">
-              <span className="text-[10px] text-slate-400 uppercase flex items-center gap-1.5">
-                <Truck className="w-3.5 h-3.5 text-emerald-400" />
-                In-Cab Speedometer
+            <div className="p-2.5 sm:p-3.5 rounded-xl bg-slate-900 border border-slate-800 font-mono">
+              <span className="text-[9px] sm:text-[10px] text-slate-400 uppercase flex items-center gap-1">
+                <Truck className="w-3 h-3 text-emerald-400" />
+                Speedometer
               </span>
-              <div className="text-xl font-black text-white mt-1">
-                {ambulanceStatus === 'en_route' ? '88 km/h' : ambulanceStatus === 'arrived' ? '0 km/h' : '0 km/h (PARKED)'}
+              <div className="text-base sm:text-xl font-black text-white mt-0.5">
+                {ambulanceStatus === 'en_route' ? '88 km/h' : ambulanceStatus === 'arrived' ? '0 km/h' : '0 km/h'}
               </div>
-              <div className="text-[10px] text-emerald-400 font-bold">
-                {ambulanceStatus === 'en_route' ? 'GREEN WAVE OVERRIDE ENGAGED' : 'STANDBY'}
+              <div className="text-[9px] sm:text-[10px] text-emerald-400 font-bold truncate">
+                {ambulanceStatus === 'en_route' ? 'GREEN WAVE' : 'STANDBY'}
               </div>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 font-mono">
-              <span className="text-[10px] text-slate-400 uppercase flex items-center gap-1.5">
-                <Shield className="w-3.5 h-3.5 text-red-400" />
-                Triage / Trauma Severity
+            <div className="p-2.5 sm:p-3.5 rounded-xl bg-slate-900 border border-slate-800 font-mono">
+              <span className="text-[9px] sm:text-[10px] text-slate-400 uppercase flex items-center gap-1">
+                <Shield className="w-3 h-3 text-red-400" />
+                Severity
               </span>
-              <div className="text-xl font-black text-red-400 mt-1">
-                CSI: {activeIncident ? activeIncident.csi : '0.0'} <span className="text-xs text-slate-500">/ 5.0</span>
+              <div className="text-base sm:text-xl font-black text-red-400 mt-0.5">
+                CSI: {activeIncident ? activeIncident.csi : '0.0'}
               </div>
-              <div className="text-[10px] text-red-300">
-                {activeIncident ? `${activeIncident.trappedVictims} VICTIMS TRAPPED` : 'NO ACTIVE INCIDENT'}
+              <div className="text-[9px] sm:text-[10px] text-red-300 truncate">
+                {activeIncident ? `${activeIncident.trappedVictims} TRAPPED` : 'STANDBY'}
               </div>
             </div>
           </div>

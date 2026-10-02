@@ -70,13 +70,17 @@ export default function App() {
   }, [ambulanceStatus, triggerIncident, acceptDispatch, toggleSound])
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-red-500/30">
+    <div className="min-h-screen min-h-[100dvh] bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-red-500/30 w-full overflow-x-hidden">
       {/* Sticky Mission-Control Header */}
       <Header />
 
       {/* Main View Area with Bottom Padding for Drawer */}
-      <main className={`flex-1 p-4 sm:p-6 transition-all duration-300 ${outboundDrawerOpen ? 'pb-96' : 'pb-16'}`}>
-        <div className="max-w-7xl mx-auto">
+      <main
+        className={`flex-1 px-2.5 sm:px-4 md:px-6 py-3 sm:py-5 transition-all duration-300 w-full ${
+          outboundDrawerOpen ? 'pb-[70vh] sm:pb-96' : 'pb-14 sm:pb-16'
+        }`}
+      >
+        <div className="max-w-7xl mx-auto w-full">
           {activeTab === 'command' && <CommandCenterView />}
           {activeTab === 'ambulance' && <AmbulanceConsoleView />}
           {activeTab === 'hospital' && <HospitalBayView />}

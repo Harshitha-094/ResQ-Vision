@@ -71,56 +71,59 @@ export default function OutboundDrawer() {
     <aside
       aria-label="Simulated Outbound Communications & Hardware Feeds"
       className={`fixed bottom-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out border-t border-slate-800 bg-slate-950/98 backdrop-blur-xl shadow-2xl ${
-        outboundDrawerOpen ? 'h-96' : 'h-11'
+        outboundDrawerOpen ? 'h-[65vh] sm:h-96 max-h-[500px]' : 'h-11'
       }`}
     >
       {/* Header Bar / Handle Button */}
       <div
         onClick={toggleDrawer}
-        className="h-11 px-4 flex items-center justify-between cursor-pointer bg-slate-900/90 hover:bg-slate-850 select-none text-xs font-mono border-b border-slate-800/80"
+        className="h-11 px-3 sm:px-4 flex items-center justify-between cursor-pointer bg-slate-900/90 hover:bg-slate-850 select-none text-xs font-mono border-b border-slate-800/80"
       >
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 font-bold text-slate-200">
-            <Terminal className="w-4 h-4 text-cyan-400" />
-            <span className="tracking-wide">
+        <div className="flex items-center gap-2 sm:gap-3 truncate">
+          <div className="flex items-center gap-1.5 sm:gap-2 font-bold text-slate-200 truncate">
+            <Terminal className="w-4 h-4 text-cyan-400 shrink-0" />
+            <span className="tracking-wide hidden sm:inline truncate">
               Simulated Outbound Communications & Hardware Feeds
+            </span>
+            <span className="tracking-wide sm:hidden truncate">
+              Outbound Feeds
             </span>
           </div>
 
-          <span className="px-2 py-0.5 rounded-full bg-cyan-950 border border-cyan-800 text-[10px] text-cyan-300 font-bold">
-            {simulatedLogs.length} EVENTS LOGGED
+          <span className="px-1.5 sm:px-2 py-0.5 rounded-full bg-cyan-950 border border-cyan-800 text-[9px] sm:text-[10px] text-cyan-300 font-bold shrink-0">
+            {simulatedLogs.length} LOGGED
           </span>
-          <span className="text-slate-500 hidden sm:inline">|</span>
-          <span className="text-[11px] text-slate-400 hidden sm:inline">
+          <span className="text-slate-500 hidden md:inline">|</span>
+          <span className="text-[11px] text-slate-400 hidden lg:inline truncate">
             SMS (108 EMRI) • ERSS 112 Police CAD • MQTT Telemetry • C-V2X V2I • FHIR HL7
           </span>
         </div>
 
-        <div className="flex items-center gap-3">
-          <span className="text-[11px] text-slate-400 font-medium">
-            {outboundDrawerOpen ? 'COLLAPSE DRAWER' : 'EXPAND FEED'}
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+          <span className="text-[10px] sm:text-[11px] text-slate-400 font-medium hidden xs:inline">
+            {outboundDrawerOpen ? 'COLLAPSE' : 'EXPAND'}
           </span>
           <div className="p-1 rounded bg-slate-800 text-slate-300">
-            {outboundDrawerOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
+            {outboundDrawerOpen ? <ChevronDown className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : <ChevronUp className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
           </div>
         </div>
       </div>
 
       {/* Expanded Content Viewport */}
       {outboundDrawerOpen && (
-        <div className="h-[calc(100%-2.75rem)] flex flex-col p-3 space-y-2">
+        <div className="h-[calc(100%-2.75rem)] flex flex-col p-2.5 sm:p-3 space-y-2">
           {/* Action and Filter Toolbar */}
           <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-slate-800/80 text-xs font-mono">
             {/* Filter Pills */}
-            <div className="flex items-center gap-1 overflow-x-auto no-scrollbar">
-              <span className="text-slate-500 text-[11px] mr-1 flex items-center gap-1">
+            <div className="flex items-center gap-1 overflow-x-auto no-scrollbar max-w-full py-0.5">
+              <span className="text-slate-500 text-[10px] sm:text-[11px] mr-1 flex items-center gap-1 shrink-0">
                 <Filter className="w-3 h-3" /> Filter:
               </span>
               {channels.map((ch) => (
                 <button
                   key={ch}
                   onClick={() => setActiveChannelFilter(ch)}
-                  className={`px-2.5 py-1 rounded text-[11px] font-semibold transition-colors ${
+                  className={`px-2 sm:px-2.5 py-0.5 sm:py-1 rounded text-[10px] sm:text-[11px] font-semibold transition-colors shrink-0 ${
                     activeChannelFilter === ch
                       ? 'bg-cyan-600 text-white shadow-sm'
                       : 'bg-slate-900 border border-slate-800 text-slate-400 hover:text-slate-200'
@@ -132,31 +135,31 @@ export default function OutboundDrawer() {
             </div>
 
             {/* Utility Actions */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
               <button
                 onClick={handleCopyLogs}
-                className="px-2.5 py-1 rounded bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white flex items-center gap-1.5 transition-colors"
+                className="px-2 sm:px-2.5 py-1 rounded bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white flex items-center gap-1 transition-colors text-[10px] sm:text-xs"
                 title="Copy formatted logs to clipboard"
               >
-                {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                {copied ? <Check className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-400" /> : <Copy className="w-3 h-3 sm:w-3.5 sm:h-3.5" />}
                 <span>{copied ? 'COPIED' : 'COPY'}</span>
               </button>
 
               <button
                 onClick={handleExportJson}
-                className="px-2.5 py-1 rounded bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white flex items-center gap-1.5 transition-colors"
+                className="px-2 sm:px-2.5 py-1 rounded bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white flex items-center gap-1 transition-colors text-[10px] sm:text-xs"
                 title="Export as JSON"
               >
-                <Download className="w-3.5 h-3.5" />
+                <Download className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                 <span>JSON</span>
               </button>
 
               <button
                 onClick={clearLogs}
-                className="px-2.5 py-1 rounded bg-slate-900 hover:bg-red-950/40 border border-slate-800 hover:border-red-800 text-slate-400 hover:text-red-300 flex items-center gap-1.5 transition-colors"
+                className="px-2 sm:px-2.5 py-1 rounded bg-slate-900 hover:bg-red-950/40 border border-slate-800 hover:border-red-800 text-slate-400 hover:text-red-300 flex items-center gap-1 transition-colors text-[10px] sm:text-xs"
                 title="Clear telemetry logs"
               >
-                <Trash2 className="w-3.5 h-3.5" />
+                <Trash2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                 <span>CLEAR</span>
               </button>
             </div>

@@ -287,36 +287,37 @@ export default function VideoReplayBuffer({ scenarioKey = 'highway' }) {
   return (
     <div className="bg-slate-950 rounded-xl border border-slate-800 overflow-hidden shadow-2xl flex flex-col">
       {/* Top Replay Bar */}
-      <div className="px-3.5 py-2 bg-slate-900/90 border-b border-slate-800 flex items-center justify-between text-xs">
-        <div className="flex items-center gap-2">
-          <Film className="w-4 h-4 text-red-500" />
-          <span className="font-mono font-bold text-slate-200">
-            5-SECOND ROADSIDE EDGE VIDEO BUFFER
+      <div className="px-3 sm:px-3.5 py-2 bg-slate-900/90 border-b border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs">
+        <div className="flex items-center gap-1.5 sm:gap-2 truncate">
+          <Film className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-red-500 shrink-0" />
+          <span className="font-mono font-bold text-slate-200 truncate">
+            <span className="hidden sm:inline">5-SECOND ROADSIDE EDGE VIDEO BUFFER</span>
+            <span className="sm:hidden">5s EDGE BUFFER</span>
           </span>
-          <span className="px-1.5 py-0.2 rounded bg-red-950/80 border border-red-800 text-[10px] font-mono text-red-400">
+          <span className="px-1.5 py-0.2 rounded bg-red-950/80 border border-red-800 text-[9px] sm:text-[10px] font-mono text-red-400 shrink-0">
             PRE & POST IMPACT
           </span>
         </div>
 
         {/* Camera Angle Selector */}
-        <div className="flex items-center bg-slate-950 border border-slate-800 rounded-lg p-0.5 text-[11px] font-mono">
+        <div className="flex items-center bg-slate-950 border border-slate-800 rounded-lg p-0.5 text-[10px] sm:text-[11px] font-mono overflow-x-auto no-scrollbar max-w-full">
           <button
             onClick={() => setCameraAngle('cam1')}
-            className={`px-2 py-0.5 rounded ${cameraAngle === 'cam1' ? 'bg-slate-800 text-cyan-300' : 'text-slate-500'}`}
+            className={`px-2 py-0.5 rounded shrink-0 transition-colors ${cameraAngle === 'cam1' ? 'bg-slate-800 text-cyan-300 font-bold' : 'text-slate-500'}`}
           >
             Pole Mast #1
           </button>
           <button
             onClick={() => setCameraAngle('cam2')}
-            className={`px-2 py-0.5 rounded ${cameraAngle === 'cam2' ? 'bg-slate-800 text-cyan-300' : 'text-slate-500'}`}
+            className={`px-2 py-0.5 rounded shrink-0 transition-colors ${cameraAngle === 'cam2' ? 'bg-slate-800 text-cyan-300 font-bold' : 'text-slate-500'}`}
           >
             Gantry #2
           </button>
           <button
             onClick={() => setCameraAngle('cam3')}
-            className={`px-2 py-0.5 rounded ${cameraAngle === 'cam3' ? 'bg-slate-800 text-cyan-300' : 'text-slate-500'}`}
+            className={`px-2 py-0.5 rounded shrink-0 transition-colors ${cameraAngle === 'cam3' ? 'bg-slate-800 text-cyan-300 font-bold' : 'text-slate-500'}`}
           >
-            On-Board C-V2X
+            C-V2X Cam
           </button>
         </div>
       </div>
@@ -332,8 +333,8 @@ export default function VideoReplayBuffer({ scenarioKey = 'highway' }) {
       </div>
 
       {/* Scrubbing & Controls Bar */}
-      <div className="px-4 py-2.5 bg-slate-900 border-t border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs">
-        <div className="flex items-center gap-2">
+      <div className="px-3 sm:px-4 py-2 sm:py-2.5 bg-slate-900 border-t border-slate-800 flex flex-wrap items-center justify-between gap-2.5 sm:gap-3 text-xs">
+        <div className="flex items-center gap-1.5 sm:gap-2">
           <button
             onClick={() => setIsPlaying(!isPlaying)}
             className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 transition-colors"
@@ -352,19 +353,19 @@ export default function VideoReplayBuffer({ scenarioKey = 'highway' }) {
 
           <button
             onClick={() => setSlowMo(!slowMo)}
-            className={`px-2 py-1 rounded text-[11px] font-mono border transition-colors ${
+            className={`px-2 py-0.5 sm:py-1 rounded text-[10px] sm:text-[11px] font-mono border transition-colors ${
               slowMo
                 ? 'bg-amber-950/80 border-amber-700 text-amber-300 font-bold'
                 : 'bg-slate-800 border-slate-700 text-slate-400 hover:text-slate-200'
             }`}
           >
-            {slowMo ? '0.25x SLOW-MO' : '1.0x NORMAL'}
+            {slowMo ? '0.25x' : '1.0x'}
           </button>
         </div>
 
         {/* Scrubber slider */}
-        <div className="flex-1 max-w-xs flex items-center gap-2 font-mono text-[11px] text-slate-400">
-          <span>-5.0s</span>
+        <div className="flex-1 min-w-[130px] max-w-xs flex items-center gap-1.5 sm:gap-2 font-mono text-[10px] sm:text-[11px] text-slate-400">
+          <span>-5s</span>
           <input
             type="range"
             min="0"
@@ -374,11 +375,11 @@ export default function VideoReplayBuffer({ scenarioKey = 'highway' }) {
             onChange={(e) => setPlaybackTime(parseFloat(e.target.value))}
             className="w-full accent-red-500 h-1.5 bg-slate-800 rounded-lg cursor-pointer"
           />
-          <span>0.0s</span>
+          <span>0s</span>
         </div>
 
-        <div className="text-[11px] font-mono text-slate-300">
-          Time: <strong className="text-red-400">T -{(5 - playbackTime).toFixed(2)}s</strong>
+        <div className="text-[10px] sm:text-[11px] font-mono text-slate-300 shrink-0">
+          <strong className="text-red-400">T -{(5 - playbackTime).toFixed(2)}s</strong>
         </div>
       </div>
     </div>

@@ -44,38 +44,39 @@ export default function TacticalMap() {
   const activeZoneCoord = zoneLocations[selectedZone]
 
   return (
-    <div className="relative w-full h-[440px] bg-slate-950 rounded-xl border border-slate-800 overflow-hidden shadow-2xl flex flex-col">
+    <div className="relative w-full h-[260px] sm:h-[340px] lg:h-[420px] bg-slate-950 rounded-xl border border-slate-800 overflow-hidden shadow-2xl flex flex-col">
       {/* Top Map HUD Bar */}
-      <div className="px-4 py-2.5 bg-slate-900/90 border-b border-slate-800 flex items-center justify-between text-xs z-10">
-        <div className="flex items-center gap-2">
-          <Crosshair className="w-4 h-4 text-cyan-400" />
-          <span className="font-mono font-bold text-slate-200">
-            KARNATAKA STATE TACTICAL SURVEILLANCE GRID (GIS / MoRTH)
+      <div className="px-3 sm:px-4 py-2 bg-slate-900/90 border-b border-slate-800 flex items-center justify-between text-xs z-10">
+        <div className="flex items-center gap-1.5 sm:gap-2 truncate">
+          <Crosshair className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+          <span className="font-mono font-bold text-slate-200 truncate">
+            <span className="hidden sm:inline">KARNATAKA STATE TACTICAL SURVEILLANCE GRID</span>
+            <span className="sm:hidden">TACTICAL GRID (GIS)</span>
           </span>
-          <span className="px-1.5 py-0.5 rounded bg-cyan-950/80 border border-cyan-800 text-[10px] font-mono text-cyan-300">
+          <span className="hidden md:inline px-1.5 py-0.5 rounded bg-cyan-950/80 border border-cyan-800 text-[10px] font-mono text-cyan-300">
             WGS-84 RTK-GPS
           </span>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           {/* Layer toggles */}
-          <div className="flex items-center bg-slate-950 border border-slate-800 rounded-lg p-0.5 text-[11px]">
+          <div className="flex items-center bg-slate-950 border border-slate-800 rounded-lg p-0.5 text-[10px] sm:text-[11px]">
             <button
               onClick={() => setShowCameras(!showCameras)}
-              className={`px-2 py-0.5 rounded ${showCameras ? 'bg-slate-800 text-cyan-300' : 'text-slate-500'}`}
+              className={`px-1.5 sm:px-2 py-0.5 rounded ${showCameras ? 'bg-slate-800 text-cyan-300' : 'text-slate-500'}`}
             >
-              CCTV Masts
+              CCTV
             </button>
             <button
               onClick={() => setShowSignals(!showSignals)}
-              className={`px-2 py-0.5 rounded ${showSignals ? 'bg-slate-800 text-emerald-300' : 'text-slate-500'}`}
+              className={`px-1.5 sm:px-2 py-0.5 rounded ${showSignals ? 'bg-slate-800 text-emerald-300' : 'text-slate-500'}`}
             >
-              C-V2X Signals
+              C-V2X
             </button>
           </div>
 
-          <div className="text-[11px] font-mono text-slate-400">
-            LOCUS: <span className="text-slate-200 font-bold">{ZONES[selectedZone].name}</span>
+          <div className="hidden lg:block text-[11px] font-mono text-slate-400 truncate max-w-[140px]">
+            <span className="text-slate-200 font-bold">{ZONES[selectedZone].name.split(' ')[0]}</span>
           </div>
         </div>
       </div>
@@ -87,7 +88,8 @@ export default function TacticalMap() {
 
         <svg
           viewBox="0 0 900 520"
-          className="w-full h-full object-cover select-none"
+          preserveAspectRatio="xMidYMid meet"
+          className="w-full h-full object-contain sm:object-cover select-none"
           xmlns="http://www.w3.org/2000/svg"
         >
           <defs>
@@ -326,23 +328,23 @@ export default function TacticalMap() {
         </svg>
 
         {/* Tactical Legend & Status Overlay */}
-        <div className="absolute bottom-3 left-3 bg-slate-900/90 border border-slate-800 rounded-lg p-2.5 backdrop-blur-md text-[11px] font-mono space-y-1">
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-red-500 shadow-sm shadow-red-500 animate-pulse" />
-            <span className="text-slate-200">Accident Hotspot Node</span>
+        <div className="absolute bottom-2 left-2 sm:bottom-3 sm:left-3 bg-slate-900/90 border border-slate-800 rounded-lg p-1.5 sm:p-2.5 backdrop-blur-md text-[9px] sm:text-[11px] font-mono space-y-0.5 sm:space-y-1">
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-red-500 shadow-sm shadow-red-500 animate-pulse" />
+            <span className="text-slate-200">Accident Hotspot</span>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-            <span className="text-slate-300">C-V2X Signal Preemption Lock</span>
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-emerald-500" />
+            <span className="text-slate-300">C-V2X Green Wave</span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="hidden sm:flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
-            <span className="text-slate-300">108 ALS Interceptor In Transit</span>
+            <span className="text-slate-300">108 ALS En Route</span>
           </div>
         </div>
 
         {/* Selected Zone Quick Telemetry Pill */}
-        <div className="absolute top-3 right-3 bg-slate-900/95 border border-slate-700/80 rounded-lg p-2.5 backdrop-blur-md text-xs font-mono shadow-xl max-w-xs">
+        <div className="hidden md:block absolute top-3 right-3 bg-slate-900/95 border border-slate-700/80 rounded-lg p-2.5 backdrop-blur-md text-xs font-mono shadow-xl max-w-xs">
           <div className="text-[10px] text-cyan-400 font-bold uppercase tracking-wider mb-0.5">
             Zone Telemetry Preview
           </div>
