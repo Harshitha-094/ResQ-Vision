@@ -208,19 +208,31 @@ export default function AmbulanceView() {
                 </div>
 
                 {/* Actual Photo Clicked by Citizen */}
-                <div className="relative aspect-video rounded-xl overflow-hidden border border-slate-800 bg-black">
-                  <img
-                    src={citizenIncident.image}
-                    alt="Citizen captured accident scene"
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute top-2 left-2 px-2 py-0.5 rounded bg-black/80 text-[10px] font-mono text-white border border-slate-700 flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                    <span>CITIZEN SMARTPHONE CAPTURE</span>
-                  </div>
-                  <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-black/85 text-[10px] font-mono text-emerald-300 border border-emerald-900">
-                    GPS LOCK: {citizenIncident.coordinates.lat.toFixed(4)}° N, {citizenIncident.coordinates.lng.toFixed(4)}° E
-                  </div>
+                <div className="relative aspect-video rounded-xl overflow-hidden border border-slate-800 bg-black flex items-center justify-center">
+                  {citizenIncident.image ? (
+                    <>
+                      <img
+                        src={citizenIncident.image}
+                        alt="Original Citizen Captured Accident Scene"
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute top-2 left-2 px-2 py-0.5 rounded bg-black/85 text-[10px] font-mono text-emerald-400 border border-emerald-800 flex items-center gap-1.5 backdrop-blur-xs">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                        <span>ORIGINAL CITIZEN LIVE CAMERA PHOTO · NO DEMO</span>
+                      </div>
+                      <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-black/85 text-[10px] font-mono text-emerald-300 border border-emerald-900">
+                        GPS LOCK: {citizenIncident.coordinates.lat.toFixed(4)}° N, {citizenIncident.coordinates.lng.toFixed(4)}° E
+                      </div>
+                    </>
+                  ) : (
+                    <div className="p-6 text-center space-y-2 text-slate-400">
+                      <Camera className="w-8 h-8 text-slate-500 mx-auto animate-pulse" />
+                      <div className="text-xs font-mono text-slate-300">Awaiting Original Camera Snap from Bystander</div>
+                      <div className="text-[11px] text-slate-500 max-w-xs mx-auto">
+                        Demo photos are not substituted for citizen reports. Only original citizen camera snapshot will display here.
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Actual Location Where Photo Was Clicked */}
@@ -382,8 +394,9 @@ export default function AmbulanceView() {
                 alt="Accident scene capture"
                 className="w-full h-full object-cover"
               />
-              <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-black/80 text-[10px] font-mono text-white">
-                CAM-07 NH-44
+              <div className="absolute top-2 left-2 px-2 py-0.5 rounded bg-black/85 text-[10px] font-mono text-red-300 border border-red-900/60 flex items-center gap-1.5 backdrop-blur-xs">
+                <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                <span>DEMO STREAM · CAM-07 NH-44 HIGHWAY</span>
               </div>
             </div>
 

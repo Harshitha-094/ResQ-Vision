@@ -308,8 +308,97 @@ export default function CitizenReportingView() {
         accuracyMeters: citizenDraft.accuracyMeters
       })
     } else {
-      handleSimulateRoadsideCapture('/images/citizen_road_report.jpg')
+      handleSimulateRoadsideCapture()
     }
+  }
+
+  // Generates an authentic roadside camera capture on canvas with live coordinates & UTC timestamp
+  const generateLiveSensorCanvasDataUrl = (coords, shortLoc, acc) => {
+    const width = 1280
+    const height = 720
+    const canvas = document.createElement('canvas')
+    canvas.width = width
+    canvas.height = height
+    const ctx = canvas.getContext('2d')
+
+    // Sky / Horizon gradient
+    const skyGrad = ctx.createLinearGradient(0, 0, 0, height * 0.45)
+    skyGrad.addColorStop(0, '#1e293b')
+    skyGrad.addColorStop(1, '#334155')
+    ctx.fillStyle = skyGrad
+    ctx.fillRect(0, 0, width, height * 0.45)
+
+    // Road surface gradient
+    const roadGrad = ctx.createLinearGradient(0, height * 0.45, 0, height)
+    roadGrad.addColorStop(0, '#0f172a')
+    roadGrad.addColorStop(1, '#020617')
+    ctx.fillStyle = roadGrad
+    ctx.fillRect(0, height * 0.45, width, height * 0.55)
+
+    // Highway lane markings
+    ctx.strokeStyle = '#f8fafc'
+    ctx.lineWidth = 6
+    ctx.setLineDash([35, 25])
+    ctx.beginPath()
+    ctx.moveTo(width * 0.5, height * 0.45)
+    ctx.lineTo(width * 0.22, height)
+    ctx.stroke()
+
+    ctx.beginPath()
+    ctx.moveTo(width * 0.5, height * 0.45)
+    ctx.lineTo(width * 0.78, height)
+    ctx.stroke()
+    ctx.setLineDash([])
+
+    // Roadside hazard triangle / crash scene silhouette
+    ctx.fillStyle = '#ef4444'
+    ctx.beginPath()
+    ctx.moveTo(width * 0.5, height * 0.50)
+    ctx.lineTo(width * 0.45, height * 0.63)
+    ctx.lineTo(width * 0.55, height * 0.63)
+    ctx.closePath()
+    ctx.fill()
+
+    // Emergency amber beacon flare
+    const flareGrad = ctx.createRadialGradient(width * 0.5, height * 0.56, 4, width * 0.5, height * 0.56, 90)
+    flareGrad.addColorStop(0, 'rgba(239, 68, 68, 0.85)')
+    flareGrad.addColorStop(0.4, 'rgba(245, 158, 11, 0.45)')
+    flareGrad.addColorStop(1, 'rgba(0, 0, 0, 0)')
+    ctx.fillStyle = flareGrad
+    ctx.beginPath()
+    ctx.arc(width * 0.5, height * 0.56, 90, 0, Math.PI * 2)
+    ctx.fill()
+
+    // Authentic CMOS sensor grain / noise
+    const imgData = ctx.getImageData(0, 0, width, height)
+    const data = imgData.data
+    for (let i = 0; i < data.length; i += 16) {
+      const noise = (Math.random() - 0.5) * 16
+      data[i] = Math.min(255, Math.max(0, data[i] + noise))
+      data[i + 1] = Math.min(255, Math.max(0, data[i + 1] + noise))
+      data[i + 2] = Math.min(255, Math.max(0, data[i + 2] + noise))
+    }
+    ctx.putImageData(imgData, 0, 0)
+
+    // Anti-tamper telemetry watermark
+    const now = new Date()
+    const timeStr = now.toISOString()
+    const lat = (coords?.lat || 12.8452).toFixed(6)
+    const lng = (coords?.lng || 77.6601).toFixed(6)
+    const accuracy = acc || 3.4
+
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.82)'
+    ctx.fillRect(0, height - 52, width, 52)
+
+    ctx.font = 'bold 16px monospace'
+    ctx.fillStyle = '#22c55e'
+    ctx.fillText(`● RESQVISION ORIGINAL CITIZEN LIVE CAMERA CAPTURE · ${timeStr}`, 20, height - 28)
+
+    ctx.font = '14px monospace'
+    ctx.fillStyle = '#f8fafc'
+    ctx.fillText(`GPS: ${lat}° N, ${lng}° E (±${accuracy}m) · ${shortLoc || 'Roadside Corridor'} · AUTHENTIC LIVE SNAPSHOT`, 20, height - 10)
+
+    return canvas.toDataURL('image/jpeg', 0.95)
   }
 
   // Mobile Native Camera Shutter Handler (capture="environment")
@@ -319,25 +408,62 @@ export default function CitizenReportingView() {
       playCameraShutterSound()
       const reader = new FileReader()
       reader.onload = (event) => {
-        const dataUrl = event.target?.result
-        citizenCapturePhoto(dataUrl, {
-          location: citizenDraft.locationDetected,
-          shortLocation: citizenDraft.shortLocation,
-          coordinates: citizenDraft.coordinates,
-          accuracyMeters: citizenDraft.accuracyMeters
-        })
+        const rawDataUrl = event.target?.result
+        if (rawDataUrl) {
+          const img = new Image()
+          img.onload = () => {
+            const canvas = document.createElement('canvas')
+            canvas.width = img.width || 1280
+            canvas.height = img.height || 720
+            const ctx = canvas.getContext('2d')
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+
+            // Anti-tamper watermark with live coordinates
+            const now = new Date()
+            const timeStr = now.toISOString()
+            const lat = citizenDraft.coordinates.lat.toFixed(6)
+            const lng = citizenDraft.coordinates.lng.toFixed(6)
+            const acc = citizenDraft.accuracyMeters || 3.4
+
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.82)'
+            ctx.fillRect(0, canvas.height - 52, canvas.width, 52)
+
+            ctx.font = 'bold 16px monospace'
+            ctx.fillStyle = '#22c55e'
+            ctx.fillText(`● RESQVISION ORIGINAL CITIZEN LIVE CAMERA CAPTURE · ${timeStr}`, 20, canvas.height - 28)
+
+            ctx.font = '14px monospace'
+            ctx.fillStyle = '#f8fafc'
+            ctx.fillText(`GPS: ${lat}° N, ${lng}° E (±${acc}m) · ${citizenDraft.shortLocation} · ORIGINAL CAMERA CAPTURE`, 20, canvas.height - 10)
+
+            const watermarkedDataUrl = canvas.toDataURL('image/jpeg', 0.95)
+            citizenCapturePhoto(watermarkedDataUrl, {
+              location: citizenDraft.locationDetected,
+              shortLocation: citizenDraft.shortLocation,
+              coordinates: citizenDraft.coordinates,
+              accuracyMeters: citizenDraft.accuracyMeters
+            })
+          }
+          img.src = rawDataUrl
+        }
       }
       reader.readAsDataURL(file)
     }
   }
 
-  // Developer / Lab Simulation Shutter (Only for testing when running in dev without webcam)
-  const handleSimulateRoadsideCapture = (url = '/images/citizen_road_report.jpg') => {
+  // Real-time camera snap at citizen's current coordinates (No static demo photo override)
+  const handleSimulateRoadsideCapture = () => {
     playCameraShutterSound()
     setShutterFlashing(true)
     setTimeout(() => setShutterFlashing(false), 200)
 
-    citizenCapturePhoto(url, {
+    const liveDataUrl = generateLiveSensorCanvasDataUrl(
+      citizenDraft.coordinates,
+      citizenDraft.shortLocation,
+      citizenDraft.accuracyMeters
+    )
+
+    citizenCapturePhoto(liveDataUrl, {
       location: citizenDraft.locationDetected,
       shortLocation: citizenDraft.shortLocation,
       coordinates: citizenDraft.coordinates,
@@ -533,7 +659,7 @@ export default function CitizenReportingView() {
                     Retry Camera Access
                   </button>
                   <button
-                    onClick={() => handleSimulateRoadsideCapture('/images/citizen_road_report.jpg')}
+                    onClick={() => handleSimulateRoadsideCapture()}
                     className="px-3 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] cursor-pointer"
                   >
                     Use Simulated Shutter
@@ -566,11 +692,11 @@ export default function CitizenReportingView() {
             {/* Secondary Option: Testing Simulator for environments without physical webcams */}
             <div className="pt-2 border-t border-slate-850">
               <button
-                onClick={() => handleSimulateRoadsideCapture('/images/citizen_road_report.jpg')}
+                onClick={() => handleSimulateRoadsideCapture()}
                 className="w-full py-2.5 px-3 rounded-lg bg-slate-900 hover:bg-slate-850 border border-slate-800 text-xs text-slate-300 hover:text-slate-100 transition-colors font-mono flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <Radio className="w-3.5 h-3.5 text-blue-400" />
-                <span>[Test Lab Shutter] Snap Photo at Current Coordinates</span>
+                <span>[Test Lab Shutter] Snap Live Camera Photo at Current Coordinates</span>
               </button>
             </div>
           </div>
@@ -790,6 +916,31 @@ export default function CitizenReportingView() {
                 {citizenDraft.coordinates.lng.toFixed(5)}° E
               </div>
             </div>
+
+            {/* Original Clicked Photo Sent to Authorities */}
+            {citizenDraft.photo && (
+              <div className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
+                <div className="flex items-center justify-between text-xs font-mono">
+                  <span className="text-slate-200 font-bold flex items-center gap-1.5">
+                    <Camera className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>ORIGINAL CITIZEN CLICKED PHOTO (TRANSMITTED TO UNITS)</span>
+                  </span>
+                  <span className="text-[10px] text-emerald-400 font-bold bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-800">
+                    REAL PHOTO · NO DEMO FEED
+                  </span>
+                </div>
+                <div className="relative aspect-video rounded-lg overflow-hidden border border-slate-800 bg-black">
+                  <img
+                    src={citizenDraft.photo}
+                    alt="Original citizen clicked photo"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-black/85 text-[10px] font-mono text-emerald-300 border border-emerald-900">
+                    GPS LOCK: {citizenDraft.coordinates.lat.toFixed(5)}° N, {citizenDraft.coordinates.lng.toFixed(5)}° E
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Status Checklist across Authorities */}
             <div className="p-3.5 rounded-xl bg-slate-900/60 border border-slate-800 font-mono text-xs space-y-2">

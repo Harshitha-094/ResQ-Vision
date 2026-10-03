@@ -487,28 +487,28 @@ export const INITIAL_INCIDENTS = [
     severity: 'Pending Review',
     source: 'CITIZEN PHOTO REPORT',
     cameraNode: 'Live Mobile Camera App',
-    location: 'Electronic City Phase 1 Road (Near Elevated Flyover Entry)',
+    location: 'Electronic City Phase 1 Road (Awaiting Live Citizen Camera Snap)',
     shortLocation: 'Electronic City',
-    detectedTime: '14:35:10',
-    status: 'Waiting for confirmation',
-    remainingSeconds: 850,
+    detectedTime: 'Pending Capture',
+    status: 'Waiting for live camera photo capture',
+    remainingSeconds: 900,
     targetSeconds: 900,
     confidence: null,
-    image: '/images/citizen_road_report.jpg',
-    vehicles: '1 Car and 1 Auto-Rickshaw',
+    image: null, // Strictly NULL until citizen snaps live photo - NO demo photo override!
+    vehicles: 'Reported Collision (Awaiting live verification)',
     casualties: 1,
     coordinates: { lat: 12.8452, lng: 77.6601 },
     timeline: [
-      { time: '14:35:10', text: 'Live photo uploaded by citizen bystander', source: 'Citizen' },
-      { time: '14:35:12', text: 'GPS coordinates verified via device telemetry', source: 'System' },
-      { time: '14:35:15', text: 'Incident queued for dispatch officer review', source: 'System' }
+      { time: '14:35:10', text: 'Citizen opened live camera reporting viewfinder', source: 'Citizen' },
+      { time: '14:35:12', text: 'Device GPS calibrated (±3.4m accuracy lock)', source: 'System' },
+      { time: '14:35:15', text: 'Awaiting original camera snapshot from bystander', source: 'System' }
     ],
     citizenReport: {
-      photoReceived: true,
+      photoReceived: false,
       locationReceived: true,
       confirmed: false,
-      capturedTime: 'Captured just now',
-      reportedBy: 'Citizen Bystander'
+      capturedTime: null,
+      reportedBy: 'Citizen Bystander (Live Device Camera)'
     },
     response: {
       ambulance: {

@@ -211,25 +211,35 @@ export default function IncidentDetailView() {
             {/* Accident Image Beside the Timeline as Specified */}
             <div className="bg-slate-900/60 border border-slate-800 rounded-lg overflow-hidden flex flex-col">
               <div className="relative aspect-video bg-black flex items-center justify-center overflow-hidden">
-                <img
-                  src={incident.image}
-                  alt={`Accident scene capture for ${incident.id}`}
-                  className="w-full h-full object-cover"
-                />
-                {/* Visual camera or citizen photo overlay tag */}
-                <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-black/75 border border-white/20 text-[10px] font-mono text-white flex items-center gap-1.5 backdrop-blur-xs">
-                  <span className={`w-1.5 h-1.5 rounded-full ${incident.source?.includes('CITIZEN') ? 'bg-blue-400' : 'bg-red-500'}`} />
-                  <span>{incident.source?.includes('CITIZEN') ? 'CITIZEN LIVE CAPTURE' : incident.cameraNode || 'AI CAM FEED'}</span>
-                </div>
-                {incident.source?.includes('CITIZEN') ? (
-                  <div className="absolute bottom-2 right-2 px-1.5 py-0.5 rounded bg-black/75 text-[10px] font-mono text-emerald-400 border border-emerald-900/50">
-                    GPS ±{incident.citizenReport?.accuracyMeters || 3.4}m Verified
+                {incident.image ? (
+                  <>
+                    <img
+                      src={incident.image}
+                      alt={`Accident scene capture for ${incident.id}`}
+                      className="w-full h-full object-cover"
+                    />
+                    {/* Visual camera or citizen photo overlay tag */}
+                    <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-black/75 border border-white/20 text-[10px] font-mono text-white flex items-center gap-1.5 backdrop-blur-xs">
+                      <span className={`w-1.5 h-1.5 rounded-full ${incident.source?.includes('CITIZEN') ? 'bg-emerald-400' : 'bg-red-500'}`} />
+                      <span>{incident.source?.includes('CITIZEN') ? 'ORIGINAL CITIZEN LIVE PHOTO' : incident.cameraNode ? `PUBLIC CAM DEMO · ${incident.cameraNode}` : 'AI CAM FEED'}</span>
+                    </div>
+                    {incident.source?.includes('CITIZEN') ? (
+                      <div className="absolute bottom-2 right-2 px-1.5 py-0.5 rounded bg-black/75 text-[10px] font-mono text-emerald-400 border border-emerald-900/50">
+                        GPS ±{incident.citizenReport?.accuracyMeters || 3.4}m Verified · Real Photo
+                      </div>
+                    ) : incident.confidence ? (
+                      <div className="absolute bottom-2 right-2 px-1.5 py-0.5 rounded bg-black/75 text-[10px] font-mono text-emerald-400 border border-emerald-900/50">
+                        Confidence {incident.confidence}%
+                      </div>
+                    ) : null}
+                  </>
+                ) : (
+                  <div className="p-6 text-center space-y-2 text-slate-400">
+                    <Camera className="w-8 h-8 text-slate-500 mx-auto animate-pulse" />
+                    <div className="text-xs font-mono text-slate-300">Awaiting Citizen Live Camera Photo</div>
+                    <div className="text-[10px] text-slate-500">Original bystander camera image will appear here upon submission. No demo override.</div>
                   </div>
-                ) : incident.confidence ? (
-                  <div className="absolute bottom-2 right-2 px-1.5 py-0.5 rounded bg-black/75 text-[10px] font-mono text-emerald-400 border border-emerald-900/50">
-                    Confidence {incident.confidence}%
-                  </div>
-                ) : null}
+                )}
               </div>
               <div className="p-2.5 bg-slate-950/80 border-t border-slate-800 text-[11px] text-slate-400 flex items-center justify-between">
                 <span>Vehicles: {incident.vehicles || '2 Vehicles'}</span>

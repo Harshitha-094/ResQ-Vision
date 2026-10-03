@@ -174,15 +174,26 @@ export default function PoliceView() {
                 <Camera className="w-3.5 h-3.5 text-blue-400" />
                 <span>Actual Photo Clicked by Citizen:</span>
               </span>
-              <div className="relative aspect-video rounded-lg overflow-hidden border border-slate-800 bg-black">
-                <img
-                  src={incident.image}
-                  alt="Citizen road report"
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-black/80 text-[10px] font-mono text-white">
-                  VERIFIED BYSTANDER SNAPSHOT
-                </div>
+              <div className="relative aspect-video rounded-lg overflow-hidden border border-slate-800 bg-black flex items-center justify-center">
+                {incident.image ? (
+                  <>
+                    <img
+                      src={incident.image}
+                      alt="Citizen road report"
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute top-2 left-2 px-2 py-0.5 rounded bg-black/85 text-[10px] font-mono text-emerald-400 border border-emerald-800 flex items-center gap-1 backdrop-blur-xs">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                      <span>ORIGINAL CITIZEN LIVE PHOTO</span>
+                    </div>
+                  </>
+                ) : (
+                  <div className="p-4 text-center space-y-1 text-slate-400">
+                    <Camera className="w-6 h-6 text-slate-500 mx-auto animate-pulse" />
+                    <div className="text-[11px] font-mono text-slate-300">Awaiting Live Photo Capture from Citizen</div>
+                    <div className="text-[10px] text-slate-500">Only original bystander camera image will appear here.</div>
+                  </div>
+                )}
               </div>
             </div>
 

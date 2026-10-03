@@ -133,7 +133,7 @@ export const useEmergencyStore = create((set, get) => ({
 
   // Citizen Reporting Draft State
   citizenDraft: {
-    photo: '/images/citizen_road_report.jpg',
+    photo: null, // Strictly null until citizen captures a live photo via camera
     hasPhoto: false,
     locationDetected: 'NH 44, near Electronic City Elevated Highway (12.8452° N, 77.6601° E)',
     shortLocation: 'Electronic City',
@@ -827,8 +827,8 @@ export const useEmergencyStore = create((set, get) => ({
     set((state) => ({
       citizenDraft: {
         ...state.citizenDraft,
-        hasPhoto: true,
-        photo: customPhotoUrl || '/images/citizen_road_report.jpg',
+        hasPhoto: Boolean(customPhotoUrl),
+        photo: customPhotoUrl || null,
         timestamp: getFormattedTime(),
         step: 'preview',
         ...(locationData ? {
@@ -850,7 +850,8 @@ export const useEmergencyStore = create((set, get) => ({
     const shortLocation = draft.shortLocation || 'Electronic City'
     const coordinates = draft.coordinates || { lat: 12.8452, lng: 77.6601 }
     const accuracy = draft.accuracyMeters || 4.8
-    const photo = draft.photo || '/images/citizen_road_report.jpg'
+    // Strictly preserve original citizen clicked photo - NO demo photo fallback!
+    const photo = draft.photo
 
     set((state) => {
       const updatedIncidents = state.incidents.map((inc) => {
@@ -860,22 +861,25 @@ export const useEmergencyStore = create((set, get) => ({
             location: actualLocation,
             shortLocation,
             coordinates,
-            image: photo,
+            image: photo, // Original citizen clicked photo
+            isOriginalCitizenPhoto: true,
+            isDemoStream: false,
             detectedTime: currentTime,
             status: 'Citizen report received · Dispatched to authorities',
             severity: 'Moderate',
-            source: 'CITIZEN LIVE PHOTO REPORT',
+            source: 'ORIGINAL CITIZEN LIVE PHOTO REPORT',
             timeline: [
-              { time: currentTime, text: `Live accident photo clicked by citizen bystander`, source: 'Citizen' },
+              { time: currentTime, text: `Live accident photo clicked by citizen bystander (Original Camera Capture)`, source: 'Citizen' },
               { time: currentTime, text: `Actual incident GPS locked: ${coordinates.lat}° N, ${coordinates.lng}° E (±${accuracy}m)`, source: 'System' },
-              { time: currentTime, text: `Incident location transmitted to Ambulance 04, BTP Patrol 11, and Traffic Authority`, source: 'System' }
+              { time: currentTime, text: `Original citizen photo & coordinates transmitted to Ambulance 04, BTP Patrol 11, and Traffic Authority`, source: 'System' }
             ],
             citizenReport: {
-              photoReceived: true,
+              photoReceived: Boolean(photo),
+              isOriginalClickedPhoto: true,
               locationReceived: true,
               confirmed: true,
               capturedTime: currentTime,
-              reportedBy: 'Citizen Bystander (GPS Verified)',
+              reportedBy: 'Citizen Bystander (Live Device Camera Snap)',
               accuracyMeters: accuracy,
               actualLocation,
               coordinates
@@ -1101,7 +1105,7 @@ export const useEmergencyStore = create((set, get) => ({
   citizenResetForm: () => {
     set({
       citizenDraft: {
-        photo: '/images/citizen_road_report.jpg',
+        photo: null,
         hasPhoto: false,
         locationDetected: 'NH 44, near Electronic City Elevated Highway (12.8452° N, 77.6601° E)',
         shortLocation: 'Electronic City',

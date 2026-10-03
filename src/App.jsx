@@ -14,6 +14,7 @@ import TollView from './components/TollView'
 import CameraMonitoringView from './components/CameraMonitoringView'
 import CitizenReportingView from './components/CitizenReportingView'
 import ReportsView from './components/ReportsView'
+import UserGuideManualView from './components/UserGuideManualView'
 import ConfirmModal from './components/ConfirmModal'
 import SettingsModal from './components/SettingsModal'
 import AccessRestrictedView from './components/AccessRestrictedView'
@@ -94,6 +95,7 @@ export default function App() {
               {activeView === 'cameras' && <CameraMonitoringView />}
               {activeView === 'citizen' && <CitizenReportingView />}
               {activeView === 'reports' && <ReportsView />}
+              {activeView === 'manual' && <UserGuideManualView />}
             </>
           )}
         </main>

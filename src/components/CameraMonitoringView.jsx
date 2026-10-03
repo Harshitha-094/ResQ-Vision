@@ -130,6 +130,12 @@ export default function CameraMonitoringView() {
               </div>
             </div>
           )}
+
+          {/* Demonstration Public Feed Tag */}
+          <div className="absolute bottom-3 left-3 px-2.5 py-1 rounded bg-black/85 text-[10px] font-mono text-slate-300 border border-slate-700 flex items-center gap-1.5 backdrop-blur-xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+            <span>PUBLIC CAMERA DEMONSTRATION STREAM · {activeCam.category?.toUpperCase()} ONLY</span>
+          </div>
         </div>
 
         {/* ======================================================== */}

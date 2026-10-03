@@ -17,7 +17,8 @@ import {
   Radio,
   Lock,
   ShieldAlert,
-  KeyRound
+  KeyRound,
+  BookOpen
 } from 'lucide-react'
 import { useEmergencyStore } from '../store/emergencyStore'
 import { DEPARTMENT_ROLES, checkViewAuthorization } from '../data/rolesConfig'
@@ -46,7 +47,8 @@ export default function Sidebar({ mobileOpen, setMobileOpen, onOpenSettings }) {
     { id: 'toll', label: 'Toll Authority', icon: CreditCard, deskRole: 'toll' },
     { id: 'cameras', label: 'Camera Feeds', icon: Camera },
     { id: 'citizen', label: 'Citizen Report', icon: Smartphone, deskRole: 'citizen' },
-    { id: 'reports', label: 'Reports', icon: FileText }
+    { id: 'reports', label: 'Reports', icon: FileText },
+    { id: 'manual', label: 'User Guide Manual', icon: BookOpen }
   ]
 
   const handleNavClick = (viewId) => {

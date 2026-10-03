@@ -15,7 +15,8 @@ import {
   Radio,
   ExternalLink,
   Shield,
-  KeyRound
+  KeyRound,
+  BookOpen
 } from 'lucide-react'
 import { useEmergencyStore } from '../store/emergencyStore'
 import { DEPARTMENT_ROLES } from '../data/rolesConfig'
@@ -191,6 +192,20 @@ export default function TopBar({ onToggleMobileSidebar }) {
             </div>
           )}
         </div>
+
+        {/* User Guide Manual Quick Link */}
+        <button
+          onClick={() => setActiveView('manual')}
+          className={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer border ${
+            activeView === 'manual'
+              ? 'bg-red-600 text-white border-red-500 shadow-sm'
+              : 'bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border-slate-800'
+          }`}
+          title="Open Human-Made Operational Field Manual (SOP-802)"
+        >
+          <BookOpen className="w-3.5 h-3.5 text-red-400" />
+          <span className="hidden sm:inline">User Guide Manual</span>
+        </button>
 
         {/* Department Terminal Clearance Switcher */}
         <div className="flex items-center gap-1.5">
