@@ -21,7 +21,8 @@ import {
   Ban,
   RefreshCw,
   Video,
-  Slash
+  Slash,
+  BookOpen
 } from 'lucide-react'
 import { useEmergencyStore } from '../store/emergencyStore'
 import { playCameraShutterSound, playAlertBeep } from '../utils/audio'
@@ -76,7 +77,8 @@ export default function CitizenReportingView() {
     setCitizenDeviceMode,
     setActiveView,
     setSelectedAmbulanceUnitId,
-    setSelectedIncidentId
+    setSelectedIncidentId,
+    openUserGuides
   } = useEmergencyStore()
 
   const [useLiveVideo, setUseLiveVideo] = useState(false)
@@ -496,19 +498,29 @@ export default function CitizenReportingView() {
         aria-hidden="true"
       />
 
-      {/* Device Mode Toggle Bar */}
+      {/* Device Mode Toggle Bar with Quick User Guide Link */}
       <div className="flex items-center justify-between text-xs text-slate-400 bg-slate-900/50 p-2.5 rounded-lg border border-slate-800">
         <span className="flex items-center gap-1.5 font-medium text-slate-300">
           <Smartphone className="w-3.5 h-3.5 text-blue-400" />
           <span>Citizen Live Reporting · Device Camera Node</span>
         </span>
-        <button
-          onClick={() => setCitizenDeviceMode(citizenDeviceMode === 'mobile' ? 'full' : 'mobile')}
-          className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-slate-800 text-slate-300 hover:text-white cursor-pointer"
-        >
-          <Smartphone className="w-3.5 h-3.5" />
-          <span>{citizenDeviceMode === 'mobile' ? 'Expand View' : 'Phone Bezel View'}</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => openUserGuides('citizen')}
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-red-950/80 hover:bg-red-900 border border-red-800 text-red-200 text-[11px] font-semibold transition-colors cursor-pointer"
+            title="Open Citizen Reporting Step-by-Step User Guide"
+          >
+            <BookOpen className="w-3.5 h-3.5 text-red-400" />
+            <span>User Guide</span>
+          </button>
+          <button
+            onClick={() => setCitizenDeviceMode(citizenDeviceMode === 'mobile' ? 'full' : 'mobile')}
+            className="flex items-center gap-1.5 px-2 py-1 rounded bg-slate-800 text-slate-300 hover:text-white cursor-pointer text-[11px]"
+          >
+            <Smartphone className="w-3.5 h-3.5" />
+            <span>{citizenDeviceMode === 'mobile' ? 'Expand View' : 'Phone Bezel'}</span>
+          </button>
+        </div>
       </div>
 
       {/* Main Container */}

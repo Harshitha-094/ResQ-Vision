@@ -15,6 +15,8 @@ import CameraMonitoringView from './components/CameraMonitoringView'
 import CitizenReportingView from './components/CitizenReportingView'
 import ReportsView from './components/ReportsView'
 import UserGuideManualView from './components/UserGuideManualView'
+import UserGuidesModal from './components/UserGuidesModal'
+import FloatingGuidesButton from './components/FloatingGuidesButton'
 import ConfirmModal from './components/ConfirmModal'
 import SettingsModal from './components/SettingsModal'
 import AccessRestrictedView from './components/AccessRestrictedView'
@@ -101,8 +103,10 @@ export default function App() {
         </main>
       </div>
 
-      {/* System Modals */}
+      {/* System Modals & Floating Help */}
       <ConfirmModal />
+      <UserGuidesModal />
+      <FloatingGuidesButton />
       <SettingsModal
         isOpen={settingsOpen}
         onClose={() => setSettingsOpen(false)}

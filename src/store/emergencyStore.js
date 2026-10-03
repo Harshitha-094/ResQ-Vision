@@ -160,6 +160,13 @@ export const useEmergencyStore = create((set, get) => ({
     onConfirm: null
   },
 
+  // Interactive User Guides System
+  userGuidesOpen: false,
+  userGuidesActiveTopic: 'citizen',
+  openUserGuides: (topic = 'citizen') => set({ userGuidesOpen: true, userGuidesActiveTopic: topic }),
+  closeUserGuides: () => set({ userGuidesOpen: false }),
+  setUserGuidesActiveTopic: (topic) => set({ userGuidesActiveTopic: topic }),
+
   // Response Timer for RQ-1048
   timerSeconds: 134, // 02:14
   timerStatus: 'within_target', // 'within_target' | 'at_risk' | 'exceeded'

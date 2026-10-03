@@ -16,7 +16,8 @@ import {
   Truck,
   FileCheck2,
   RotateCcw,
-  ShieldCheck
+  ShieldCheck,
+  BookOpen
 } from 'lucide-react'
 import { useEmergencyStore } from '../store/emergencyStore'
 import HospitalSelectionModal from './HospitalSelectionModal'
@@ -42,7 +43,8 @@ export default function AmbulanceView() {
     ambulanceDeviceMode,
     setAmbulanceDeviceMode,
     incidents,
-    hospitals
+    hospitals,
+    openUserGuides
   } = useEmergencyStore()
 
   const [hospitalModalOpen, setHospitalModalOpen] = useState(false)
@@ -144,13 +146,23 @@ export default function AmbulanceView() {
           </div>
         </div>
 
-        <button
-          onClick={() => setAmbulanceDeviceMode(ambulanceDeviceMode === 'mobile' ? 'full' : 'mobile')}
-          className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-800 text-slate-300 hover:text-white border border-slate-700 self-start sm:self-auto"
-        >
-          <Smartphone className="w-3.5 h-3.5" />
-          <span>{ambulanceDeviceMode === 'mobile' ? 'Expand Full Width' : 'Phone Bezel View'}</span>
-        </button>
+        <div className="flex items-center gap-2 self-start sm:self-auto">
+          <button
+            onClick={() => openUserGuides('ambulance')}
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-800 text-emerald-200 text-xs font-semibold transition-colors cursor-pointer"
+            title="Open Ambulance 108 Step-by-Step SOP Guide"
+          >
+            <BookOpen className="w-3.5 h-3.5 text-emerald-400" />
+            <span>SOP Guide</span>
+          </button>
+          <button
+            onClick={() => setAmbulanceDeviceMode(ambulanceDeviceMode === 'mobile' ? 'full' : 'mobile')}
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-800 text-slate-300 hover:text-white border border-slate-700 text-xs cursor-pointer"
+          >
+            <Smartphone className="w-3.5 h-3.5" />
+            <span>{ambulanceDeviceMode === 'mobile' ? 'Expand Full' : 'Phone Bezel'}</span>
+          </button>
+        </div>
       </div>
 
       {/* Main Ambulance Device Frame */}

@@ -19,7 +19,8 @@ import {
   Crosshair,
   Search,
   Droplet,
-  ArrowUpRight
+  ArrowUpRight,
+  BookOpen
 } from 'lucide-react'
 import { useEmergencyStore } from '../store/emergencyStore'
 import { calculateGpsDistanceKm } from '../data/mockScenarios'
@@ -35,7 +36,8 @@ export default function HospitalView() {
     simulationStage,
     incidents,
     hospitals,
-    selectedIncidentId
+    selectedIncidentId,
+    openUserGuides
   } = useEmergencyStore()
 
   const [handoverModalOpen, setHandoverModalOpen] = useState(false)
@@ -145,8 +147,17 @@ export default function HospitalView() {
           </p>
         </div>
 
-        {/* Readiness Badge */}
-        <div>
+        {/* Readiness Badge & SOP Guide Link */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => openUserGuides('hospital')}
+            className="px-2.5 py-1.5 rounded-lg bg-blue-950/80 hover:bg-blue-900 border border-blue-800 text-blue-200 font-mono text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+            title="Open Hospital Trauma Desk Step-by-Step SOP Guide"
+          >
+            <BookOpen className="w-3.5 h-3.5 text-blue-400" />
+            <span>SOP Guide</span>
+          </button>
+
           {isCompleted ? (
             <span className="px-3 py-1.5 rounded-lg bg-emerald-950 border border-emerald-600 text-emerald-300 font-mono text-xs font-bold flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-emerald-400" />
