@@ -24,11 +24,13 @@ export default function HospitalHandoverModal({ isOpen, onClose }) {
     incidents,
     hospitalState,
     ambulanceConfirmHandoverAndCloseCase,
-    simulationStage
+    simulationStage,
+    hospitals
   } = useEmergencyStore()
 
   const incident = incidents.find(i => i.id === 'RQ-1048') || incidents[0]
   const isAlreadyCompleted = simulationStage >= 12 || hospitalState.handoverCompleted
+  const selectedHospital = hospitals.find(h => h.id === hospitalState.selectedHospitalId) || hospitals[0]
 
   // Handover form state
   const [receivingDoctor, setReceivingDoctor] = useState(
@@ -39,7 +41,7 @@ export default function HospitalHandoverModal({ isOpen, onClose }) {
   )
   const [paramedicName, setParamedicName] = useState('Paramedic S. Nair (ALS Badge #9021)')
   const [notes, setNotes] = useState(
-    'Both casualties transported safely via Hosur Rd corridor. Deceleration trauma stabilized in-transit. Blood bank notified for 4 units O-Negative. Full clinical custody transferred to St. John\'s Trauma Team.'
+    `Both casualties transported safely via emergency corridor. Deceleration trauma stabilized in-transit. Blood bank notified for 4 units O-Negative. Full clinical custody transferred to ${selectedHospital.name} Trauma Team.`
   )
 
   // Handover checklist verification
@@ -81,7 +83,8 @@ Docket Number:       REC-2026-RQ1048-SJ
 Incident Reference:  RQ-1048 (NH-44 KM 42.4)
 Responding Unit:     Ambulance 07 (KA 01 AB 1234 - ALS)
 Paramedic In Charge: ${paramedicName}
-Receiving Hospital:  St. John's Medical College Hospital
+Receiving Hospital:  ${selectedHospital.name}
+Hospital GPS:        ${selectedHospital.coordinates.lat.toFixed(5)}° N, ${selectedHospital.coordinates.lng.toFixed(5)}° E
 Designated Facility: Trauma Care Center - ${selectedBay}
 Attending Physician: ${receivingDoctor}
 Handover Timestamp:  ${hospitalState.handoverTime || '14:48:30 IST'}
@@ -181,10 +184,10 @@ Verified via 108 Emergency Medical CAD Network.
                 Destination Trauma Facility
               </span>
               <div className="font-bold text-slate-100 text-sm">
-                St. John's Medical College Hospital
+                {selectedHospital.name}
               </div>
               <div className="text-[11px] text-emerald-400 font-mono">
-                Level-1 Trauma Care Center · Gate 2 Bay
+                {selectedHospital.traumaLevel?.split('&')[0]} · GPS: {selectedHospital.coordinates.lat.toFixed(4)}° N, {selectedHospital.coordinates.lng.toFixed(4)}° E
               </div>
             </div>
 

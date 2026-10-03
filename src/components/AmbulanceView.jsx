@@ -41,7 +41,8 @@ export default function AmbulanceView() {
     hospitalState,
     ambulanceDeviceMode,
     setAmbulanceDeviceMode,
-    incidents
+    incidents,
+    hospitals
   } = useEmergencyStore()
 
   const [hospitalModalOpen, setHospitalModalOpen] = useState(false)
@@ -50,6 +51,7 @@ export default function AmbulanceView() {
   const isAcceptedBy07 = simulationStage >= 3
   const incident = incidents.find(i => i.id === 'RQ-1048') || incidents[0]
   const citizenIncident = incidents.find(i => i.id === 'RQ-1052')
+  const selectedHospital = hospitals.find(h => h.id === hospitalState.selectedHospitalId) || hospitals[0]
 
   const isCitizenDispatchedTo04 = Boolean(
     citizenIncident && (
@@ -484,7 +486,7 @@ export default function AmbulanceView() {
 
             {/* Destination Confirmed Card (Shown after hospital selected) */}
             {simulationStage >= 9 && simulationStage <= 11 && (
-              <div className="p-3 rounded-lg bg-emerald-950/40 border border-emerald-800/80 text-xs space-y-1">
+              <div className="p-3 rounded-lg bg-emerald-950/40 border border-emerald-800/80 text-xs space-y-1.5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5 text-emerald-400 font-semibold">
                     <CheckCircle2 className="w-3.5 h-3.5" />
@@ -496,16 +498,34 @@ export default function AmbulanceView() {
                     </span>
                   ) : (
                     <span className="text-[10px] text-amber-400 font-mono">
-                      In-transit (ETA 06 min)
+                      In-transit (ETA {selectedHospital.etaMinutes || 6} min)
                     </span>
                   )}
                 </div>
-                <div className="text-slate-200 font-bold">
-                  Accident location → St. John's Hospital
+                <div className="text-slate-200 font-bold text-sm">
+                  {incident.location || 'Accident location'} → {selectedHospital.name}
                 </div>
-                <div className="text-[11px] text-slate-400 font-mono flex items-center justify-between">
-                  <span>Route via Hosur Rd Expressway · 3.2 km</span>
-                  <span className="text-emerald-400 font-semibold">Trauma Bay 1 Reserved</span>
+                <div className="text-[11px] text-slate-300 font-mono flex flex-wrap items-center justify-between gap-1 pt-0.5">
+                  <span className="text-amber-400 font-semibold">
+                    Distance: {selectedHospital.distanceKm || 3.2} km · Corridor Speed
+                  </span>
+                  <span className="text-emerald-400 font-semibold">
+                    GPS: {selectedHospital.coordinates.lat.toFixed(4)}° N, {selectedHospital.coordinates.lng.toFixed(4)}° E
+                  </span>
+                </div>
+                <div className="pt-1 flex items-center justify-between border-t border-emerald-900/50 text-[11px]">
+                  <span className="text-slate-400 font-mono">
+                    Trauma Bay 1 Reserved · {selectedHospital.traumaLevel?.split('&')[0]}
+                  </span>
+                  <a
+                    href={`https://www.google.com/maps/dir/?api=1&origin=${incident.coordinates?.lat || 12.8452},${incident.coordinates?.lng || 77.6601}&destination=${selectedHospital.coordinates.lat},${selectedHospital.coordinates.lng}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-2 py-0.5 rounded bg-emerald-900/60 hover:bg-emerald-800 border border-emerald-700 text-emerald-200 font-mono text-[10px] flex items-center gap-1 transition-colors"
+                  >
+                    <span>Google Maps GPS</span>
+                    <span>→</span>
+                  </a>
                 </div>
               </div>
             )}

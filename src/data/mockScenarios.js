@@ -86,41 +86,89 @@ export const AUTHORIZED_CAMERAS = [
 
 export const NEARBY_HOSPITALS = [
   {
+    id: 'HOSP-NARAYANA',
+    name: 'Narayana Health City / Mazumdar Shaw Medical Center',
+    shortName: 'Narayana Health City',
+    address: '258/A, Bommasandra Industrial Area, Anekal Taluk, NH 44, Bengaluru, Karnataka 560099',
+    distanceKm: 2.8,
+    etaMinutes: 6,
+    emergencyStatus: 'Emergency available',
+    traumaLevel: 'Comprehensive Level 1 Trauma & Cardiac Emergency',
+    traumaBaysAvailable: 4,
+    icuBedsOpen: 8,
+    bloodBankStatus: 'Comprehensive Blood Bank & Component Lab',
+    contact: '+91 80 7122 2222',
+    coordinates: { lat: 12.8252, lng: 77.6895 }
+  },
+  {
+    id: 'HOSP-SPARSH',
+    name: 'SPARSH Hospital, Hosur Road',
+    shortName: 'SPARSH Hospital',
+    address: 'Narayanahrudayalaya Health City Campus, Bommasandra, Hosur Road, Bengaluru 560099',
+    distanceKm: 3.1,
+    etaMinutes: 7,
+    emergencyStatus: 'Emergency available',
+    traumaLevel: 'Specialized Orthopedic & Polytrauma Care',
+    traumaBaysAvailable: 3,
+    icuBedsOpen: 5,
+    bloodBankStatus: 'Emergency O-Negative Stocked',
+    contact: '+91 80 6122 2000',
+    coordinates: { lat: 12.8235, lng: 77.6890 }
+  },
+  {
     id: 'HOSP-STJOHNS',
     name: "St. John's Medical College Hospital",
     shortName: "St. John's Hospital",
-    distanceKm: 3.2,
-    etaMinutes: 8,
+    address: 'Sarjapur Main Road, John Nagar, Koramangala, Bengaluru, Karnataka 560034',
+    distanceKm: 9.8,
+    etaMinutes: 14,
     emergencyStatus: 'Emergency available',
-    traumaLevel: 'Level 1 Trauma Care',
+    traumaLevel: 'Level 1 Trauma Care & Tertiary Referral',
     traumaBaysAvailable: 2,
     icuBedsOpen: 4,
-    bloodBankStatus: 'O-Neg Units Stocked',
+    bloodBankStatus: 'O-Neg Units Stocked & Cryoprecipitate',
     contact: '+91 80 2206 5000',
     coordinates: { lat: 12.9288, lng: 77.6186 }
   },
   {
-    id: 'HOSP-VICTORIA',
-    name: 'Victoria Hospital Trauma Center',
-    shortName: 'Victoria Hospital',
-    distanceKm: 4.1,
-    etaMinutes: 10,
+    id: 'HOSP-APOLLO',
+    name: 'Apollo Hospitals, Bannerghatta Road',
+    shortName: 'Apollo Hospitals',
+    address: '154/11, Opp. IIMB, Bannerghatta Main Rd, Krishnaraju Layout, Bengaluru 560076',
+    distanceKm: 8.5,
+    etaMinutes: 13,
     emergencyStatus: 'Emergency available',
-    traumaLevel: 'State Trauma Care Facility',
-    traumaBaysAvailable: 1,
-    icuBedsOpen: 2,
-    bloodBankStatus: 'Cross-Match Lab Active',
-    contact: '+91 80 2670 1150',
-    coordinates: { lat: 12.9645, lng: 77.5745 }
+    traumaLevel: 'Tertiary Trauma & Critical Care Center',
+    traumaBaysAvailable: 3,
+    icuBedsOpen: 6,
+    bloodBankStatus: '24/7 Apheresis & Whole Blood',
+    contact: '+91 80 2630 4050',
+    coordinates: { lat: 12.8942, lng: 77.5991 }
+  },
+  {
+    id: 'HOSP-MANIPAL',
+    name: 'Manipal Hospital, Sarjapur Road',
+    shortName: 'Manipal Hospital',
+    address: 'Survey No. 71/1, Sarjapur Main Rd, Carmelaram, Doddakannelli, Bengaluru 560035',
+    distanceKm: 8.8,
+    etaMinutes: 14,
+    emergencyStatus: 'Emergency available',
+    traumaLevel: 'Advanced Emergency Care & Trauma Unit',
+    traumaBaysAvailable: 2,
+    icuBedsOpen: 4,
+    bloodBankStatus: 'Cross-Match Laboratory Active',
+    contact: '+91 80 4012 4012',
+    coordinates: { lat: 12.9168, lng: 77.6745 }
   },
   {
     id: 'HOSP-NIMHANS',
-    name: 'NIMHANS Neurotrauma Emergency Bay',
+    name: 'NIMHANS Neurotrauma Emergency Center',
     shortName: 'NIMHANS Neurotrauma',
-    distanceKm: 5.8,
-    etaMinutes: 14,
+    address: 'Hosur Road, near Dairy Circle, Lakkasandra, Bengaluru, Karnataka 560029',
+    distanceKm: 12.6,
+    etaMinutes: 18,
     emergencyStatus: 'Emergency available',
-    traumaLevel: 'Specialized Neuro & Spine Trauma',
+    traumaLevel: 'National Institute for Severe Neuro & Spine Trauma',
     traumaBaysAvailable: 3,
     icuBedsOpen: 5,
     bloodBankStatus: 'Full Component Blood Bank',
@@ -128,13 +176,29 @@ export const NEARBY_HOSPITALS = [
     coordinates: { lat: 12.9392, lng: 77.5936 }
   },
   {
+    id: 'HOSP-VICTORIA',
+    name: 'Victoria Hospital Trauma Care Centre (BMCRI)',
+    shortName: 'Victoria Hospital',
+    address: 'Fort Road, Near City Market, Kalasipalya, Bengaluru, Karnataka 560002',
+    distanceKm: 15.4,
+    etaMinutes: 22,
+    emergencyStatus: 'Emergency available',
+    traumaLevel: 'State Polytrauma & Burns Care Center',
+    traumaBaysAvailable: 2,
+    icuBedsOpen: 3,
+    bloodBankStatus: 'Cross-Match Lab Active',
+    contact: '+91 80 2670 1150',
+    coordinates: { lat: 12.9645, lng: 77.5745 }
+  },
+  {
     id: 'HOSP-BOWRING',
     name: 'Bowring & Lady Curzon Hospital',
     shortName: 'Bowring Hospital',
-    distanceKm: 7.2,
-    etaMinutes: 18,
+    address: 'Lady Curzon Road, Tasker Town, Shivaji Nagar, Bengaluru, Karnataka 560001',
+    distanceKm: 17.1,
+    etaMinutes: 26,
     emergencyStatus: 'Emergency available',
-    traumaLevel: 'General Emergency Care',
+    traumaLevel: 'Government General Emergency Care',
     traumaBaysAvailable: 1,
     icuBedsOpen: 3,
     bloodBankStatus: 'Standard Blood Bank',
@@ -142,6 +206,21 @@ export const NEARBY_HOSPITALS = [
     coordinates: { lat: 12.9822, lng: 77.6045 }
   }
 ]
+
+export function calculateGpsDistanceKm(lat1, lon1, lat2, lon2) {
+  if (!lat1 || !lon1 || !lat2 || !lon2) return 0
+  const R = 6371
+  const dLat = ((lat2 - lat1) * Math.PI) / 180
+  const dLon = ((lon2 - lon1) * Math.PI) / 180
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2)
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+  return Math.round(R * c * 10) / 10
+}
 
 export const FLEET_AMBULANCES = [
   {

@@ -368,12 +368,52 @@ export default function LiveMap({ compact = false, focusedIncidentId = null, onS
                 onClick={() => handleMarkerClick('HOSP-NIMHANS', {
                   title: 'NIMHANS Neurotrauma',
                   type: 'hospital',
-                  info: 'Specialized Neurotrauma Bay · Available',
+                  info: 'Specialized Neurotrauma Bay · Available (GPS: 12.9392° N, 77.5936° E)',
                   eta: '14 min'
                 })}
               >
                 <circle r="10" fill="#0f172a" stroke="#3b82f6" strokeWidth="1.5" />
                 <path d="M -2.5,0 L 2.5,0 M 0,-2.5 L 0,2.5" stroke="#60a5fa" strokeWidth="1.5" strokeLinecap="round" />
+                <text x="14" y="3" fill="#94a3b8" fontSize="8">
+                  NIMHANS
+                </text>
+              </g>
+
+              {/* Narayana Health City (Bommasandra) */}
+              <g
+                transform="translate(620, 395)"
+                className="cursor-pointer group"
+                onClick={() => handleMarkerClick('HOSP-NARAYANA', {
+                  title: 'Narayana Health City',
+                  type: 'hospital',
+                  info: 'Level-1 Comprehensive Trauma & Cardiac ER · 2.8 km (GPS: 12.8252° N, 77.6895° E)',
+                  eta: '6 min'
+                })}
+              >
+                <circle r="13" fill="#0f172a" stroke="#10b981" strokeWidth="2" />
+                <rect x="-4" y="-4" width="8" height="8" fill="#10b981" rx="1" />
+                <path d="M -2.5,0 L 2.5,0 M 0,-2.5 L 0,2.5" stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round" />
+                <text x="16" y="4" fill="#6ee7b7" fontSize="9" fontWeight="600" className="drop-shadow">
+                  Narayana Health
+                </text>
+              </g>
+
+              {/* SPARSH Hospital (Hosur Rd) */}
+              <g
+                transform="translate(605, 415)"
+                className="cursor-pointer"
+                onClick={() => handleMarkerClick('HOSP-SPARSH', {
+                  title: 'SPARSH Hospital',
+                  type: 'hospital',
+                  info: 'Polytrauma & Orthopedic Emergency · 3.1 km (GPS: 12.8235° N, 77.6890° E)',
+                  eta: '7 min'
+                })}
+              >
+                <circle r="10" fill="#0f172a" stroke="#3b82f6" strokeWidth="1.5" />
+                <path d="M -2.5,0 L 2.5,0 M 0,-2.5 L 0,2.5" stroke="#60a5fa" strokeWidth="1.5" strokeLinecap="round" />
+                <text x="14" y="3" fill="#94a3b8" fontSize="8">
+                  SPARSH
+                </text>
               </g>
             </g>
           )}
