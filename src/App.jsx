@@ -1,97 +1,95 @@
-import React, { useEffect } from 'react'
-import Header from './components/Header'
-import CommandCenterView from './components/CommandCenterView'
-import AmbulanceConsoleView from './components/AmbulanceConsoleView'
-import HospitalBayView from './components/HospitalBayView'
-import GreenCorridorView from './components/GreenCorridorView'
-import MobileCamView from './components/MobileCamView'
-import OutboundDrawer from './components/OutboundDrawer'
+import React, { useState, useEffect } from 'react'
+import Sidebar from './components/Sidebar'
+import TopBar from './components/TopBar'
+import DemoModePanel from './components/DemoModePanel'
+import ControlCenterView from './components/ControlCenterView'
+import IncidentsListView from './components/IncidentsListView'
+import IncidentDetailView from './components/IncidentDetailView'
+import LiveMap from './components/LiveMap'
+import AmbulanceView from './components/AmbulanceView'
+import HospitalView from './components/HospitalView'
+import PoliceView from './components/PoliceView'
+import TrafficView from './components/TrafficView'
+import TollView from './components/TollView'
+import CameraMonitoringView from './components/CameraMonitoringView'
+import CitizenReportingView from './components/CitizenReportingView'
+import ReportsView from './components/ReportsView'
+import ConfirmModal from './components/ConfirmModal'
+import SettingsModal from './components/SettingsModal'
 import { useEmergencyStore } from './store/emergencyStore'
 
 export default function App() {
   const {
-    activeTab,
-    ambulanceStatus,
-    decrementCountdown,
-    advanceSimulationProgress,
-    triggerIncident,
-    acceptDispatch,
-    toggleSound,
-    outboundDrawerOpen,
+    activeView,
+    setActiveView,
+    tickTimer
   } = useEmergencyStore()
 
-  // Auto-decrementing driver timeout (15s countdown)
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
+  const [settingsOpen, setSettingsOpen] = useState(false)
+
+  // Real-time response timer interval
   useEffect(() => {
-    let interval = null
-    if (ambulanceStatus === 'alerted') {
-      interval = setInterval(() => {
-        decrementCountdown()
-      }, 1000)
-    }
-    return () => {
-      if (interval) clearInterval(interval)
-    }
-  }, [ambulanceStatus, decrementCountdown])
-
-  // Real-time progress advancement when ambulance is en route
-  useEffect(() => {
-    let interval = null
-    if (ambulanceStatus === 'en_route') {
-      interval = setInterval(() => {
-        advanceSimulationProgress()
-      }, 2000)
-    }
-    return () => {
-      if (interval) clearInterval(interval)
-    }
-  }, [ambulanceStatus, advanceSimulationProgress])
-
-  // Helpful keyboard shortcuts for high-stakes demonstrations
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      // Don't trigger if user is in an input field
-      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return
-
-      if (e.key === '1') {
-        triggerIncident('highway')
-      } else if (e.key === '2') {
-        triggerIncident('urban')
-      } else if (e.key === '3') {
-        triggerIncident('ghat')
-      } else if (e.key === ' ' && ambulanceStatus === 'alerted') {
-        e.preventDefault()
-        acceptDispatch()
-      } else if (e.key === 'm' || e.key === 'M') {
-        toggleSound()
-      }
-    }
-
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [ambulanceStatus, triggerIncident, acceptDispatch, toggleSound])
+    const timer = setInterval(() => {
+      tickTimer()
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [tickTimer])
 
   return (
-    <div className="min-h-screen min-h-[100dvh] bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-red-500/30 w-full overflow-x-hidden">
-      {/* Sticky Mission-Control Header */}
-      <Header />
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col md:flex-row font-sans selection:bg-red-500/20 w-full overflow-x-hidden">
+      {/* Left Sidebar */}
+      <Sidebar
+        mobileOpen={mobileSidebarOpen}
+        setMobileOpen={setMobileSidebarOpen}
+        onOpenSettings={() => setSettingsOpen(true)}
+      />
 
-      {/* Main View Area with Bottom Padding for Drawer */}
-      <main
-        className={`flex-1 px-2.5 sm:px-4 md:px-6 py-3 sm:py-5 transition-all duration-300 w-full ${
-          outboundDrawerOpen ? 'pb-[70vh] sm:pb-96' : 'pb-14 sm:pb-16'
-        }`}
-      >
-        <div className="max-w-7xl mx-auto w-full">
-          {activeTab === 'camera' && <MobileCamView />}
-          {activeTab === 'command' && <CommandCenterView />}
-          {activeTab === 'ambulance' && <AmbulanceConsoleView />}
-          {activeTab === 'hospital' && <HospitalBayView />}
-          {activeTab === 'corridor' && <GreenCorridorView />}
-        </div>
-      </main>
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col min-w-0 bg-[#0b0f19]">
+        {/* Top App Header */}
+        <TopBar
+          onToggleMobileSidebar={() => setMobileSidebarOpen(!mobileSidebarOpen)}
+        />
 
-      {/* Persistent Collapsible Outbound Telemetry & Communications Drawer */}
-      <OutboundDrawer />
+        {/* Demo Mode 12-Stage Simulation Controller */}
+        <DemoModePanel />
+
+        {/* Main Operational Viewport */}
+        <main className="flex-1 p-3 sm:p-5 lg:p-6 max-w-7xl w-full mx-auto">
+          {activeView === 'overview' && <ControlCenterView />}
+          {activeView === 'incidents' && <IncidentsListView />}
+          {activeView === 'incident_detail' && <IncidentDetailView />}
+          {activeView === 'map' && (
+            <div className="space-y-4 max-w-5xl mx-auto">
+              <div>
+                <h1 className="text-xl font-bold tracking-tight text-slate-100">
+                  Full GIS Operations Map
+                </h1>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  High-definition monitoring grid for Bangalore South and National Highway Corridors
+                </p>
+              </div>
+              <LiveMap />
+            </div>
+          )}
+          {activeView === 'ambulances' && <AmbulanceView />}
+          {activeView === 'hospitals' && <HospitalView />}
+          {activeView === 'police' && <PoliceView />}
+          {activeView === 'traffic' && <TrafficView />}
+          {activeView === 'toll' && <TollView />}
+          {activeView === 'cameras' && <CameraMonitoringView />}
+          {activeView === 'citizen' && <CitizenReportingView />}
+          {activeView === 'reports' && <ReportsView />}
+        </main>
+      </div>
+
+      {/* System Modals */}
+      <ConfirmModal />
+      <SettingsModal
+        isOpen={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+      />
     </div>
   )
 }

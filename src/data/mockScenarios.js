@@ -1,217 +1,574 @@
-// Comprehensive Mock Scenarios grounded in Karnataka GovTech / MoRTH / 108 GVK-EMRI emergency systems
+// ResQVision - Operational Mock Data & Authorized Infrastructure Assets
+// Grounded in Indian National Highway (NHAI) / Karnataka Emergency Response 108 & 112 grids
 
-export const ZONES = {
-  highway: {
-    id: 'highway',
-    name: 'NH-275 Bengaluru–Mysuru Expressway',
-    subTitle: 'KM 42.4 Ramanagara Bypass Section',
-    district: 'Ramanagara District, Karnataka',
-    terrainLabel: 'Expressway / Highway',
-    type: 'Access-Controlled 10-Lane Expressway',
-    speedLimit: '100 km/h',
-    cameraNode: 'CAM-NH275-KM42-A',
-    sensorNode: 'EDGE-AI-NODE-275-RN',
-    coordinates: { lat: 12.7231, lng: 77.2842 },
-    curveMarker: 'KM 42.4 (Lane #2 & #3)',
-    mapsUrl: 'https://maps.google.com/?q=12.7231,77.2842',
-    nearestHospital: 'Ramanagara District Trauma Hospital',
-    secondaryHospital: 'Victoria Hospital Trauma Center, Bengaluru',
-    ambulanceBase: 'KA-01-EA-108 (ALS Unit - Ramanagara Toll Plaza)',
-    policeUnit: 'KA-42-G-112 (Highway Interceptor 04)',
-    networkStatus: '4G LTE / 5G SA Mesh (Primary)',
-    loraStatus: 'LoRaWAN 865 MHz Standby',
-    ambientDb: 64,
-    roadSurface: 'Dry Asphalt (Friction \u03bc = 0.82)',
-    weatherCondition: 'Clear Daylight (31\u00b0C, Visibility >10 km)',
+export const AUTHORIZED_CAMERAS = [
+  {
+    id: 'CAM-07',
+    nodeName: 'NH 44 — Camera 07 (KM 42.4)',
+    category: 'Highways',
+    location: 'NH 44, Bengaluru–Hosur Expressway KM 42.4',
+    coordinates: { lat: 12.8452, lng: 77.6601 },
+    status: 'LIVE',
+    hasAccident: true,
+    activeIncidentId: 'RQ-1048',
+    aiConfidence: 92,
+    estimatedSeverity: 'Severe',
+    feedImage: '/images/cctv_highway_crash.jpg',
+    resolution: '1080p · 25 fps',
+    network: 'Optical Fiber Backbone',
+    lastSync: 'Just now'
   },
-  urban: {
-    id: 'urban',
-    name: 'Silk Board Junction / Hosur Rd Underpass',
-    subTitle: 'Outer Ring Road (ORR) Inter-Corridor',
-    district: 'Bengaluru Urban, Karnataka',
-    terrainLabel: 'Urban Arterial Grid',
-    type: 'High-Density Arterial Urban Grid',
-    speedLimit: '50 km/h',
-    cameraNode: 'CAM-BTRAC-SB-07',
-    sensorNode: 'ITMS-SMARTCITY-SB-01',
+  {
+    id: 'CAM-14',
+    nodeName: 'Tumkur Road — Camera 14',
+    category: 'Traffic junctions',
+    location: 'Tumkur Road (NH 48) / Yeshwanthpur Junction',
+    coordinates: { lat: 13.0382, lng: 77.5189 },
+    status: 'LIVE',
+    hasAccident: true,
+    activeIncidentId: 'RQ-1047',
+    aiConfidence: 89,
+    estimatedSeverity: 'Moderate',
+    feedImage: '/images/cctv_junction_crash.jpg',
+    resolution: '1080p · 30 fps',
+    network: 'Smart City Fiber Loop',
+    lastSync: 'Just now'
+  },
+  {
+    id: 'CAM-04',
+    nodeName: 'Silk Board Junction — Camera 04',
+    category: 'Traffic junctions',
+    location: 'Outer Ring Road / Hosur Road Underpass',
     coordinates: { lat: 12.9177, lng: 77.6238 },
-    curveMarker: 'Silk Board Underpass (Lane #1 Northbound)',
-    mapsUrl: 'https://maps.google.com/?q=12.9177,77.6238',
-    nearestHospital: 'NIMHANS Neurotrauma Emergency Bay',
-    secondaryHospital: "St. John's Medical College Hospital",
-    ambulanceBase: 'KA-02-G-108 (ALS Rapid Response - Madiwala Bay)',
-    policeUnit: 'BTP Traffic Interceptor Central-3',
-    networkStatus: 'Smart City 4G LTE / Fiber Loop',
-    loraStatus: 'B-TRAC Wireless Grid Active',
-    ambientDb: 78,
-    roadSurface: 'City Bitumen / Wet Spots (\u03bc = 0.58)',
-    weatherCondition: 'Humid Overcast (26\u00b0C, Visibility 4.5 km)',
+    status: 'LIVE',
+    hasAccident: false,
+    activeIncidentId: null,
+    aiConfidence: null,
+    estimatedSeverity: null,
+    feedImage: '/images/cctv_junction_crash.jpg',
+    resolution: '1080p · 30 fps',
+    network: 'B-TRAC Traffic Grid',
+    lastSync: 'Just now'
   },
-  ghat: {
-    id: 'ghat',
-    name: 'Charmadi / Shiradi Ghat Hairpin #8',
-    subTitle: 'Western Ghats Scenic Pass (NH-75 / SH-73)',
-    district: 'Chikkamagaluru / Dakshina Kannada Border',
-    terrainLabel: 'Mountain Ghat Pass',
-    type: 'High-Elevation Mountain Pass (Dense Fog Zone)',
-    speedLimit: '30 km/h',
-    cameraNode: 'CAM-GHAT-HP8-FLIR',
-    sensorNode: 'LORA-ACOUSTIC-SOLAR-08',
-    coordinates: { lat: 12.9422, lng: 75.7289 },
-    curveMarker: 'Hairpin Turn #8 (Elevation 1,120m, 18m Radius)',
-    mapsUrl: 'https://maps.google.com/?q=12.9422,75.7289',
-    nearestHospital: 'KIMS Hospital / Hassan District Trauma Center',
-    secondaryHospital: 'Father Muller Hospital, Mangaluru',
-    ambulanceBase: 'KA-21-E-108 (4x4 Hill-Terrain ALS Ambulance)',
-    policeUnit: 'Sakleshpur Ghat Police Patrol 02',
-    networkStatus: 'Zero Cellular / Satellite Gateway',
-    loraStatus: 'LoRaWAN 865 MHz Mesh ACTIVE (Autonomous Failover)',
-    ambientDb: 42,
-    roadSurface: 'Wet Mountain Silt / Low Friction (\u03bc = 0.35)',
-    weatherCondition: 'Dense Mountain Fog / Rain (19\u00b0C, Visibility <6m)',
+  {
+    id: 'CAM-02-PLAZA',
+    nodeName: 'Toll Plaza 17 — Entry Cam 02',
+    category: 'Toll plazas',
+    location: 'Attibele / Electronic City Toll Plaza 17, Lane #1-4',
+    coordinates: { lat: 12.8310, lng: 77.6820 },
+    status: 'LIVE',
+    hasAccident: false,
+    activeIncidentId: null,
+    aiConfidence: null,
+    estimatedSeverity: null,
+    feedImage: '/images/cctv_highway_crash.jpg',
+    resolution: '4K · 25 fps',
+    network: 'NHAI FASTag Dedicated Grid',
+    lastSync: 'Just now'
   },
-}
+  {
+    id: 'CAM-09-PETROL',
+    nodeName: 'Indian Oil Highway Pump — Cam 01',
+    category: 'Petrol pumps',
+    location: 'IOCL Highway Service Station KM 38, NH 44',
+    coordinates: { lat: 12.8590, lng: 77.6450 },
+    status: 'LIVE',
+    hasAccident: false,
+    activeIncidentId: null,
+    aiConfidence: null,
+    estimatedSeverity: null,
+    feedImage: '/images/cctv_highway_crash.jpg',
+    resolution: '1080p · 20 fps',
+    network: 'Retail Petroleum Safety Stream',
+    lastSync: '1 min ago'
+  }
+]
 
-export const SCENARIOS = {
-  highway: {
-    zoneKey: 'highway',
-    title: 'High-Speed Multi-Vehicle Pileup (>100 km/h Deceleration)',
-    code: 'P0-CRASH-HWY-42',
-    severity: 'CRITICAL P0',
-    csi: 4.8, // Crash Severity Index 1 - 5
-    issEstimate: 36, // Injury Severity Score
-    goldenHourMinutes: 42,
-    vehicles: '3 Vehicles (Toyota Fortuner, Hyundai Creta, KSRTC Bus)',
-    casualtiesCount: 4,
-    casualtyBreakdown: {
-      criticalP0: 2,
-      seriousP1: 1,
-      minorP2: 1,
-    },
-    trappedVictims: 2,
-    extricationRequired: true,
-    telemetry: {
-      preImpactSpeed: '114 km/h',
-      postImpactSpeed: '0 km/h in 160ms',
-      deltaV: 82, // km/h delta
-      gForce: '18.4 G',
-      acousticPeakDb: 141.2,
-      acousticDurationMs: 480,
-      opticalConfidence: '99.4% (YOLOv10-Edge TensorRT)',
-      impactAngle: 'Frontal Off-Center + Rear Shunt',
-      hazmatRisk: 'Fuel Leakage Detected (Diesel / Petrol Vapors)',
-      fireRisk: 'Low (Thermal 84°C engine bay localized)',
-      roadSurface: 'Dry Asphalt (Friction \u03bc = 0.82)',
-      weatherCondition: 'Clear Daylight (31°C, Visibility >10 km)',
-    },
-    clinicalAssessment: {
-      mechanism: 'Severe high-energy deceleration with crushed front cabin & dashboard intrusion.',
-      headTraumaRisk: 'High (Airbag deployed, steering wheel deformation noted)',
-      cervicalSpineRisk: 'Severe (Violent whiplash mechanism)',
-      chestAbdomenRisk: 'Probable blunt thoracic trauma & occult hemothorax',
-      recommendedBed: 'Trauma Bay 1 (Red Zone)',
-      bloodCrossMatch: '4 Units O-Negative Packed Red Blood Cells',
-      ctScanType: 'Whole-Body Pan-Scan (Trauma Protocol)',
-    },
-    signals: [
-      { id: 'SIG-275-01', name: 'Kumbalgodu Jn (KM 18.2)', distance: '1.2 km', state: 'GREEN_PREEMPTED', timer: '0:45' },
-      { id: 'SIG-275-02', name: 'Bidadi Industrial Bypass (KM 31.8)', distance: '3.6 km', state: 'ARMED_PREEMPTION', timer: '1:20' },
-      { id: 'SIG-275-03', name: 'Ramanagara Bypass North (KM 41.5)', distance: '6.4 km', state: 'HOLD_CYCLE', timer: '2:15' },
-      { id: 'SIG-275-04', name: 'District Hospital Access Spur', distance: '8.1 km', state: 'STANDBY', timer: '--:--' },
-    ],
+export const NEARBY_HOSPITALS = [
+  {
+    id: 'HOSP-STJOHNS',
+    name: "St. John's Medical College Hospital",
+    shortName: "St. John's Hospital",
+    distanceKm: 3.2,
+    etaMinutes: 8,
+    emergencyStatus: 'Emergency available',
+    traumaLevel: 'Level 1 Trauma Care',
+    traumaBaysAvailable: 2,
+    icuBedsOpen: 4,
+    bloodBankStatus: 'O-Neg Units Stocked',
+    contact: '+91 80 2206 5000',
+    coordinates: { lat: 12.9288, lng: 77.6186 }
   },
-  urban: {
-    zoneKey: 'urban',
-    title: 'Urban Two-Wheeler / Pedestrian Collision at High-Congestion Junction',
-    code: 'P0-CRASH-URB-07',
-    severity: 'CRITICAL P0',
-    csi: 3.9,
-    issEstimate: 28,
-    goldenHourMinutes: 35,
-    vehicles: '2 Vehicles (EV Delivery Scooter + Light Commercial Van)',
-    casualtiesCount: 2,
-    casualtyBreakdown: {
-      criticalP0: 1,
-      seriousP1: 1,
-      minorP2: 0,
-    },
-    trappedVictims: 0,
-    extricationRequired: false,
-    telemetry: {
-      preImpactSpeed: '52 km/h',
-      postImpactSpeed: '0 km/h in 90ms',
-      deltaV: 52,
-      gForce: '9.6 G',
-      acousticPeakDb: 119.4,
-      acousticDurationMs: 220,
-      opticalConfidence: '98.1% (B-TRAC Smart City Edge Stream)',
-      impactAngle: 'Side T-Bone Collision + Pedestrian Ejection',
-      hazmatRisk: 'Li-Ion EV Battery Casing Breach Warning',
-      fireRisk: 'Minimal',
-      roadSurface: 'City Bitumen / Wet Spots (\u03bc = 0.58)',
-      weatherCondition: 'Humid Overcast (26°C, Visibility 4.5 km)',
-    },
-    clinicalAssessment: {
-      mechanism: 'High-energy motorized two-wheeler broadside impact with 4.8m rider projection onto asphalt.',
-      headTraumaRisk: 'Critical (Severe TBI risk, helmet ejected on secondary curb strike)',
-      cervicalSpineRisk: 'High (Immediate rigid cervical collar required)',
-      chestAbdomenRisk: 'Multiple rib fractures / pelvic girdle instability suspected',
-      recommendedBed: 'Trauma Bay 1 (NIMHANS Neurotrauma)',
-      bloodCrossMatch: '2 Units O-Negative Uncrossmatched + 2 Units Whole Blood',
-      ctScanType: 'Emergency Non-Contrast Head CT + C-Spine Screen',
-    },
-    signals: [
-      { id: 'SIG-BTRAC-01', name: 'Silk Board Underpass Flyover Ramp', distance: '350 m', state: 'GREEN_PREEMPTED', timer: '0:30' },
-      { id: 'SIG-BTRAC-02', name: 'Madiwala Police Station Signal', distance: '1.1 km', state: 'ARMED_PREEMPTION', timer: '1:05' },
-      { id: 'SIG-BTRAC-03', name: 'Dairy Circle Flyover Junction', distance: '2.8 km', state: 'HOLD_CYCLE', timer: '2:10' },
-      { id: 'SIG-BTRAC-04', name: 'NIMHANS Hospital Main Gate', distance: '4.2 km', state: 'STANDBY', timer: '--:--' },
-    ],
+  {
+    id: 'HOSP-VICTORIA',
+    name: 'Victoria Hospital Trauma Center',
+    shortName: 'Victoria Hospital',
+    distanceKm: 4.1,
+    etaMinutes: 10,
+    emergencyStatus: 'Emergency available',
+    traumaLevel: 'State Trauma Care Facility',
+    traumaBaysAvailable: 1,
+    icuBedsOpen: 2,
+    bloodBankStatus: 'Cross-Match Lab Active',
+    contact: '+91 80 2670 1150',
+    coordinates: { lat: 12.9645, lng: 77.5745 }
   },
-  ghat: {
-    zoneKey: 'ghat',
-    title: 'Ghat Blind-Turn Crash: Guardrail Breach & Ravine Descent (Acoustic + LoRaWAN)',
-    code: 'P0-CRASH-GHAT-08',
-    severity: 'CRITICAL P0',
-    csi: 4.6,
-    issEstimate: 34,
-    goldenHourMinutes: 50,
-    vehicles: '1 Vehicle (Mahindra Bolero 4x4 Crew Cab down 14m slope)',
-    casualtiesCount: 3,
-    casualtyBreakdown: {
-      criticalP0: 2,
-      seriousP1: 1,
-      minorP2: 0,
-    },
-    trappedVictims: 3,
-    extricationRequired: true,
-    telemetry: {
-      preImpactSpeed: 'Camera Blinded by Zero-Visibility Fog (<4m)',
-      postImpactSpeed: 'Guardrail Strain Sensor: 310 kN Breakpoint',
-      deltaV: 68,
-      gForce: '21.2 G (Rotational Roll-over Impact)',
-      acousticPeakDb: 138.6,
-      acousticDurationMs: 940,
-      opticalConfidence: '31.2% (Degraded by Mist - Acoustic/Vibration Primary)',
-      impactAngle: 'Oblique Deflection & Incline Descent into Gorge',
-      hazmatRisk: 'None (Engine stalled inverted)',
-      fireRisk: 'Moderate (Battery disconnected automatically)',
-      roadSurface: 'Wet Mountain Silt / Low Friction (\u03bc = 0.35)',
-      weatherCondition: 'Dense Mountain Fog / Rain (19°C, Visibility <6m)',
-    },
-    clinicalAssessment: {
-      mechanism: 'Vehicle rolled 1.5 times down 40° earthen embankment into dense bamboo grove.',
-      headTraumaRisk: 'High (Roll-over roof crush injury, potential skull fracture)',
-      cervicalSpineRisk: 'Critical (Axial loading and compression forces)',
-      chestAbdomenRisk: 'Traumatic asphyxia and prolonged entrapment risk',
-      recommendedBed: 'Trauma Bay 1 (KIMS Hubballi / Hassan HIMS)',
-      bloodCrossMatch: '4 Units O-Negative + Rapid Infuser Primed',
-      ctScanType: 'Spine & Polytrauma CT Protocol + Angiography',
-    },
-    signals: [
-      { id: 'SIG-GHAT-01', name: 'Hairpin #7 Flashing Caution Beacon', distance: '800 m', state: 'GREEN_PREEMPTED', timer: '0:50' },
-      { id: 'SIG-GHAT-02', name: 'Charmadi Forest Checkpost Barrier', distance: '3.4 km', state: 'ARMED_PREEMPTION', timer: '1:45' },
-      { id: 'SIG-GHAT-03', name: 'Kottigehara Valley Junction', distance: '7.8 km', state: 'HOLD_CYCLE', timer: '3:20' },
-      { id: 'SIG-GHAT-04', name: 'District Hospital Ambulance Bay', distance: '14.2 km', state: 'STANDBY', timer: '--:--' },
-    ],
+  {
+    id: 'HOSP-NIMHANS',
+    name: 'NIMHANS Neurotrauma Emergency Bay',
+    shortName: 'NIMHANS Neurotrauma',
+    distanceKm: 5.8,
+    etaMinutes: 14,
+    emergencyStatus: 'Emergency available',
+    traumaLevel: 'Specialized Neuro & Spine Trauma',
+    traumaBaysAvailable: 3,
+    icuBedsOpen: 5,
+    bloodBankStatus: 'Full Component Blood Bank',
+    contact: '+91 80 2699 5000',
+    coordinates: { lat: 12.9392, lng: 77.5936 }
   },
-}
+  {
+    id: 'HOSP-BOWRING',
+    name: 'Bowring & Lady Curzon Hospital',
+    shortName: 'Bowring Hospital',
+    distanceKm: 7.2,
+    etaMinutes: 18,
+    emergencyStatus: 'Emergency available',
+    traumaLevel: 'General Emergency Care',
+    traumaBaysAvailable: 1,
+    icuBedsOpen: 3,
+    bloodBankStatus: 'Standard Blood Bank',
+    contact: '+91 80 2559 1362',
+    coordinates: { lat: 12.9822, lng: 77.6045 }
+  }
+]
+
+export const FLEET_AMBULANCES = [
+  {
+    id: 'AMB-07',
+    callSign: 'Ambulance 07',
+    registration: 'KA 01 AB 1234',
+    type: 'ALS (Advanced Life Support)',
+    driver: 'Ramesh K.',
+    paramedic: 'S. Nair',
+    baseStation: 'Electronic City Emergency Post',
+    contact: '+91 98450 12007',
+    coordinates: { lat: 12.8520, lng: 77.6520 }
+  },
+  {
+    id: 'AMB-04',
+    callSign: 'Ambulance 04',
+    registration: 'KA 04 E 2211',
+    type: 'BLS (Basic Life Support)',
+    driver: 'P. Mahesh',
+    paramedic: 'A. Joseph',
+    baseStation: 'Bommanahalli Fire Station Bay',
+    contact: '+91 98450 12004',
+    coordinates: { lat: 12.9020, lng: 77.6280 }
+  },
+  {
+    id: 'AMB-12',
+    callSign: 'Ambulance 12',
+    registration: 'KA 04 G 4567',
+    type: 'ALS (Advanced Life Support)',
+    driver: 'Vinod Kumar',
+    paramedic: 'Dr. T. Reddy',
+    baseStation: 'Yeshwanthpur Traffic Post Bay',
+    contact: '+91 98450 12012',
+    coordinates: { lat: 13.0280, lng: 77.5380 }
+  },
+  {
+    id: 'AMB-02',
+    callSign: 'Ambulance 02',
+    registration: 'KA 05 C 8899',
+    type: 'BLS (Basic Life Support)',
+    driver: 'Farooq Ahmed',
+    paramedic: 'C. Gowda',
+    baseStation: 'Silk Board Junction Emergency Bay',
+    contact: '+91 98450 12002',
+    coordinates: { lat: 12.9150, lng: 77.6200 }
+  }
+]
+
+export const POLICE_UNITS = [
+  {
+    id: 'POL-04',
+    unitName: 'Highway Interceptor 04',
+    registration: 'KA 42 G 112',
+    jurisdiction: 'NH 44 Hosur Road Expressway',
+    officerInCharge: 'Sub-Inspector M. Kumar',
+    crewCount: 3,
+    contact: '+91 94808 01004',
+    coordinates: { lat: 12.8390, lng: 77.6710 }
+  },
+  {
+    id: 'POL-08',
+    unitName: 'Traffic Patrol 08',
+    registration: 'KA 04 G 9908',
+    jurisdiction: 'Tumkur Road West Corridor',
+    officerInCharge: 'Inspector K. Patel',
+    crewCount: 2,
+    contact: '+91 94808 01008',
+    coordinates: { lat: 13.0310, lng: 77.5250 }
+  },
+  {
+    id: 'POL-11',
+    unitName: 'BTP Central Patrol 11',
+    registration: 'KA 01 G 5511',
+    jurisdiction: 'Outer Ring Road South',
+    officerInCharge: 'SI V. Rao',
+    crewCount: 2,
+    contact: '+91 94808 01011',
+    coordinates: { lat: 12.9210, lng: 77.6310 }
+  }
+]
+
+export const TOLL_PLAZAS = [
+  {
+    id: 'TOLL-17',
+    name: 'Toll Plaza 17 (Attibele / Electronic City)',
+    highway: 'NH 44 (Bengaluru–Hosur Section)',
+    manager: 'NHAI Plaza Officer D. Joshi',
+    emergencyLane: 'Lane #1 (Dedicated Emergency & FASTag Override)',
+    emergencyLaneStatus: 'Standby / Open on Demand',
+    coordinates: { lat: 12.8310, lng: 77.6820 }
+  },
+  {
+    id: 'TOLL-NELAMANGALA',
+    name: 'Nelamangala Toll Plaza',
+    highway: 'NH 48 (Tumkur Road Expressway)',
+    manager: 'Plaza Supervisor R. Gowda',
+    emergencyLane: 'Lane #1',
+    emergencyLaneStatus: 'Normal Flow',
+    coordinates: { lat: 13.0920, lng: 77.3910 }
+  }
+]
+
+export const INITIAL_INCIDENTS = [
+  {
+    id: 'RQ-1048',
+    severity: 'Severe',
+    source: 'AI CAMERA DETECTION',
+    cameraNode: 'CAM-07 NH-44',
+    location: 'NH 44, Bengaluru–Hosur Highway KM 42.4',
+    shortLocation: 'NH 44, Bengaluru',
+    detectedTime: '14:32:18',
+    status: 'Ambulance en route',
+    remainingSeconds: 134, // 02:14
+    targetSeconds: 180, // 03:00 target
+    confidence: 92,
+    image: '/images/cctv_highway_crash.jpg',
+    vehicles: '2 Vehicles (Silver Sedan, Blue Hatchback)',
+    casualties: 2,
+    coordinates: { lat: 12.8452, lng: 77.6601 },
+    timeline: [
+      { time: '14:32:18', text: 'Accident detected by AI camera CAM-07', source: 'Camera' },
+      { time: '14:32:20', text: 'Emergency alert sent to dispatch grid', source: 'System' },
+      { time: '14:32:31', text: 'Ambulance 07 accepted dispatch', source: 'Ambulance' },
+      { time: '14:32:32', text: 'Police Highway Interceptor 04 notified', source: 'Police' },
+      { time: '14:33:04', text: 'Ambulance 07 en route to scene', source: 'Ambulance' }
+    ],
+    response: {
+      ambulance: {
+        id: 'KA 01 AB 1234',
+        unit: 'Ambulance 07',
+        status: 'En route',
+        targetArrival: '02:14',
+        distanceKm: '2.8 km'
+      },
+      police: {
+        unit: 'Highway Interceptor 04',
+        status: 'Dispatched',
+        officer: 'Sub-Inspector M. Kumar'
+      },
+      hospital: {
+        name: 'Not selected yet',
+        status: 'Pending patient pickup',
+        eta: '--'
+      },
+      traffic: {
+        status: 'Advisory Active',
+        impact: 'High',
+        road: 'NH 44 (Lane 2 blocked)'
+      },
+      toll: {
+        plaza: 'Toll Plaza 17',
+        distance: '2.1 km',
+        emergencyLane: 'Lane #1 Cleared'
+      }
+    }
+  },
+  {
+    id: 'RQ-1047',
+    severity: 'Moderate',
+    source: 'AI CAMERA DETECTION',
+    cameraNode: 'CAM-14 TUMKUR-RD',
+    location: 'Tumkur Road Junction (NH 48)',
+    shortLocation: 'Tumkur Road',
+    detectedTime: '14:18:02',
+    status: 'Hospital selected',
+    remainingSeconds: 278, // 04:38
+    targetSeconds: 360,
+    confidence: 89,
+    image: '/images/cctv_junction_crash.jpg',
+    vehicles: '2 Vehicles (Silver Hatchback, White MPV)',
+    casualties: 1,
+    coordinates: { lat: 13.0382, lng: 77.5189 },
+    timeline: [
+      { time: '14:18:02', text: 'Accident detected by camera CAM-14', source: 'Camera' },
+      { time: '14:18:05', text: 'Emergency alert sent', source: 'System' },
+      { time: '14:18:22', text: 'Ambulance 12 accepted', source: 'Ambulance' },
+      { time: '14:18:25', text: 'Traffic Patrol 08 dispatched', source: 'Police' },
+      { time: '14:22:10', text: 'Ambulance arrived on scene', source: 'Ambulance' },
+      { time: '14:26:40', text: 'Patient picked up · Victoria Hospital selected', source: 'Ambulance' }
+    ],
+    response: {
+      ambulance: {
+        id: 'KA 04 G 4567',
+        unit: 'Ambulance 12',
+        status: 'Transporting',
+        targetArrival: '04:38',
+        distanceKm: '3.6 km'
+      },
+      police: {
+        unit: 'Traffic Patrol 08',
+        status: 'Arrived',
+        officer: 'Inspector K. Patel'
+      },
+      hospital: {
+        name: 'Victoria Hospital Trauma Center',
+        status: 'Ready for arrival',
+        eta: '04:38'
+      },
+      traffic: {
+        status: 'Diversion active',
+        impact: 'Moderate',
+        road: 'Tumkur Road Northbound'
+      },
+      toll: {
+        plaza: 'Nelamangala Toll',
+        distance: '6.4 km',
+        emergencyLane: 'Normal'
+      }
+    }
+  },
+  {
+    id: 'RQ-1046',
+    severity: 'Mild',
+    source: 'TRAFFIC JUNCTION SENSOR',
+    cameraNode: 'CAM-04 SILK-BOARD',
+    location: 'Outer Ring Road, Silk Board Junction',
+    shortLocation: 'Outer Ring Road',
+    detectedTime: '14:11:45',
+    status: 'Police notified',
+    remainingSeconds: 680, // 11:20
+    targetSeconds: 900,
+    confidence: 84,
+    image: '/images/cctv_junction_crash.jpg',
+    vehicles: '2 Vehicles (Two-wheeler sideswipe)',
+    casualties: 1,
+    coordinates: { lat: 12.9177, lng: 77.6238 },
+    timeline: [
+      { time: '14:11:45', text: 'Low-speed sideswipe detected', source: 'Sensor' },
+      { time: '14:12:00', text: 'Police notification generated', source: 'System' },
+      { time: '14:12:30', text: 'BTP Patrol 11 acknowledged alert', source: 'Police' }
+    ],
+    response: {
+      ambulance: {
+        id: 'KA 05 C 8899',
+        unit: 'Ambulance 02',
+        status: 'Standby / Evaluating',
+        targetArrival: '11:20',
+        distanceKm: '1.2 km'
+      },
+      police: {
+        unit: 'BTP Patrol 11',
+        status: 'En route',
+        officer: 'SI V. Rao'
+      },
+      hospital: {
+        name: 'Not selected yet',
+        status: 'Standby',
+        eta: '--'
+      },
+      traffic: {
+        status: 'Monitoring',
+        impact: 'Low',
+        road: 'Outer Ring Road'
+      },
+      toll: {
+        plaza: 'None',
+        distance: '--',
+        emergencyLane: 'N/A'
+      }
+    }
+  },
+  {
+    id: 'RQ-1052',
+    severity: 'Pending Review',
+    source: 'CITIZEN PHOTO REPORT',
+    cameraNode: 'Live Mobile Camera App',
+    location: 'Electronic City Phase 1 Road (Near Elevated Flyover Entry)',
+    shortLocation: 'Electronic City',
+    detectedTime: '14:35:10',
+    status: 'Waiting for confirmation',
+    remainingSeconds: 850,
+    targetSeconds: 900,
+    confidence: null,
+    image: '/images/citizen_road_report.jpg',
+    vehicles: '1 Car and 1 Auto-Rickshaw',
+    casualties: 1,
+    coordinates: { lat: 12.8452, lng: 77.6601 },
+    timeline: [
+      { time: '14:35:10', text: 'Live photo uploaded by citizen bystander', source: 'Citizen' },
+      { time: '14:35:12', text: 'GPS coordinates verified via device telemetry', source: 'System' },
+      { time: '14:35:15', text: 'Incident queued for dispatch officer review', source: 'System' }
+    ],
+    citizenReport: {
+      photoReceived: true,
+      locationReceived: true,
+      confirmed: false,
+      capturedTime: 'Captured just now',
+      reportedBy: 'Citizen Bystander'
+    },
+    response: {
+      ambulance: {
+        unit: 'Unassigned',
+        status: 'Pending confirmation',
+        targetArrival: '--',
+        distanceKm: '--'
+      },
+      police: {
+        unit: 'Queued',
+        status: 'Pending review',
+        officer: '--'
+      },
+      hospital: {
+        name: 'Unassigned',
+        status: 'Standby',
+        eta: '--'
+      },
+      traffic: {
+        status: 'Standby',
+        impact: 'Low',
+        road: 'Electronic City Phase 1 Road'
+      },
+      toll: {
+        plaza: 'Plaza 17',
+        distance: '1.4 km',
+        emergencyLane: 'Standby'
+      }
+    }
+  }
+]
+
+export const RESOLVED_INCIDENT_REPORTS = [
+  {
+    id: 'RQ-1045',
+    date: 'Today, 13:10:04 IST',
+    location: 'NH 44, Electronic City Elevated Highway Ramp',
+    severity: 'Severe',
+    source: 'AI CAMERA DETECTION',
+    assignedAmbulance: 'Ambulance 07 (KA 01 AB 1234)',
+    hospitalDestination: "St. John's Hospital",
+    policeUnit: 'Highway Interceptor 04',
+    timeToDispatch: '32s',
+    timeToArrival: '3m 18s',
+    totalHandoverTime: '15m 44s',
+    status: 'Completed',
+    outcome: 'Patient successfully handed over to Trauma Bay 1. Vital signs stabilized.'
+  },
+  {
+    id: 'RQ-1042',
+    date: 'Today, 11:42:19 IST',
+    location: 'Tumkur Road KM 18 Flyover',
+    severity: 'Moderate',
+    source: 'CITIZEN PHOTO REPORT',
+    assignedAmbulance: 'Ambulance 12 (KA 04 G 4567)',
+    hospitalDestination: 'Victoria Hospital Trauma Center',
+    policeUnit: 'Traffic Patrol 08',
+    timeToDispatch: '45s',
+    timeToArrival: '5m 02s',
+    totalHandoverTime: '18m 10s',
+    status: 'Completed',
+    outcome: 'Minor orthopedic fracture stabilized. Highway lane reopened within 22 minutes.'
+  },
+  {
+    id: 'RQ-1039',
+    date: 'Yesterday, 19:24:50 IST',
+    location: 'Silk Board Underpass Lane #2',
+    severity: 'Mild',
+    source: 'AI CAMERA DETECTION',
+    assignedAmbulance: 'Ambulance 02 (KA 05 C 8899)',
+    hospitalDestination: 'NIMHANS Bay',
+    policeUnit: 'BTP Patrol 11',
+    timeToDispatch: '58s',
+    timeToArrival: '4m 30s',
+    totalHandoverTime: '12m 15s',
+    status: 'Completed',
+    outcome: 'Vehicle safely moved to shoulder. First aid administered on scene.'
+  }
+]
+
+export const SIMULATION_STAGES = [
+  {
+    stage: 1,
+    title: 'Accident detected',
+    description: 'AI camera CAM-07 detects high-speed collision on NH 44 (Confidence 92%). Incident RQ-1048 created.'
+  },
+  {
+    stage: 2,
+    title: 'Ambulance alert',
+    description: 'Emergency alert dispatched to nearest available unit (Ambulance 07, 2.8 km away). Target arrival: 03:00.'
+  },
+  {
+    stage: 3,
+    title: 'Ambulance accepts',
+    description: 'Ambulance 07 acknowledges and accepts incident RQ-1048 dispatch.'
+  },
+  {
+    stage: 4,
+    title: 'Other ambulances blocked',
+    description: 'Dispatch grid locks assignment. Ambulance 04 and other units display "Incident already assigned · No action required".'
+  },
+  {
+    stage: 5,
+    title: 'Police alert & dispatch',
+    description: 'Mandatory police alert transmitted to Highway Interceptor 04. Police unit acknowledges and dispatches immediately.'
+  },
+  {
+    stage: 6,
+    title: 'Ambulance en route',
+    description: 'Ambulance 07 starts GPS navigation toward NH 44 KM 42.4. Response timer actively counts down.'
+  },
+  {
+    stage: 7,
+    title: 'Ambulance arrives',
+    description: 'Ambulance 07 reaches accident scene at NH 44 KM 42.4. Crew begins casualty stabilization.'
+  },
+  {
+    stage: 8,
+    title: 'Patient picked up',
+    description: 'Paramedics complete preliminary triage and secure casualties inside ambulance.'
+  },
+  {
+    stage: 9,
+    title: 'Hospital selected',
+    description: "Ambulance crew selects St. John's Medical College Hospital (Level-1 Trauma Care, 3.2 km away) based on bay availability."
+  },
+  {
+    stage: 10,
+    title: 'Hospital alerted',
+    description: "St. John's Emergency Desk receives incoming alert with live ETA (6 min) and accident image."
+  },
+  {
+    stage: 11,
+    title: 'Hospital ready',
+    description: "Emergency desk marks 'READY FOR ARRIVAL'. Trauma Bay 1 is reserved and surgical team is placed on standby."
+  },
+  {
+    stage: 12,
+    title: 'Incident completed',
+    description: 'Ambulance delivers patient to hospital trauma bay. Handover confirmed. Incident closed and archived to response audit.'
+  }
+]
