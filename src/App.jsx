@@ -16,12 +16,15 @@ import CitizenReportingView from './components/CitizenReportingView'
 import ReportsView from './components/ReportsView'
 import ConfirmModal from './components/ConfirmModal'
 import SettingsModal from './components/SettingsModal'
+import AccessRestrictedView from './components/AccessRestrictedView'
 import { useEmergencyStore } from './store/emergencyStore'
+import { checkViewAuthorization } from './data/rolesConfig'
 
 export default function App() {
   const {
     activeView,
     setActiveView,
+    userRole,
     tickTimer
   } = useEmergencyStore()
 
@@ -36,6 +39,9 @@ export default function App() {
     return () => clearInterval(timer)
   }, [tickTimer])
 
+  // Verify departmental role access to the requested desk
+  const authCheck = checkViewAuthorization(activeView, userRole)
+
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col md:flex-row font-sans selection:bg-red-500/20 w-full overflow-x-hidden">
       {/* Left Sidebar */}
@@ -47,7 +53,7 @@ export default function App() {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 bg-[#0b0f19]">
-        {/* Top App Header */}
+        {/* Top App Header with Department Credentials Switcher */}
         <TopBar
           onToggleMobileSidebar={() => setMobileSidebarOpen(!mobileSidebarOpen)}
         />
@@ -57,30 +63,39 @@ export default function App() {
 
         {/* Main Operational Viewport */}
         <main className="flex-1 p-3 sm:p-5 lg:p-6 max-w-7xl w-full mx-auto">
-          {activeView === 'overview' && <ControlCenterView />}
-          {activeView === 'incidents' && <IncidentsListView />}
-          {activeView === 'incident_detail' && <IncidentDetailView />}
-          {activeView === 'map' && (
-            <div className="space-y-4 max-w-5xl mx-auto">
-              <div>
-                <h1 className="text-xl font-bold tracking-tight text-slate-100">
-                  Full GIS Operations Map
-                </h1>
-                <p className="text-xs text-slate-400 mt-0.5">
-                  High-definition monitoring grid for Bangalore South and National Highway Corridors
-                </p>
-              </div>
-              <LiveMap />
-            </div>
+          {!authCheck.allowed ? (
+            <AccessRestrictedView
+              targetView={activeView}
+              authCheck={authCheck}
+            />
+          ) : (
+            <>
+              {activeView === 'overview' && <ControlCenterView />}
+              {activeView === 'incidents' && <IncidentsListView />}
+              {activeView === 'incident_detail' && <IncidentDetailView />}
+              {activeView === 'map' && (
+                <div className="space-y-4 max-w-5xl mx-auto">
+                  <div>
+                    <h1 className="text-xl font-bold tracking-tight text-slate-100">
+                      Full GIS Operations Map
+                    </h1>
+                    <p className="text-xs text-slate-400 mt-0.5">
+                      High-definition monitoring grid for Bangalore South and National Highway Corridors
+                    </p>
+                  </div>
+                  <LiveMap />
+                </div>
+              )}
+              {activeView === 'ambulances' && <AmbulanceView />}
+              {activeView === 'hospitals' && <HospitalView />}
+              {activeView === 'police' && <PoliceView />}
+              {activeView === 'traffic' && <TrafficView />}
+              {activeView === 'toll' && <TollView />}
+              {activeView === 'cameras' && <CameraMonitoringView />}
+              {activeView === 'citizen' && <CitizenReportingView />}
+              {activeView === 'reports' && <ReportsView />}
+            </>
           )}
-          {activeView === 'ambulances' && <AmbulanceView />}
-          {activeView === 'hospitals' && <HospitalView />}
-          {activeView === 'police' && <PoliceView />}
-          {activeView === 'traffic' && <TrafficView />}
-          {activeView === 'toll' && <TollView />}
-          {activeView === 'cameras' && <CameraMonitoringView />}
-          {activeView === 'citizen' && <CitizenReportingView />}
-          {activeView === 'reports' && <ReportsView />}
         </main>
       </div>
 

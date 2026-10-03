@@ -13,14 +13,19 @@ import {
   VolumeX,
   X,
   Radio,
-  ExternalLink
+  ExternalLink,
+  Shield,
+  KeyRound
 } from 'lucide-react'
 import { useEmergencyStore } from '../store/emergencyStore'
+import { DEPARTMENT_ROLES } from '../data/rolesConfig'
 
 export default function TopBar({ onToggleMobileSidebar }) {
   const {
     activeView,
     setActiveView,
+    userRole,
+    setUserRole,
     notifications,
     notificationsOpen,
     setNotificationsOpen,
@@ -61,18 +66,7 @@ export default function TopBar({ onToggleMobileSidebar }) {
 
   const unreadCount = notifications.filter(n => !n.read).length
 
-  const roles = [
-    { view: 'overview', label: 'Control Center' },
-    { view: 'ambulances', label: 'Ambulance 07' },
-    { view: 'hospitals', label: 'Hospital Desk' },
-    { view: 'police', label: 'Police Unit' },
-    { view: 'traffic', label: 'Traffic Authority' },
-    { view: 'toll', label: 'Toll Authority' },
-    { view: 'citizen', label: 'Citizen Reporter' },
-    { view: 'cameras', label: 'Camera Feeds' }
-  ]
-
-  const activeRoleLabel = roles.find(r => r.view === activeView)?.label || 'Control Center'
+  const currentRoleObj = DEPARTMENT_ROLES.find(r => r.id === userRole) || DEPARTMENT_ROLES[0]
 
   return (
     <header className="sticky top-0 z-30 bg-slate-950 border-b border-slate-800/90 h-13 px-3 sm:px-5 flex items-center justify-between gap-3 text-xs select-none">
@@ -198,21 +192,29 @@ export default function TopBar({ onToggleMobileSidebar }) {
           )}
         </div>
 
-        {/* Role Quick Switcher */}
-        <div className="flex items-center">
-          <select
-            value={activeView}
-            onChange={(e) => setActiveView(e.target.value)}
-            className="bg-slate-900 border border-slate-700/80 rounded px-2 py-1 text-slate-200 text-xs font-medium focus:outline-none focus:border-blue-500 cursor-pointer"
-            title="Switch User Role View"
-            aria-label="Switch User Role View"
-          >
-            {roles.map(r => (
-              <option key={r.view} value={r.view}>
-                View as: {r.label}
-              </option>
-            ))}
-          </select>
+        {/* Department Terminal Clearance Switcher */}
+        <div className="flex items-center gap-1.5">
+          <div className="hidden xl:flex items-center gap-1.5 px-2 py-1 rounded bg-slate-900 border border-slate-800 text-[10px] font-mono text-slate-300">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="text-slate-400">Badge:</span>
+            <span className="text-slate-200 font-bold">{currentRoleObj.badgeId}</span>
+          </div>
+
+          <div className="flex items-center">
+            <select
+              value={userRole}
+              onChange={(e) => setUserRole(e.target.value)}
+              className="bg-slate-900 border border-slate-700/80 rounded px-2.5 py-1 text-slate-200 text-xs font-semibold focus:outline-hidden focus:border-blue-500 cursor-pointer"
+              title="Switch Department Terminal Credentials"
+              aria-label="Switch Department Terminal Credentials"
+            >
+              {DEPARTMENT_ROLES.map(role => (
+                <option key={role.id} value={role.id}>
+                  Credentials: {role.name}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
         {/* Demo Mode Pill Indicator & Controller Toggle */}

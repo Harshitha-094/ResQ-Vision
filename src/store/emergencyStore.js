@@ -9,6 +9,7 @@ import {
   SIMULATION_STAGES,
   RESOLVED_INCIDENT_REPORTS
 } from '../data/mockScenarios'
+import { DEPARTMENT_ROLES, checkViewAuthorization } from '../data/rolesConfig'
 import { playAlertBeep, playCountdownTick, playAcceptChime, playRadioSquelch } from '../utils/audio'
 
 function getFormattedTime() {
@@ -60,8 +61,9 @@ const INITIAL_NOTIFICATIONS = [
 ]
 
 export const useEmergencyStore = create((set, get) => ({
-  // Navigation & View
-  activeView: 'overview', // 'overview' | 'incidents' | 'incident_detail' | 'map' | 'ambulances' | 'hospitals' | 'police' | 'traffic' | 'toll' | 'cameras' | 'citizen' | 'reports'
+  // Navigation & Department RBAC Role
+  userRole: 'ambulance', // 'ambulance' | 'hospital' | 'police' | 'traffic' | 'toll' | 'citizen' | 'dispatcher'
+  activeView: 'ambulances', // 'overview' | 'incidents' | 'incident_detail' | 'map' | 'ambulances' | 'hospitals' | 'police' | 'traffic' | 'toll' | 'cameras' | 'citizen' | 'reports'
   selectedIncidentId: 'RQ-1048',
   selectedAmbulanceUnitId: 'AMB-07', // 'AMB-07' (assigned) | 'AMB-04' (other unit)
   ambulanceDeviceMode: 'mobile', // 'mobile' | 'full'
@@ -164,6 +166,19 @@ export const useEmergencyStore = create((set, get) => ({
 
   // Setters
   setActiveView: (view) => set({ activeView: view }),
+  setUserRole: (newRole) => {
+    const roleObj = DEPARTMENT_ROLES.find(r => r.id === newRole)
+    const targetDesk = roleObj ? roleObj.primaryDesk : 'overview'
+    set({
+      userRole: newRole,
+      activeView: targetDesk
+    })
+    get().addNotification({
+      title: `Active Terminal: ${roleObj?.name || newRole}`,
+      detail: `Department credentials switched. Desk isolation protocol active.`,
+      type: 'info'
+    })
+  },
   setSelectedIncidentId: (id) => set({ selectedIncidentId: id }),
   setSelectedAmbulanceUnitId: (unitId) => set({ selectedAmbulanceUnitId: unitId }),
   setAmbulanceDeviceMode: (mode) => set({ ambulanceDeviceMode: mode }),

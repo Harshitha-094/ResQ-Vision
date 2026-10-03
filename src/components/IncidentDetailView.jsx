@@ -13,9 +13,11 @@ import {
   ExternalLink,
   Archive,
   Maximize2,
-  FileCheck2
+  FileCheck2,
+  Lock
 } from 'lucide-react'
 import { useEmergencyStore } from '../store/emergencyStore'
+import { checkViewAuthorization } from '../data/rolesConfig'
 import ResponseTimer from './ResponseTimer'
 import HospitalHandoverModal from './HospitalHandoverModal'
 
@@ -24,6 +26,7 @@ export default function IncidentDetailView() {
     selectedIncidentId,
     incidents,
     setActiveView,
+    userRole,
     openConfirmModal,
     closeIncident,
     setSelectedAmbulanceUnitId,
@@ -262,8 +265,17 @@ export default function IncidentDetailView() {
                   }}
                   className="mt-2 text-[10px] text-blue-400 hover:text-blue-300 flex items-center gap-1 cursor-pointer"
                 >
-                  <span>Open Console</span>
-                  <ExternalLink className="w-2.5 h-2.5" />
+                  {!checkViewAuthorization('ambulances', userRole).allowed ? (
+                    <span className="flex items-center gap-1 text-slate-400">
+                      <Lock className="w-2.5 h-2.5 text-amber-500" />
+                      <span>Restricted</span>
+                    </span>
+                  ) : (
+                    <>
+                      <span>Open Console</span>
+                      <ExternalLink className="w-2.5 h-2.5" />
+                    </>
+                  )}
                 </button>
               </div>
 
@@ -280,10 +292,19 @@ export default function IncidentDetailView() {
                 </div>
                 <button
                   onClick={() => setActiveView('police')}
-                  className="mt-2 text-[10px] text-blue-400 hover:text-blue-300 flex items-center gap-1"
+                  className="mt-2 text-[10px] text-blue-400 hover:text-blue-300 flex items-center gap-1 cursor-pointer"
                 >
-                  <span>Open Police Unit</span>
-                  <ExternalLink className="w-2.5 h-2.5" />
+                  {!checkViewAuthorization('police', userRole).allowed ? (
+                    <span className="flex items-center gap-1 text-slate-400">
+                      <Lock className="w-2.5 h-2.5 text-amber-500" />
+                      <span>Restricted</span>
+                    </span>
+                  ) : (
+                    <>
+                      <span>Open Police Unit</span>
+                      <ExternalLink className="w-2.5 h-2.5" />
+                    </>
+                  )}
                 </button>
               </div>
 
@@ -300,10 +321,19 @@ export default function IncidentDetailView() {
                 </div>
                 <button
                   onClick={() => setActiveView('hospitals')}
-                  className="mt-2 text-[10px] text-blue-400 hover:text-blue-300 flex items-center gap-1"
+                  className="mt-2 text-[10px] text-blue-400 hover:text-blue-300 flex items-center gap-1 cursor-pointer"
                 >
-                  <span>Open Hospital Bay</span>
-                  <ExternalLink className="w-2.5 h-2.5" />
+                  {!checkViewAuthorization('hospitals', userRole).allowed ? (
+                    <span className="flex items-center gap-1 text-slate-400">
+                      <Lock className="w-2.5 h-2.5 text-amber-500" />
+                      <span>Restricted</span>
+                    </span>
+                  ) : (
+                    <>
+                      <span>Open Hospital Bay</span>
+                      <ExternalLink className="w-2.5 h-2.5" />
+                    </>
+                  )}
                 </button>
               </div>
             </div>
@@ -319,9 +349,12 @@ export default function IncidentDetailView() {
                 </div>
                 <button
                   onClick={() => setActiveView('traffic')}
-                  className="text-[11px] text-blue-400 hover:underline"
+                  className="text-[11px] text-blue-400 hover:underline flex items-center gap-1 cursor-pointer"
                 >
-                  Inspect
+                  {!checkViewAuthorization('traffic', userRole).allowed && (
+                    <Lock className="w-2.5 h-2.5 text-amber-500" />
+                  )}
+                  <span>Inspect</span>
                 </button>
               </div>
 
@@ -334,9 +367,12 @@ export default function IncidentDetailView() {
                 </div>
                 <button
                   onClick={() => setActiveView('toll')}
-                  className="text-[11px] text-blue-400 hover:underline"
+                  className="text-[11px] text-blue-400 hover:underline flex items-center gap-1 cursor-pointer"
                 >
-                  Inspect
+                  {!checkViewAuthorization('toll', userRole).allowed && (
+                    <Lock className="w-2.5 h-2.5 text-amber-500" />
+                  )}
+                  <span>Inspect</span>
                 </button>
               </div>
             </div>
