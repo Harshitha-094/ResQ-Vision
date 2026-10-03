@@ -156,6 +156,12 @@ export default function ControlCenterView() {
                     <span className="text-slate-200 font-medium truncate">
                       {incident.shortLocation || incident.location}
                     </span>
+
+                    {incident.source?.includes('CITIZEN') && (
+                      <span className="px-1.5 py-0.2 rounded bg-blue-950/80 border border-blue-800 text-blue-300 text-[10px] font-mono hidden md:inline">
+                        📸 GPS Locked
+                      </span>
+                    )}
                   </div>
 
                   <div className="flex items-center gap-1 text-slate-400 group-hover:text-slate-200 shrink-0">
@@ -165,7 +171,7 @@ export default function ControlCenterView() {
                 </div>
 
                 {/* Row 2: Ambulance en route / 02:14 remaining */}
-                <div className="flex items-center justify-between pl-23 text-slate-400 text-[11px]">
+                <div className="flex items-center justify-between sm:pl-24 text-slate-400 text-[11px]">
                   <div className="flex items-center gap-2">
                     <span className="w-1.5 h-1.5 rounded-full bg-slate-500 inline-block" />
                     <span className="text-slate-300 font-medium">{incident.status}</span>

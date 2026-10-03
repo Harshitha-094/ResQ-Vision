@@ -105,6 +105,13 @@ export const useEmergencyStore = create((set, get) => ({
     trafficDiverted: true,
     investigationDocket: 'FIR-2026-NH44-01048'
   },
+  policeCitizenState: {
+    unitId: 'POL-11',
+    status: 'Alert received', // 'Alert received' | 'Dispatched' | 'Arrived'
+    officer: 'Sub-Inspector V. Rao',
+    trafficDiverted: false,
+    investigationDocket: 'FIR-2026-BLR-01052'
+  },
   trafficState: {
     vmsAdvisoryActive: true,
     vmsMessage: 'CAUTION: CRASH 2KM AHEAD AT KM 42 — MERGE RIGHT',
@@ -127,10 +134,13 @@ export const useEmergencyStore = create((set, get) => ({
     photo: '/images/citizen_road_report.jpg',
     hasPhoto: false,
     locationDetected: 'NH 44, near Electronic City Elevated Highway (12.8452° N, 77.6601° E)',
+    shortLocation: 'Electronic City',
+    coordinates: { lat: 12.8452, lng: 77.6601 },
     accuracyMeters: 4.8,
     timestamp: null,
     step: 'camera', // 'camera' | 'preview' | 'submitted'
-    submittedIncidentId: null
+    submittedIncidentId: null,
+    gpsLocked: false
   },
 
   // System
@@ -785,31 +795,291 @@ export const useEmergencyStore = create((set, get) => ({
   })),
 
   // Citizen Reporting Flow
-  citizenCapturePhoto: (customPhotoUrl) => {
+  citizenSetLocation: ({ location, shortLocation, coordinates, accuracyMeters }) => {
+    set((state) => ({
+      citizenDraft: {
+        ...state.citizenDraft,
+        locationDetected: location || state.citizenDraft.locationDetected,
+        shortLocation: shortLocation || state.citizenDraft.shortLocation,
+        coordinates: coordinates || state.citizenDraft.coordinates,
+        accuracyMeters: accuracyMeters || state.citizenDraft.accuracyMeters,
+        gpsLocked: true
+      }
+    }))
+  },
+
+  citizenCapturePhoto: (customPhotoUrl, locationData = null) => {
     set((state) => ({
       citizenDraft: {
         ...state.citizenDraft,
         hasPhoto: true,
         photo: customPhotoUrl || '/images/citizen_road_report.jpg',
         timestamp: getFormattedTime(),
-        step: 'preview'
+        step: 'preview',
+        ...(locationData ? {
+          locationDetected: locationData.location || state.citizenDraft.locationDetected,
+          shortLocation: locationData.shortLocation || state.citizenDraft.shortLocation,
+          coordinates: locationData.coordinates || state.citizenDraft.coordinates,
+          accuracyMeters: locationData.accuracyMeters || state.citizenDraft.accuracyMeters,
+          gpsLocked: true
+        } : {})
       }
     }))
   },
 
   citizenSubmitReport: () => {
     const newId = 'RQ-1052'
-    set((state) => ({
-      citizenDraft: {
-        ...state.citizenDraft,
-        step: 'submitted',
-        submittedIncidentId: newId
+    const draft = get().citizenDraft
+    const currentTime = draft.timestamp || getFormattedTime()
+    const actualLocation = draft.locationDetected || 'Electronic City Phase 1 Road (12.8452° N, 77.6601° E)'
+    const shortLocation = draft.shortLocation || 'Electronic City'
+    const coordinates = draft.coordinates || { lat: 12.8452, lng: 77.6601 }
+    const accuracy = draft.accuracyMeters || 4.8
+    const photo = draft.photo || '/images/citizen_road_report.jpg'
+
+    set((state) => {
+      const updatedIncidents = state.incidents.map((inc) => {
+        if (inc.id === newId) {
+          return {
+            ...inc,
+            location: actualLocation,
+            shortLocation,
+            coordinates,
+            image: photo,
+            detectedTime: currentTime,
+            status: 'Citizen report received · Dispatched to authorities',
+            severity: 'Moderate',
+            source: 'CITIZEN LIVE PHOTO REPORT',
+            timeline: [
+              { time: currentTime, text: `Live accident photo clicked by citizen bystander`, source: 'Citizen' },
+              { time: currentTime, text: `Actual incident GPS locked: ${coordinates.lat}° N, ${coordinates.lng}° E (±${accuracy}m)`, source: 'System' },
+              { time: currentTime, text: `Incident location transmitted to Ambulance 04, BTP Patrol 11, and Traffic Authority`, source: 'System' }
+            ],
+            citizenReport: {
+              photoReceived: true,
+              locationReceived: true,
+              confirmed: true,
+              capturedTime: currentTime,
+              reportedBy: 'Citizen Bystander (GPS Verified)',
+              accuracyMeters: accuracy,
+              actualLocation,
+              coordinates
+            },
+            response: {
+              ...inc.response,
+              ambulance: {
+                id: 'KA 04 E 2211',
+                unit: 'Ambulance 04',
+                status: 'Dispatched to Citizen GPS',
+                targetArrival: '03:45',
+                distanceKm: '1.8 km'
+              },
+              police: {
+                unit: 'BTP Patrol 11',
+                status: 'Dispatched to Incident Scene',
+                officer: 'SI V. Rao'
+              },
+              traffic: {
+                status: 'Corridor advisory active',
+                impact: 'Moderate',
+                road: actualLocation
+              }
+            }
+          }
+        }
+        return inc
+      })
+
+      return {
+        incidents: updatedIncidents,
+        citizenDraft: {
+          ...state.citizenDraft,
+          step: 'submitted',
+          submittedIncidentId: newId,
+          timestamp: currentTime
+        },
+        trafficState: {
+          ...state.trafficState,
+          vmsAdvisoryActive: true,
+          vmsMessage: `CAUTION: ACCIDENT AT ${shortLocation.toUpperCase()} — EMERGENCY CORRIDOR ACTIVE`
+        }
       }
+    })
+
+    get().addNotification({
+      title: `Citizen report ${newId} dispatched to emergency grid`,
+      detail: `Location: ${actualLocation} · Ambulance 04, BTP Patrol 11 & Traffic alerted.`,
+      type: 'critical'
+    })
+
+    if (get().soundEnabled) {
+      playAlertBeep()
+    }
+  },
+
+  ambulanceAcceptCitizenIncident: () => {
+    set((state) => ({
+      incidents: state.incidents.map((inc) =>
+        inc.id === 'RQ-1052'
+          ? {
+              ...inc,
+              status: 'Ambulance 04 en route to citizen GPS',
+              response: {
+                ...inc.response,
+                ambulance: {
+                  ...inc.response.ambulance,
+                  status: 'En route to scene (GPS locked)',
+                  targetArrival: '02:50'
+                }
+              }
+            }
+          : inc
+      )
     }))
     get().addNotification({
-      title: `Citizen accident report received — ${newId}`,
-      detail: 'Live photograph and geolocation captured. Review required.',
-      type: 'neutral'
+      title: 'Ambulance 04 accepted citizen incident RQ-1052',
+      detail: 'Navigating to verified citizen photo GPS coordinates',
+      type: 'info'
+    })
+    if (get().soundEnabled) {
+      playAcceptChime()
+    }
+  },
+
+  policeDispatchToCitizenIncident: () => {
+    set((state) => ({
+      policeCitizenState: { ...state.policeCitizenState, status: 'Dispatched' },
+      incidents: state.incidents.map((inc) =>
+        inc.id === 'RQ-1052'
+          ? {
+              ...inc,
+              response: {
+                ...inc.response,
+                police: {
+                  ...inc.response.police,
+                  status: 'En route to citizen location with siren active'
+                }
+              }
+            }
+          : inc
+      )
+    }))
+    get().addNotification({
+      title: 'BTP Patrol 11 dispatched to citizen accident',
+      detail: 'Responding to citizen GPS location under Section 134A',
+      type: 'warning'
+    })
+  },
+
+  ambulanceArriveCitizenScene: () => {
+    set((state) => ({
+      incidents: state.incidents.map((inc) =>
+        inc.id === 'RQ-1052'
+          ? {
+              ...inc,
+              status: 'Ambulance 04 arrived at citizen location',
+              response: {
+                ...inc.response,
+                ambulance: {
+                  ...inc.response.ambulance,
+                  status: 'Arrived on scene (GPS verified)',
+                  targetArrival: 'Arrived'
+                }
+              }
+            }
+          : inc
+      )
+    }))
+    get().addNotification({
+      title: 'Ambulance 04 arrived at citizen scene',
+      detail: 'Paramedic triage underway at reported coordinates',
+      type: 'info'
+    })
+  },
+
+  ambulancePickUpCitizenPatient: () => {
+    set((state) => ({
+      incidents: state.incidents.map((inc) =>
+        inc.id === 'RQ-1052'
+          ? {
+              ...inc,
+              status: 'Patient secured in Ambulance 04',
+              response: {
+                ...inc.response,
+                ambulance: {
+                  ...inc.response.ambulance,
+                  status: 'Patient secured · En route to hospital'
+                }
+              }
+            }
+          : inc
+      )
+    }))
+    get().addNotification({
+      title: 'Ambulance 04: Patient secured from citizen crash scene',
+      detail: 'Transporting to emergency care center',
+      type: 'info'
+    })
+  },
+
+  policeAcknowledgeCitizen: () => {
+    set((state) => ({
+      policeCitizenState: { ...state.policeCitizenState, status: 'Alert received' }
+    }))
+    get().addNotification({
+      title: 'BTP Patrol 11 acknowledged citizen report RQ-1052',
+      detail: 'Section 134A mandatory accident protocol active',
+      type: 'info'
+    })
+  },
+
+  policeDispatchCitizen: () => {
+    set((state) => ({
+      policeCitizenState: { ...state.policeCitizenState, status: 'Dispatched' },
+      incidents: state.incidents.map((inc) =>
+        inc.id === 'RQ-1052'
+          ? {
+              ...inc,
+              response: {
+                ...inc.response,
+                police: {
+                  ...inc.response.police,
+                  status: 'Dispatched (Priority Siren)'
+                }
+              }
+            }
+          : inc
+      )
+    }))
+    get().addNotification({
+      title: 'BTP Patrol 11 en route to citizen accident location',
+      detail: 'Patrol vehicle dispatched with beacon and siren active',
+      type: 'warning'
+    })
+  },
+
+  policeArriveCitizen: () => {
+    set((state) => ({
+      policeCitizenState: { ...state.policeCitizenState, status: 'Arrived', trafficDiverted: true },
+      incidents: state.incidents.map((inc) =>
+        inc.id === 'RQ-1052'
+          ? {
+              ...inc,
+              response: {
+                ...inc.response,
+                police: {
+                  ...inc.response.police,
+                  status: 'Arrived on scene · Securing perimeter'
+                }
+              }
+            }
+          : inc
+      )
+    }))
+    get().addNotification({
+      title: 'BTP Patrol 11 arrived at citizen accident scene',
+      detail: 'Perimeter secured and traffic cones deployed',
+      type: 'info'
     })
   },
 
@@ -819,10 +1089,13 @@ export const useEmergencyStore = create((set, get) => ({
         photo: '/images/citizen_road_report.jpg',
         hasPhoto: false,
         locationDetected: 'NH 44, near Electronic City Elevated Highway (12.8452° N, 77.6601° E)',
+        shortLocation: 'Electronic City',
+        coordinates: { lat: 12.8452, lng: 77.6601 },
         accuracyMeters: 4.8,
         timestamp: null,
         step: 'camera',
-        submittedIncidentId: null
+        submittedIncidentId: null,
+        gpsLocked: false
       }
     })
   },
@@ -847,7 +1120,7 @@ export const useEmergencyStore = create((set, get) => ({
     }))
     get().addNotification({
       title: `Incident ${id} confirmed by operator`,
-      detail: 'Ambulance 04 and Police Patrol 11 dispatched',
+      detail: 'Ambulance 04 and Police Patrol 11 dispatched to scene',
       type: 'info'
     })
   },

@@ -34,6 +34,10 @@ export default function AmbulanceView() {
     ambulanceMarkPatientPickedUp,
     ambulanceArriveHospital,
     ambulanceResetToAvailable,
+    ambulanceAcceptCitizenIncident,
+    ambulanceArriveCitizenScene,
+    ambulancePickUpCitizenPatient,
+    citizenSubmitReport,
     hospitalState,
     ambulanceDeviceMode,
     setAmbulanceDeviceMode,
@@ -45,6 +49,18 @@ export default function AmbulanceView() {
   const isUnit07 = selectedAmbulanceUnitId === 'AMB-07'
   const isAcceptedBy07 = simulationStage >= 3
   const incident = incidents.find(i => i.id === 'RQ-1048') || incidents[0]
+  const citizenIncident = incidents.find(i => i.id === 'RQ-1052')
+
+  const isCitizenDispatchedTo04 = Boolean(
+    citizenIncident && (
+      citizenIncident.source?.includes('CITIZEN') ||
+      citizenIncident.status?.toLowerCase().includes('citizen') ||
+      citizenIncident.status?.toLowerCase().includes('ambulance 04') ||
+      citizenIncident.response?.ambulance?.status?.toLowerCase().includes('en route') ||
+      citizenIncident.response?.ambulance?.status?.toLowerCase().includes('dispatched') ||
+      citizenIncident.citizenReport?.photoReceived
+    )
+  )
 
   // Status computation for top header
   let unitStatus = 'AVAILABLE'
@@ -77,7 +93,23 @@ export default function AmbulanceView() {
     }
   } else {
     // Ambulance 04
-    unitStatus = isAcceptedBy07 ? 'STANDBY / AVAILABLE' : 'AVAILABLE'
+    if (isCitizenDispatchedTo04) {
+      if (citizenIncident.status?.includes('arrived')) {
+        unitStatus = 'ARRIVED ON SCENE'
+        unitStatusColor = 'text-emerald-400 bg-emerald-950/80 border-emerald-800'
+      } else if (citizenIncident.status?.includes('secured')) {
+        unitStatus = 'PATIENT SECURED'
+        unitStatusColor = 'text-emerald-400 bg-emerald-950/80 border-emerald-800'
+      } else if (citizenIncident.response?.ambulance?.status?.toLowerCase().includes('en route')) {
+        unitStatus = 'EN ROUTE TO CITIZEN GPS'
+        unitStatusColor = 'text-amber-400 bg-amber-950/80 border-amber-800'
+      } else {
+        unitStatus = 'CITIZEN DISPATCH ALERT'
+        unitStatusColor = 'text-red-400 bg-red-950/80 border-red-800'
+      }
+    } else {
+      unitStatus = isAcceptedBy07 ? 'STANDBY / AVAILABLE' : 'AVAILABLE'
+    }
   }
 
   return (
@@ -94,15 +126,18 @@ export default function AmbulanceView() {
                 isUnit07 ? 'bg-slate-800 text-emerald-300 font-bold' : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              Ambulance 07 (Assigned)
+              Ambulance 07 (Assigned AI Crash)
             </button>
             <button
               onClick={() => setSelectedAmbulanceUnitId('AMB-04')}
-              className={`px-2.5 py-1 rounded text-xs font-mono font-medium transition-colors ${
+              className={`px-2.5 py-1 rounded text-xs font-mono font-medium transition-colors flex items-center gap-1.5 ${
                 !isUnit07 ? 'bg-slate-800 text-blue-300 font-bold' : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              Ambulance 04 (Other Unit)
+              <span>Ambulance 04 (Citizen Unit)</span>
+              {isCitizenDispatchedTo04 && (
+                <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+              )}
             </button>
           </div>
         </div>
@@ -122,14 +157,14 @@ export default function AmbulanceView() {
           ? 'max-w-md bg-slate-950 rounded-2xl border-4 border-slate-800 p-4 shadow-2xl space-y-4'
           : 'w-full bg-slate-950 rounded-xl border border-slate-800 p-5 shadow-lg space-y-4'
       }`}>
-        {/* At the top: AMBULANCE 07 & Status AVAILABLE as Specified */}
+        {/* At the top: AMBULANCE Unit ID & Status */}
         <div className="flex items-center justify-between border-b border-slate-800/90 pb-3">
           <div>
             <h2 className="text-base sm:text-lg font-bold font-mono tracking-tight text-slate-100">
               {isUnit07 ? 'AMBULANCE 07' : 'AMBULANCE 04'}
             </h2>
             <div className="text-[11px] text-slate-400 font-mono">
-              {isUnit07 ? 'KA 01 AB 1234 · ALS Crew' : 'KA 04 E 2211 · BLS Crew'}
+              {isUnit07 ? 'KA 01 AB 1234 · ALS Crew (Electronic City Depot)' : 'KA 04 E 2211 · BLS Crew (Bommanahalli Bay)'}
             </div>
           </div>
 
@@ -142,31 +177,174 @@ export default function AmbulanceView() {
         </div>
 
         {/* ======================================================== */}
-        {/* CASE A: OTHER AMBULANCE (AMBULANCE 04) SCENARIO           */}
+        {/* CASE A: AMBULANCE 04 SCENARIOS (Citizen Report vs Standby) */}
         {/* ======================================================== */}
-        {!isUnit07 && isAcceptedBy07 && (
-          <div className="py-8 px-4 text-center space-y-3 bg-slate-900/40 rounded-xl border border-slate-800">
-            <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center mx-auto text-slate-400">
-              <CheckCircle2 className="w-5 h-5 text-slate-400" />
-            </div>
+        {!isUnit07 && (
+          <div className="space-y-4">
+            {isCitizenDispatchedTo04 ? (
+              /* CITIZEN EMERGENCY REPORT DISPATCHED TO AMBULANCE 04 */
+              <div className="space-y-4 animate-in fade-in duration-150">
+                {/* Emergency Header */}
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 rounded bg-red-950 border border-red-800 text-red-400 font-mono text-[11px] font-bold flex items-center gap-1.5">
+                      <Radio className="w-3 h-3 text-red-400 animate-pulse" />
+                      <span>CITIZEN LIVE PHOTO DISPATCH</span>
+                    </span>
+                    <span className="font-mono text-xs text-slate-400 font-bold">
+                      {citizenIncident.id}
+                    </span>
+                  </div>
+                  <h3 className="text-xl font-bold text-slate-100">
+                    Accident Reported by Citizen
+                  </h3>
+                  <div className="flex items-center gap-3 text-xs font-mono text-slate-300">
+                    <span className="text-emerald-400 font-bold">1.8 km away</span>
+                    <span>·</span>
+                    <span className="text-amber-400 font-bold">Target arrival: 03:45</span>
+                  </div>
+                </div>
 
-            <h3 className="text-base font-bold text-slate-200">
-              Incident already assigned
-            </h3>
+                {/* Actual Photo Clicked by Citizen */}
+                <div className="relative aspect-video rounded-xl overflow-hidden border border-slate-800 bg-black">
+                  <img
+                    src={citizenIncident.image}
+                    alt="Citizen captured accident scene"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute top-2 left-2 px-2 py-0.5 rounded bg-black/80 text-[10px] font-mono text-white border border-slate-700 flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                    <span>CITIZEN SMARTPHONE CAPTURE</span>
+                  </div>
+                  <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-black/85 text-[10px] font-mono text-emerald-300 border border-emerald-900">
+                    GPS LOCK: {citizenIncident.coordinates.lat.toFixed(4)}° N, {citizenIncident.coordinates.lng.toFixed(4)}° E
+                  </div>
+                </div>
 
-            <p className="text-xs text-slate-300 max-w-xs mx-auto leading-relaxed">
-              Ambulance 07 is responding to this incident.
-            </p>
+                {/* Actual Location Where Photo Was Clicked */}
+                <div className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2 text-xs">
+                  <div className="flex items-center justify-between border-b border-slate-800 pb-1.5">
+                    <span className="font-bold text-slate-100 flex items-center gap-1.5 font-mono">
+                      <MapPin className="w-3.5 h-3.5 text-red-400" />
+                      <span>ACTUAL LOCATION WHERE PHOTO WAS CLICKED</span>
+                    </span>
+                    <span className="font-mono text-[10px] text-emerald-400 font-bold">
+                      GPS ±{citizenIncident.citizenReport?.accuracyMeters || 3.4}m
+                    </span>
+                  </div>
 
-            <div className="pt-2">
-              <span className="inline-block px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-xs font-semibold text-slate-400">
-                No action required
-              </span>
-            </div>
+                  <p className="text-slate-200 text-xs font-medium">
+                    {citizenIncident.location}
+                  </p>
 
-            <div className="pt-4 border-t border-slate-800/80 text-[11px] text-slate-400 font-mono">
-              Vehicle KA 04 E 2211 remains on active standby at Bommanahalli Bay.
-            </div>
+                  <div className="text-[11px] font-mono text-slate-400 flex items-center justify-between">
+                    <span>Coordinates: {citizenIncident.coordinates.lat.toFixed(5)}° N, {citizenIncident.coordinates.lng.toFixed(5)}° E</span>
+                    <span className="text-blue-400">Direct Route Calculated</span>
+                  </div>
+                </div>
+
+                {/* Navigation Route Map */}
+                <div className="relative h-32 bg-slate-900 rounded-xl border border-slate-800 overflow-hidden flex items-center justify-center">
+                  <svg viewBox="0 0 300 120" className="w-full h-full">
+                    <path d="M 20,60 Q 150,30 280,70" stroke="#334155" strokeWidth="6" fill="none" />
+                    <path d="M 50,60 L 250,68" stroke="#3b82f6" strokeWidth="2.5" strokeDasharray="4 3" fill="none" />
+                    <circle cx="50" cy="60" r="6" fill="#10b981" />
+                    <circle cx="250" cy="68" r="8" fill="#ef4444" />
+                    <text x="50" y="80" fill="#6ee7b7" fontSize="9" fontWeight="bold" textAnchor="middle">Ambulance 04</text>
+                    <text x="250" y="90" fill="#fca5a5" fontSize="9" fontWeight="bold" textAnchor="middle">Photo Spot</text>
+                  </svg>
+                  <div className="absolute bottom-1 right-2 text-[10px] text-slate-400 font-mono">
+                    Routing to Citizen GPS Spot
+                  </div>
+                </div>
+
+                {/* Ambulance 04 Action Controls */}
+                <div className="space-y-2 pt-1">
+                  {!citizenIncident.response?.ambulance?.status?.toLowerCase().includes('en route') &&
+                   !citizenIncident.status?.includes('arrived') &&
+                   !citizenIncident.status?.includes('secured') && (
+                    <button
+                      onClick={ambulanceAcceptCitizenIncident}
+                      className="w-full py-3.5 px-4 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-sm transition-colors shadow-lg shadow-red-950/40 text-center cursor-pointer flex items-center justify-center gap-2"
+                    >
+                      <Navigation2 className="w-4 h-4 fill-white" />
+                      <span>Accept Citizen Incident & Route to Photo GPS</span>
+                    </button>
+                  )}
+
+                  {citizenIncident.response?.ambulance?.status?.toLowerCase().includes('en route') && (
+                    <button
+                      onClick={ambulanceArriveCitizenScene}
+                      className="w-full py-3.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm transition-colors shadow-lg shadow-emerald-950/40 text-center cursor-pointer flex items-center justify-center gap-2"
+                    >
+                      <MapPin className="w-4 h-4" />
+                      <span>Mark Arrived at Citizen GPS Scene</span>
+                    </button>
+                  )}
+
+                  {citizenIncident.status?.includes('arrived') && (
+                    <button
+                      onClick={ambulancePickUpCitizenPatient}
+                      className="w-full py-3.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm transition-colors shadow-lg shadow-emerald-950/40 text-center cursor-pointer flex items-center justify-center gap-2"
+                    >
+                      <Check className="w-4 h-4 stroke-[3]" />
+                      <span>Patient Picked Up (Proceed to Hospital)</span>
+                    </button>
+                  )}
+
+                  {citizenIncident.status?.includes('secured') && (
+                    <div className="space-y-2">
+                      <button
+                        onClick={() => setHospitalModalOpen(true)}
+                        className="w-full py-3.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm transition-colors shadow-lg shadow-blue-950/40 text-center cursor-pointer flex items-center justify-center gap-2"
+                      >
+                        <Building2 className="w-4 h-4" />
+                        <span>Select Hospital & Transfer Patient</span>
+                      </button>
+
+                      <button
+                        onClick={() => setHandoverModalOpen(true)}
+                        className="w-full py-2.5 px-4 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                      >
+                        <CheckCircle2 className="w-4 h-4" />
+                        <span>Confirm Hospital Handover & Close Citizen Case</span>
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              /* AMBULANCE 04 ACTIVE STANDBY */
+              <div className="py-8 px-4 text-center space-y-3 bg-slate-900/40 rounded-xl border border-slate-800">
+                <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center mx-auto text-slate-400">
+                  <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                </div>
+
+                <h3 className="text-base font-bold text-slate-200">
+                  Unit 04 on Active Standby
+                </h3>
+
+                <p className="text-xs text-slate-300 max-w-sm mx-auto leading-relaxed">
+                  Ambulance 07 is currently handling camera accident RQ-1048. Ambulance 04 is the designated rapid response unit for citizen-reported incidents.
+                </p>
+
+                <div className="pt-2">
+                  <span className="inline-block px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-xs font-semibold text-emerald-400">
+                    Standby at Bommanahalli Bay · GPS Ready
+                  </span>
+                </div>
+
+                <div className="pt-4 border-t border-slate-800/80 text-[11px] text-slate-400 font-mono space-y-2">
+                  <p>When any citizen reports an accident with a photo, this unit will immediately receive the exact clicked coordinates.</p>
+                  <button
+                    onClick={citizenSubmitReport}
+                    className="px-3 py-1.5 rounded-lg bg-blue-900/80 hover:bg-blue-800 border border-blue-700 text-blue-200 text-xs font-semibold transition-colors cursor-pointer"
+                  >
+                    Simulate Citizen Photo Report Dispatched to Ambulance 04
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
 

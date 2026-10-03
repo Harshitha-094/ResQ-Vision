@@ -24,7 +24,8 @@ export default function LiveMap({ compact = false, focusedIncidentId = null, onS
     tollPlazas,
     simulationStage,
     setActiveView,
-    setSelectedIncidentId
+    setSelectedIncidentId,
+    setSelectedAmbulanceUnitId
   } = useEmergencyStore()
 
   const [selectedMarker, setSelectedMarker] = useState(null)
@@ -545,31 +546,44 @@ export default function LiveMap({ compact = false, focusedIncidentId = null, onS
               </g>
 
               {/* RQ-1052: Citizen Report */}
-              <g
-                transform="translate(620, 410)"
-                className="cursor-pointer"
-                onClick={() => handleMarkerClick('RQ-1052', {
-                  title: 'Incident RQ-1052',
-                  type: 'incident',
-                  severity: 'Pending Review',
-                  location: 'Electronic City Phase 1 Road',
-                  status: 'Citizen live photo report awaiting verification',
-                  id: 'RQ-1052'
-                })}
-              >
-                <circle r="7" fill="#3b82f6" stroke="#0f172a" strokeWidth="1.5" />
-                <text x="12" y="3" fill="#93c5fd" fontSize="9">
-                  RQ-1052 (Citizen)
-                </text>
-              </g>
+              {(() => {
+                const inc1052 = incidents.find(i => i.id === 'RQ-1052')
+                const isCitizenActive = inc1052 && (inc1052.source?.includes('CITIZEN') || inc1052.citizenReport?.photoReceived)
+                return (
+                  <g
+                    transform="translate(620, 410)"
+                    className="cursor-pointer"
+                    onClick={() => handleMarkerClick('RQ-1052', {
+                      title: 'Incident RQ-1052 (Citizen Report)',
+                      type: 'incident',
+                      severity: inc1052?.severity || 'Moderate',
+                      location: inc1052?.location || 'Electronic City Phase 1 Road',
+                      status: inc1052?.status || 'Ambulance 04 & BTP Patrol 11 routed',
+                      id: 'RQ-1052',
+                      isCitizen: true,
+                      image: inc1052?.image,
+                      coordinates: inc1052?.coordinates,
+                      accuracyMeters: inc1052?.citizenReport?.accuracyMeters || 3.4
+                    })}
+                  >
+                    {isCitizenActive && (
+                      <circle r="15" fill="rgba(59, 130, 246, 0.2)" stroke="#3b82f6" strokeWidth="1" className="animate-ping" />
+                    )}
+                    <circle r="7" fill="#3b82f6" stroke="#ffffff" strokeWidth="1.5" />
+                    <text x="12" y="3" fill="#93c5fd" fontSize="9" fontWeight="bold">
+                      RQ-1052 (Citizen Photo)
+                    </text>
+                  </g>
+                )
+              })()}
             </g>
           )}
         </svg>
 
         {/* Selected Marker Operational Info Overlay */}
         {selectedMarker && (
-          <div className="absolute bottom-3 left-3 max-w-xs bg-slate-900/95 border border-slate-700 rounded-lg p-3 text-xs shadow-lg backdrop-blur-sm z-20">
-            <div className="flex items-start justify-between gap-2 mb-1.5">
+          <div className="absolute bottom-3 left-3 max-w-xs bg-slate-900/95 border border-slate-700 rounded-lg p-3 text-xs shadow-lg backdrop-blur-sm z-20 space-y-2">
+            <div className="flex items-start justify-between gap-2 mb-1">
               <div>
                 <span className="font-semibold text-slate-100">{selectedMarker.title}</span>
                 {selectedMarker.severity && (
@@ -592,28 +606,63 @@ export default function LiveMap({ compact = false, focusedIncidentId = null, onS
               </button>
             </div>
 
-            <p className="text-slate-300 text-[11px] mb-2 leading-relaxed">
+            {/* Thumbnail if Citizen Report */}
+            {selectedMarker.isCitizen && selectedMarker.image && (
+              <div className="relative aspect-video rounded overflow-hidden border border-slate-800 bg-black">
+                <img
+                  src={selectedMarker.image}
+                  alt="Citizen report thumbnail"
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute top-1 left-1 px-1.5 py-0.5 rounded bg-black/80 text-[9px] font-mono text-emerald-300">
+                  PHOTO CLICKED AT SCENE
+                </div>
+              </div>
+            )}
+
+            <p className="text-slate-300 text-[11px] leading-relaxed">
               {selectedMarker.location || selectedMarker.info}
             </p>
 
+            {selectedMarker.coordinates && (
+              <div className="text-[10px] font-mono text-emerald-400 bg-slate-950 p-1.5 rounded border border-slate-850">
+                GPS: {selectedMarker.coordinates.lat.toFixed(5)}° N, {selectedMarker.coordinates.lng.toFixed(5)}° E (±{selectedMarker.accuracyMeters || 3.4}m)
+              </div>
+            )}
+
             {selectedMarker.status && (
-              <div className="text-[11px] font-mono text-slate-400 mb-2">
+              <div className="text-[11px] font-mono text-slate-400">
                 Status: <span className="text-slate-200">{selectedMarker.status}</span>
               </div>
             )}
 
-            {selectedMarker.id && (
-              <button
-                onClick={() => {
-                  setSelectedIncidentId(selectedMarker.id)
-                  setActiveView('incident_detail')
-                }}
-                className="w-full flex items-center justify-center gap-1.5 py-1 px-2 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-medium border border-slate-700"
-              >
-                <span>Open Incident Detail</span>
-                <ArrowRight className="w-3 h-3 text-slate-400" />
-              </button>
-            )}
+            <div className="space-y-1.5 pt-1">
+              {selectedMarker.id && (
+                <button
+                  onClick={() => {
+                    setSelectedIncidentId(selectedMarker.id)
+                    setActiveView('incident_detail')
+                  }}
+                  className="w-full flex items-center justify-center gap-1.5 py-1 px-2 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-medium border border-slate-700 cursor-pointer"
+                >
+                  <span>Open Incident Detail</span>
+                  <ArrowRight className="w-3 h-3 text-slate-400" />
+                </button>
+              )}
+
+              {selectedMarker.id === 'RQ-1052' && (
+                <button
+                  onClick={() => {
+                    setSelectedAmbulanceUnitId('AMB-04')
+                    setActiveView('ambulances')
+                  }}
+                  className="w-full flex items-center justify-center gap-1.5 py-1 px-2 rounded bg-blue-900/80 hover:bg-blue-800 text-blue-200 text-[11px] font-medium border border-blue-700 cursor-pointer"
+                >
+                  <Ambulance className="w-3 h-3 text-blue-300" />
+                  <span>Inspect Ambulance 04 Console</span>
+                </button>
+              )}
+            </div>
           </div>
         )}
 

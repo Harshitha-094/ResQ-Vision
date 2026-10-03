@@ -26,6 +26,7 @@ export default function IncidentDetailView() {
     setActiveView,
     openConfirmModal,
     closeIncident,
+    setSelectedAmbulanceUnitId,
     simulationStage
   } = useEmergencyStore()
 
@@ -212,16 +213,20 @@ export default function IncidentDetailView() {
                   alt={`Accident scene capture for ${incident.id}`}
                   className="w-full h-full object-cover"
                 />
-                {/* Visual camera overlay tag */}
+                {/* Visual camera or citizen photo overlay tag */}
                 <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-black/75 border border-white/20 text-[10px] font-mono text-white flex items-center gap-1.5 backdrop-blur-xs">
-                  <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
-                  <span>{incident.cameraNode || 'AI CAM FEED'}</span>
+                  <span className={`w-1.5 h-1.5 rounded-full ${incident.source?.includes('CITIZEN') ? 'bg-blue-400' : 'bg-red-500'}`} />
+                  <span>{incident.source?.includes('CITIZEN') ? 'CITIZEN LIVE CAPTURE' : incident.cameraNode || 'AI CAM FEED'}</span>
                 </div>
-                {incident.confidence && (
+                {incident.source?.includes('CITIZEN') ? (
+                  <div className="absolute bottom-2 right-2 px-1.5 py-0.5 rounded bg-black/75 text-[10px] font-mono text-emerald-400 border border-emerald-900/50">
+                    GPS ±{incident.citizenReport?.accuracyMeters || 3.4}m Verified
+                  </div>
+                ) : incident.confidence ? (
                   <div className="absolute bottom-2 right-2 px-1.5 py-0.5 rounded bg-black/75 text-[10px] font-mono text-emerald-400 border border-emerald-900/50">
                     Confidence {incident.confidence}%
                   </div>
-                )}
+                ) : null}
               </div>
               <div className="p-2.5 bg-slate-950/80 border-t border-slate-800 text-[11px] text-slate-400 flex items-center justify-between">
                 <span>Vehicles: {incident.vehicles || '2 Vehicles'}</span>
@@ -243,14 +248,19 @@ export default function IncidentDetailView() {
                   Ambulance
                 </div>
                 <div className="font-bold text-slate-100 text-sm">
-                  {incident.response?.ambulance?.id || 'KA 01 AB 1234'}
+                  {incident.id === 'RQ-1052' ? 'Ambulance 04' : (incident.response?.ambulance?.id || 'KA 01 AB 1234')}
                 </div>
                 <div className="text-emerald-400 text-xs font-medium">
                   {incident.response?.ambulance?.status || 'En route'}
                 </div>
                 <button
-                  onClick={() => setActiveView('ambulances')}
-                  className="mt-2 text-[10px] text-blue-400 hover:text-blue-300 flex items-center gap-1"
+                  onClick={() => {
+                    if (incident.id === 'RQ-1052') {
+                      setSelectedAmbulanceUnitId('AMB-04')
+                    }
+                    setActiveView('ambulances')
+                  }}
+                  className="mt-2 text-[10px] text-blue-400 hover:text-blue-300 flex items-center gap-1 cursor-pointer"
                 >
                   <span>Open Console</span>
                   <ExternalLink className="w-2.5 h-2.5" />
