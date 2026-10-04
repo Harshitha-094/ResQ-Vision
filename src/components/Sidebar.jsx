@@ -15,7 +15,9 @@ import {
   LogOut,
   Lock,
   BookOpen,
-  ShieldCheck
+  ShieldCheck,
+  Sun,
+  Moon
 } from 'lucide-react'
 import { useEmergencyStore } from '../store/emergencyStore'
 import { DEPARTMENT_ROLES, checkViewAuthorization } from '../data/rolesConfig'
@@ -27,7 +29,9 @@ export default function Sidebar({ mobileOpen, setMobileOpen, onOpenSettings }) {
     setActiveView,
     userRole,
     incidents,
-    openConfirmModal
+    openConfirmModal,
+    theme,
+    toggleTheme
   } = useEmergencyStore()
 
   const activeCount = incidents.filter(i => i.status !== 'Completed').length
@@ -201,18 +205,30 @@ export default function Sidebar({ mobileOpen, setMobileOpen, onOpenSettings }) {
           </div>
 
           {/* Action buttons */}
-          <div className="flex items-center gap-2 text-xs">
+          <div className="flex items-center gap-1.5 text-xs">
             <button
               onClick={onOpenSettings}
-              className="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2.5 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 transition-colors text-xs font-medium cursor-pointer shadow-2xs"
+              className="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 transition-colors text-xs font-medium cursor-pointer shadow-2xs truncate"
               title="System Settings"
             >
-              <Settings className="w-3.5 h-3.5 text-slate-500" />
-              <span>Settings</span>
+              <Settings className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+              <span className="truncate">Settings</span>
+            </button>
+            <button
+              onClick={toggleTheme}
+              className="flex items-center justify-center p-1.5 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-slate-600 hover:text-slate-900 transition-colors cursor-pointer shadow-2xs shrink-0"
+              title={theme === 'dark' ? 'Switch to Bright Mode' : 'Switch to Dark Mode'}
+              aria-label={theme === 'dark' ? 'Switch to Bright Mode' : 'Switch to Dark Mode'}
+            >
+              {theme === 'dark' ? (
+                <Sun className="w-4 h-4 text-amber-400" />
+              ) : (
+                <Moon className="w-4 h-4 text-slate-600" />
+              )}
             </button>
             <button
               onClick={handleSignOut}
-              className="flex items-center justify-center p-1.5 rounded-lg bg-white hover:bg-red-50 border border-slate-200 hover:border-red-200 text-slate-500 hover:text-red-600 transition-colors cursor-pointer shadow-2xs"
+              className="flex items-center justify-center p-1.5 rounded-lg bg-white hover:bg-red-50 border border-slate-200 hover:border-red-200 text-slate-500 hover:text-red-600 transition-colors cursor-pointer shadow-2xs shrink-0"
               title="Sign Out"
               aria-label="Sign Out"
             >

@@ -153,6 +153,7 @@ export const useEmergencyStore = create((set, get) => ({
   notificationsOpen: false,
   demoPanelOpen: false,
   soundEnabled: true,
+  theme: (typeof window !== 'undefined' && (localStorage.getItem('resqvision-theme') || (document.documentElement.classList.contains('dark') ? 'dark' : 'light'))) || 'light',
   confirmModal: {
     isOpen: false,
     title: '',
@@ -199,6 +200,26 @@ export const useEmergencyStore = create((set, get) => ({
   setNotificationsOpen: (open) => set({ notificationsOpen: open }),
   setDemoPanelOpen: (open) => set({ demoPanelOpen: open }),
   toggleSound: () => set((state) => ({ soundEnabled: !state.soundEnabled })),
+  setTheme: (newTheme) => {
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('resqvision-theme', newTheme)
+      } catch (e) {}
+      if (newTheme === 'dark') {
+        document.documentElement.classList.add('dark')
+        document.documentElement.classList.remove('light')
+      } else {
+        document.documentElement.classList.remove('dark')
+        document.documentElement.classList.add('light')
+      }
+    }
+    set({ theme: newTheme })
+  },
+  toggleTheme: () => {
+    const currentTheme = get().theme
+    const nextTheme = currentTheme === 'dark' ? 'light' : 'dark'
+    get().setTheme(nextTheme)
+  },
 
   // Notification Actions
   markNotificationRead: (id) => set((state) => ({

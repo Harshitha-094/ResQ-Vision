@@ -8,7 +8,9 @@ import {
   X,
   BookOpen,
   KeyRound,
-  ShieldCheck
+  ShieldCheck,
+  Sun,
+  Moon
 } from 'lucide-react'
 import { useEmergencyStore } from '../store/emergencyStore'
 import { DEPARTMENT_ROLES } from '../data/rolesConfig'
@@ -30,7 +32,9 @@ export default function TopBar({ onToggleMobileSidebar, onOpenAuthModal }) {
     simulationStage,
     soundEnabled,
     toggleSound,
-    setSelectedIncidentId
+    setSelectedIncidentId,
+    theme,
+    toggleTheme
   } = useEmergencyStore()
 
   const [currentTime, setCurrentTime] = useState('')
@@ -132,6 +136,20 @@ export default function TopBar({ onToggleMobileSidebar, onOpenAuthModal }) {
 
       {/* Right Controls: Notifications, Date/Time, Role Switcher, Demo Mode Pill */}
       <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+        {/* Theme toggle: Bright / Dark */}
+        <button
+          onClick={toggleTheme}
+          className="p-1.5 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors flex items-center justify-center border border-transparent hover:border-slate-200 cursor-pointer"
+          title={theme === 'dark' ? 'Switch to Bright Mode' : 'Switch to Dark Mode'}
+          aria-label={theme === 'dark' ? 'Switch to Bright Mode' : 'Switch to Dark Mode'}
+        >
+          {theme === 'dark' ? (
+            <Sun className="w-4 h-4 text-amber-400" />
+          ) : (
+            <Moon className="w-4 h-4 text-slate-600" />
+          )}
+        </button>
+
         {/* Sound toggle */}
         <button
           onClick={toggleSound}

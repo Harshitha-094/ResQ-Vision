@@ -1,9 +1,9 @@
 import React from 'react'
-import { Settings, X, Volume2, VolumeX, Shield, Bell, RefreshCw } from 'lucide-react'
+import { Settings, X, Volume2, VolumeX, Shield, Sun, Moon } from 'lucide-react'
 import { useEmergencyStore } from '../store/emergencyStore'
 
 export default function SettingsModal({ isOpen, onClose }) {
-  const { soundEnabled, toggleSound } = useEmergencyStore()
+  const { soundEnabled, toggleSound, theme, setTheme } = useEmergencyStore()
 
   if (!isOpen) return null
 
@@ -21,6 +21,40 @@ export default function SettingsModal({ isOpen, onClose }) {
         </div>
 
         <div className="space-y-3 text-xs">
+          {/* Theme Mode Selector: Bright vs Dark */}
+          <div className="p-3.5 rounded-lg bg-slate-50 border border-slate-200 space-y-2">
+            <div className="space-y-0.5">
+              <span className="font-semibold text-slate-800">Interface Display Theme</span>
+              <p className="text-[11px] text-slate-500">Toggle between crisp daytime Bright Mode and high-contrast tactical Dark Mode</p>
+            </div>
+            <div className="grid grid-cols-2 gap-2 pt-1">
+              <button
+                type="button"
+                onClick={() => setTheme('light')}
+                className={`py-2 px-3 rounded-lg border text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer transition-all shadow-2xs ${
+                  theme !== 'dark'
+                    ? 'bg-blue-600 border-blue-600 text-white shadow-xs'
+                    : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-100'
+                }`}
+              >
+                <Sun className={`w-4 h-4 ${theme !== 'dark' ? 'text-amber-300' : 'text-amber-500'}`} />
+                <span>Bright Mode</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setTheme('dark')}
+                className={`py-2 px-3 rounded-lg border text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer transition-all shadow-2xs ${
+                  theme === 'dark'
+                    ? 'bg-blue-600 border-blue-600 text-white shadow-xs'
+                    : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-100'
+                }`}
+              >
+                <Moon className={`w-4 h-4 ${theme === 'dark' ? 'text-white' : 'text-slate-500'}`} />
+                <span>Dark Mode</span>
+              </button>
+            </div>
+          </div>
+
           {/* Audio Alerts */}
           <div className="p-3.5 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-between">
             <div className="space-y-0.5">
