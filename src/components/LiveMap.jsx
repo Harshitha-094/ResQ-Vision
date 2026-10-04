@@ -457,7 +457,7 @@ export default function LiveMap({ compact = false, focusedIncidentId = null, onS
               </button>
             </div>
             <p className="text-[11px] text-slate-300 leading-relaxed">
-              ResQ-Vision uses Google Maps Platform for real-time GIS navigation. Provide your Google Cloud API key or free Maps Demo Key to view satellite tiles.
+              ResQVision uses Google Maps Platform for real-time GIS navigation. Provide your Google Cloud API key or free Maps Demo Key to view satellite tiles.
             </p>
             <div className="flex items-center gap-2 pt-1">
               <button

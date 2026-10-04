@@ -66,7 +66,7 @@ export default function SecurityPrivacyView() {
               Security, Privacy & Data Integrity
             </h1>
             <p className="text-xs text-slate-500 max-w-2xl leading-relaxed">
-              ResQ-Vision employs defense-in-depth security engineered for mission-critical emergency orchestration. All dispatches, location telemetry, and inter-agency communications are cryptographically protected, rate-limited, and audited.
+              ResQVision employs defense-in-depth security engineered for mission-critical emergency orchestration. All dispatches, location telemetry, and inter-agency communications are cryptographically protected, rate-limited, and audited.
             </p>
           </div>
 

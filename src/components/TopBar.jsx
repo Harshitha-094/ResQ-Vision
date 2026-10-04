@@ -69,8 +69,8 @@ export default function TopBar({ onToggleMobileSidebar, onOpenAuthModal }) {
 
   return (
     <header className="sticky top-0 z-30 bg-white border-b border-slate-200 h-14 px-4 sm:px-6 flex items-center justify-between gap-3 text-xs select-none shadow-xs">
-      {/* Left: Mobile hamburger + Operational Status */}
-      <div className="flex items-center gap-3">
+      {/* Left: Mobile hamburger + Brand + Operational Status */}
+      <div className="flex items-center gap-2.5 sm:gap-3">
         <button
           onClick={onToggleMobileSidebar}
           className="p-1.5 rounded-lg hover:bg-slate-100 border border-slate-200 md:hidden text-slate-700 transition-colors"
@@ -79,12 +79,24 @@ export default function TopBar({ onToggleMobileSidebar, onOpenAuthModal }) {
           <Menu className="w-4 h-4" />
         </button>
 
+        {/* Mobile-visible ResQVision Logo Emblem */}
+        <div className="flex items-center gap-2 md:hidden">
+          <img
+            src="/resqvision-icon.svg"
+            alt="ResQVision"
+            className="w-6 h-6 object-contain"
+          />
+          <span className="font-extrabold text-slate-900 tracking-tight text-sm">
+            ResQVision
+          </span>
+        </div>
+
         {/* Current Operational Status */}
-        <div className="flex items-center gap-2 font-medium text-slate-800">
+        <div className="hidden sm:flex items-center gap-2 font-medium text-slate-800">
           <span className="relative flex h-2 w-2">
             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
           </span>
-          <span className="hidden sm:inline font-semibold text-slate-900">
+          <span className="font-semibold text-slate-900">
             Normal Monitoring
           </span>
           <span className="text-slate-500 text-xs hidden lg:inline">

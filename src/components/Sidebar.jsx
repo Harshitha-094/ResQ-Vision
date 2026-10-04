@@ -89,15 +89,19 @@ export default function Sidebar({ mobileOpen, setMobileOpen, onOpenSettings }) {
         {/* Brand Header */}
         <div className="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-black text-sm tracking-wider shadow-2xs">
-              RV
+            <div className="relative w-9 h-9 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center p-1 shadow-md shadow-blue-950/20 shrink-0">
+              <img
+                src="/resqvision-icon.svg"
+                alt="ResQVision Logo"
+                className="w-full h-full object-contain"
+              />
             </div>
             <div>
-              <div className="font-bold text-slate-900 tracking-tight text-sm flex items-center gap-1.5">
+              <div className="font-extrabold text-slate-900 tracking-tight text-base flex items-center gap-1.5">
                 <span>ResQVision</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" title="System Operational" />
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" title="System Operational" />
               </div>
-              <div className="text-[10px] text-slate-500 font-mono">
+              <div className="text-[10px] text-blue-700 font-mono font-semibold tracking-wider">
                 EMERGENCY CAD NETWORK
               </div>
             </div>

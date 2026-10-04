@@ -107,10 +107,12 @@ export default function Header() {
       <div className="px-3 sm:px-4 py-2 sm:py-3 flex flex-wrap items-center justify-between gap-2 sm:gap-4">
         {/* Logo & System Nomenclature */}
         <div className="flex items-center gap-2.5 sm:gap-3">
-          <div className="relative flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-red-600 to-amber-700 p-0.5 shadow-lg shadow-red-950/40 shrink-0">
-            <div className="w-full h-full bg-slate-950 rounded-[7px] flex items-center justify-center">
-              <ShieldAlert className="w-5 h-5 sm:w-6 sm:h-6 text-red-500" />
-            </div>
+          <div className="relative flex items-center justify-center w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-slate-950 border border-slate-800 p-1 shadow-lg shadow-blue-950/40 shrink-0">
+            <img
+              src="/resqvision-icon.svg"
+              alt="ResQVision"
+              className="w-full h-full object-contain"
+            />
             {activeIncident && (
               <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5 sm:h-3 sm:w-3">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-80"></span>
@@ -122,8 +124,8 @@ export default function Header() {
           <div>
             <div className="flex items-center gap-1.5">
               <h1 className="text-base sm:text-lg font-black tracking-tight text-white flex items-center gap-1.5">
-                ResQ-Vision
-                <span className="text-[9px] sm:text-[10px] font-mono font-medium px-1.5 py-0.2 rounded bg-slate-800 border border-slate-700 text-slate-300">
+                ResQVision
+                <span className="text-[9px] sm:text-[10px] font-mono font-medium px-1.5 py-0.2 rounded bg-blue-950/80 border border-blue-700/60 text-blue-300">
                   GovTech
                 </span>
               </h1>
