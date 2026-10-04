@@ -15,7 +15,8 @@ import {
   Check,
   Lock,
   Ban,
-  BookOpen
+  BookOpen,
+  AlertTriangle
 } from 'lucide-react'
 import { useEmergencyStore } from '../store/emergencyStore'
 import { playCameraShutterSound } from '../utils/audio'
