@@ -11,6 +11,19 @@ node_modules
 dist
 dist-ssr
 *.local
+dist.zip
+
+# Environment & Secrets (Never commit secrets to VCS)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.cert
+*.crt
+*.pfx
+secrets/
+.secret*
 
 # Editor directories and files
 .vscode/*
@@ -24,3 +37,4 @@ dist-ssr
 *.sw?
 .vercel
 .netlify
+

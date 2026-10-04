@@ -7,8 +7,6 @@ import {
   ChevronRight,
   X,
   CheckCircle2,
-  Clock,
-  Info,
   Ambulance,
   Shield,
   Building2,
@@ -28,10 +26,7 @@ export default function DemoModePanel() {
     prevSimulationStage,
     isAutoPlaying,
     toggleAutoPlay,
-    incidents,
     policeState,
-    hospitalState,
-    trafficState,
     tollState
   } = useEmergencyStore()
 
@@ -63,29 +58,29 @@ export default function DemoModePanel() {
   const activeStageInfo = SIMULATION_STAGES.find(s => s.stage === simulationStage) || SIMULATION_STAGES[0]
 
   return (
-    <div className="bg-slate-900 border-b border-amber-900/50 p-3 sm:p-4 text-xs text-slate-200 select-none shadow-md">
+    <div className="bg-white border-b border-slate-200 p-3 sm:p-4 text-xs text-slate-800 select-none shadow-xs">
       <div className="max-w-7xl mx-auto space-y-3">
         {/* Header Bar */}
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <span className="px-2 py-0.5 rounded bg-amber-950 border border-amber-800 text-amber-300 font-mono text-[11px] font-bold">
+            <span className="px-2 py-0.5 rounded-md bg-amber-50 border border-amber-200 text-amber-800 font-mono text-[11px] font-bold">
               DEMO SIMULATION
             </span>
-            <span className="font-semibold text-slate-200">
+            <span className="font-semibold text-slate-900">
               Emergency Workflow Lifecycle (12 Stages)
             </span>
-            <span className="text-slate-400 text-[11px] hidden sm:inline">
+            <span className="text-slate-500 text-xs hidden sm:inline">
               · For Academic & Product Demonstration
             </span>
           </div>
 
           <div className="flex items-center gap-2">
             {/* Step Controls */}
-            <div className="flex items-center rounded border border-slate-700 bg-slate-950 overflow-hidden text-xs">
+            <div className="flex items-center rounded-lg border border-slate-200 bg-white overflow-hidden text-xs shadow-2xs">
               <button
                 onClick={prevSimulationStage}
                 disabled={simulationStage <= 1}
-                className="px-2.5 py-1 text-slate-300 hover:text-white hover:bg-slate-800 disabled:opacity-30 disabled:hover:bg-transparent flex items-center gap-1 border-r border-slate-800"
+                className="px-2.5 py-1.5 text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:hover:bg-transparent flex items-center gap-1 border-r border-slate-200 cursor-pointer font-medium"
                 title="Previous Stage"
               >
                 <ChevronLeft className="w-3.5 h-3.5" />
@@ -93,8 +88,8 @@ export default function DemoModePanel() {
               </button>
               <button
                 onClick={toggleAutoPlay}
-                className={`px-2.5 py-1 flex items-center gap-1 transition-colors ${
-                  isAutoPlaying ? 'bg-amber-600 text-white' : 'text-slate-300 hover:text-white hover:bg-slate-800'
+                className={`px-3 py-1.5 flex items-center gap-1.5 transition-colors cursor-pointer font-medium ${
+                  isAutoPlaying ? 'bg-amber-500 text-white' : 'text-slate-700 hover:bg-slate-50'
                 }`}
                 title={isAutoPlaying ? 'Pause Simulation' : 'Auto-Play Simulation (5s/stage)'}
               >
@@ -104,7 +99,7 @@ export default function DemoModePanel() {
               <button
                 onClick={nextSimulationStage}
                 disabled={simulationStage >= 12}
-                className="px-2.5 py-1 text-slate-300 hover:text-white hover:bg-slate-800 disabled:opacity-30 disabled:hover:bg-transparent flex items-center gap-1 border-l border-slate-800"
+                className="px-2.5 py-1.5 text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:hover:bg-transparent flex items-center gap-1 border-l border-slate-200 cursor-pointer font-medium"
                 title="Next Stage"
               >
                 <span className="hidden sm:inline">Next</span>
@@ -114,7 +109,7 @@ export default function DemoModePanel() {
 
             <button
               onClick={() => setSimulationStage(1)}
-              className="p-1 rounded bg-slate-950 border border-slate-800 text-slate-400 hover:text-slate-200"
+              className="p-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50 cursor-pointer transition-colors shadow-2xs"
               title="Reset to Stage 1"
             >
               <RotateCcw className="w-3.5 h-3.5" />
@@ -122,7 +117,7 @@ export default function DemoModePanel() {
 
             <button
               onClick={() => setDemoPanelOpen(false)}
-              className="p-1 rounded text-slate-400 hover:text-slate-200"
+              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 cursor-pointer transition-colors"
               title="Close Demo Panel"
             >
               <X className="w-4 h-4" />
@@ -131,67 +126,67 @@ export default function DemoModePanel() {
         </div>
 
         {/* Current Active Stage Summary */}
-        <div className="bg-slate-950/80 border border-slate-800 rounded p-2.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+        <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <span className="font-mono font-bold text-amber-400 text-sm">
-              Stage {activeStageInfo.stage}/12:
+            <span className="font-mono font-bold text-blue-700 text-xs px-2 py-0.5 rounded bg-blue-50 border border-blue-200">
+              Stage {activeStageInfo.stage}/12
             </span>
-            <span className="font-semibold text-slate-100">
+            <span className="font-semibold text-slate-900">
               {activeStageInfo.title}
             </span>
           </div>
-          <p className="text-slate-300 text-[11px] leading-relaxed">
+          <p className="text-slate-600 text-xs leading-relaxed max-w-2xl">
             {activeStageInfo.description}
           </p>
         </div>
 
         {/* 5-Agency Live Response Status Bar */}
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-[11px] font-mono">
-          <div className="p-2 rounded bg-slate-950 border border-slate-800 flex items-center gap-2">
-            <Ambulance className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-xs font-mono">
+          <div className="p-2.5 rounded-lg bg-white border border-slate-200 flex items-center gap-2 shadow-2xs">
+            <Ambulance className="w-4 h-4 text-emerald-600 shrink-0" />
             <div className="truncate">
-              <span className="text-[10px] text-slate-400 uppercase block">Ambulance</span>
-              <span className="text-slate-200 font-semibold truncate block">
+              <span className="text-[10px] text-slate-500 uppercase block font-sans">Ambulance</span>
+              <span className="text-slate-900 font-semibold truncate block">
                 {simulationStage >= 12 ? 'Completed' : simulationStage >= 9 ? 'Transporting' : simulationStage >= 7 ? 'Arrived' : simulationStage >= 6 ? 'En route' : simulationStage >= 3 ? 'Accepted' : simulationStage >= 2 ? 'Alerted' : 'Searching'}
               </span>
             </div>
           </div>
 
-          <div className="p-2 rounded bg-slate-950 border border-slate-800 flex items-center gap-2">
-            <Building2 className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+          <div className="p-2.5 rounded-lg bg-white border border-slate-200 flex items-center gap-2 shadow-2xs">
+            <Building2 className="w-4 h-4 text-blue-600 shrink-0" />
             <div className="truncate">
-              <span className="text-[10px] text-slate-400 uppercase block">Hospital</span>
-              <span className="text-slate-200 font-semibold truncate block">
+              <span className="text-[10px] text-slate-500 uppercase block font-sans">Hospital</span>
+              <span className="text-slate-900 font-semibold truncate block">
                 {simulationStage >= 11 ? 'Ready for Arrival' : simulationStage >= 10 ? 'Preparing Bay' : simulationStage >= 9 ? "St. John's Selected" : 'Standby'}
               </span>
             </div>
           </div>
 
-          <div className="p-2 rounded bg-slate-950 border border-slate-800 flex items-center gap-2">
-            <Shield className="w-3.5 h-3.5 text-slate-300 shrink-0" />
+          <div className="p-2.5 rounded-lg bg-white border border-slate-200 flex items-center gap-2 shadow-2xs">
+            <Shield className="w-4 h-4 text-slate-700 shrink-0" />
             <div className="truncate">
-              <span className="text-[10px] text-slate-400 uppercase block">Police</span>
-              <span className="text-slate-200 font-semibold truncate block">
+              <span className="text-[10px] text-slate-500 uppercase block font-sans">Police</span>
+              <span className="text-slate-900 font-semibold truncate block">
                 {policeState.status || (simulationStage >= 7 ? 'Arrived' : simulationStage >= 5 ? 'Dispatched' : 'Alerted')}
               </span>
             </div>
           </div>
 
-          <div className="p-2 rounded bg-slate-950 border border-slate-800 flex items-center gap-2">
-            <Activity className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+          <div className="p-2.5 rounded-lg bg-white border border-slate-200 flex items-center gap-2 shadow-2xs">
+            <Activity className="w-4 h-4 text-amber-600 shrink-0" />
             <div className="truncate">
-              <span className="text-[10px] text-slate-400 uppercase block">Traffic</span>
-              <span className="text-slate-200 font-semibold truncate block">
-                {simulationStage >= 6 ? 'Green Wave Priority' : 'Advisory Active'}
+              <span className="text-[10px] text-slate-500 uppercase block font-sans">Traffic</span>
+              <span className="text-slate-900 font-semibold truncate block">
+                {simulationStage >= 6 ? 'Green Priority' : 'Advisory Active'}
               </span>
             </div>
           </div>
 
-          <div className="p-2 rounded bg-slate-950 border border-slate-800 flex items-center gap-2 col-span-2 sm:col-span-1">
-            <CreditCard className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+          <div className="p-2.5 rounded-lg bg-white border border-slate-200 flex items-center gap-2 col-span-2 sm:col-span-1 shadow-2xs">
+            <CreditCard className="w-4 h-4 text-slate-600 shrink-0" />
             <div className="truncate">
-              <span className="text-[10px] text-slate-400 uppercase block">Toll</span>
-              <span className="text-slate-200 font-semibold truncate block">
+              <span className="text-[10px] text-slate-500 uppercase block font-sans">Toll</span>
+              <span className="text-slate-900 font-semibold truncate block">
                 {tollState.emergencyLaneOpen ? 'Lane #1 Fast-Lift' : 'Standby'}
               </span>
             </div>
@@ -208,20 +203,22 @@ export default function DemoModePanel() {
               <button
                 key={s.stage}
                 onClick={() => setSimulationStage(s.stage)}
-                className={`p-1.5 rounded text-left transition-all border ${
+                className={`p-2 rounded-lg text-left transition-all border cursor-pointer ${
                   isCurrent
-                    ? 'bg-amber-950/80 border-amber-500 text-white shadow-xs font-semibold'
+                    ? 'bg-blue-600 border-blue-600 text-white font-semibold shadow-2xs'
                     : isCompleted
-                    ? 'bg-slate-950/60 border-slate-800 text-slate-400 hover:border-slate-700'
-                    : 'bg-slate-950/30 border-slate-900 text-slate-400 hover:border-slate-800'
+                    ? 'bg-blue-50/60 border-blue-200 text-slate-800 hover:border-blue-300'
+                    : 'bg-slate-50 border-slate-200 text-slate-600 hover:border-slate-300'
                 }`}
                 title={`Jump to Stage ${s.stage}: ${s.title}`}
               >
-                <div className="flex items-center justify-between gap-1 mb-0.5">
-                  <span className="font-mono text-[10px] text-slate-400">#{s.stage}</span>
-                  {isCompleted && <CheckCircle2 className="w-2.5 h-2.5 text-emerald-400" />}
+                <div className="flex items-center justify-between gap-1 mb-1">
+                  <span className={`font-mono text-[10px] ${isCurrent ? 'text-blue-100' : 'text-slate-500'}`}>
+                    #{s.stage}
+                  </span>
+                  {isCompleted && <CheckCircle2 className="w-3 h-3 text-emerald-600" />}
                 </div>
-                <div className="text-[10px] truncate leading-tight">
+                <div className="text-[11px] truncate leading-tight font-medium">
                   {s.title}
                 </div>
               </button>

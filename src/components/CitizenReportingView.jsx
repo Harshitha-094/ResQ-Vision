@@ -3,12 +3,8 @@ import {
   Camera,
   MapPin,
   CheckCircle2,
-  Clock,
   Send,
-  RotateCcw,
   Smartphone,
-  AlertTriangle,
-  Info,
   Navigation,
   Radio,
   Crosshair,
@@ -19,13 +15,10 @@ import {
   Check,
   Lock,
   Ban,
-  RefreshCw,
-  Video,
-  Slash,
   BookOpen
 } from 'lucide-react'
 import { useEmergencyStore } from '../store/emergencyStore'
-import { playCameraShutterSound, playAlertBeep } from '../utils/audio'
+import { playCameraShutterSound } from '../utils/audio'
 
 // Preset roadside hotspots for testing different locations
 const ROADSIDE_HOTSPOTS = [
@@ -106,7 +99,6 @@ export default function CitizenReportingView() {
   useEffect(() => {
     acquireDeviceGps()
     return () => {
-      // Cleanup live camera stream on unmount
       stopLiveStream()
     }
   }, [])
@@ -134,7 +126,7 @@ export default function CitizenReportingView() {
           fetchReverseGeocode(lat, lng, accuracy)
         },
         (error) => {
-          console.warn('Geolocation acquisition error or permission denied, using roadside hotspot lock:', error)
+          console.warn('Geolocation acquisition error, falling back to hotspot:', error)
           const defaultSpot = ROADSIDE_HOTSPOTS[0]
           citizenSetLocation({
             location: defaultSpot.location,
@@ -183,7 +175,7 @@ export default function CitizenReportingView() {
         return
       }
     } catch (e) {
-      // Ignore network timeout, use clean coordinate string
+      // Ignore network timeout
     }
 
     const locString = `Live Mobile GPS (${lat.toFixed(4)}° N, ${lng.toFixed(4)}° E)`
@@ -213,7 +205,6 @@ export default function CitizenReportingView() {
     setCameraError(null)
     try {
       if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        // First try back camera (facingMode: environment)
         let stream = null
         try {
           stream = await navigator.mediaDevices.getUserMedia({
@@ -225,7 +216,6 @@ export default function CitizenReportingView() {
             audio: false
           })
         } catch (errBack) {
-          // Fallback to any available camera (front camera or default webcam)
           stream = await navigator.mediaDevices.getUserMedia({
             video: true,
             audio: false
@@ -235,7 +225,6 @@ export default function CitizenReportingView() {
         streamRef.current = stream
         setUseLiveVideo(true)
 
-        // Give React a moment to render the video element
         setTimeout(() => {
           if (videoRef.current) {
             videoRef.current.srcObject = stream
@@ -245,13 +234,12 @@ export default function CitizenReportingView() {
           }
         }, 50)
       } else if (mobileCameraInputRef.current) {
-        // Mobile fallback strictly with capture="environment" (direct camera shutter, no gallery)
         mobileCameraInputRef.current.click()
       } else {
         setCameraError('No supported camera hardware detected on this browser/device.')
       }
     } catch (err) {
-      console.warn('Camera access denied or unavailable:', err)
+      console.warn('Camera access denied:', err)
       if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
         setCameraError('Camera access was blocked by browser permissions. Please allow camera permissions to click an incident photo.')
       } else {
@@ -276,17 +264,15 @@ export default function CitizenReportingView() {
       canvas.height = height
       const ctx = canvas.getContext('2d')
 
-      // Draw active camera frame
       ctx.drawImage(video, 0, 0, width, height)
 
-      // Burn anti-tamper live telemetry watermark on canvas
       const now = new Date()
       const timeStr = now.toISOString()
       const lat = citizenDraft.coordinates.lat.toFixed(6)
       const lng = citizenDraft.coordinates.lng.toFixed(6)
       const acc = citizenDraft.accuracyMeters || 3.4
 
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.7)'
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.75)'
       ctx.fillRect(0, height - 48, width, 48)
 
       ctx.font = 'bold 16px monospace'
@@ -298,11 +284,8 @@ export default function CitizenReportingView() {
       ctx.fillText(`GPS: ${lat}° N, ${lng}° E (±${acc}m) · ${citizenDraft.shortLocation}`, 20, height - 8)
 
       const dataUrl = canvas.toDataURL('image/jpeg', 0.92)
-
-      // Stop camera stream
       stopLiveStream()
 
-      // Lock captured photo with exact location
       citizenCapturePhoto(dataUrl, {
         location: citizenDraft.locationDetected,
         shortLocation: citizenDraft.shortLocation,
@@ -323,21 +306,18 @@ export default function CitizenReportingView() {
     canvas.height = height
     const ctx = canvas.getContext('2d')
 
-    // Sky / Horizon gradient
     const skyGrad = ctx.createLinearGradient(0, 0, 0, height * 0.45)
     skyGrad.addColorStop(0, '#1e293b')
     skyGrad.addColorStop(1, '#334155')
     ctx.fillStyle = skyGrad
     ctx.fillRect(0, 0, width, height * 0.45)
 
-    // Road surface gradient
     const roadGrad = ctx.createLinearGradient(0, height * 0.45, 0, height)
     roadGrad.addColorStop(0, '#0f172a')
     roadGrad.addColorStop(1, '#020617')
     ctx.fillStyle = roadGrad
     ctx.fillRect(0, height * 0.45, width, height * 0.55)
 
-    // Highway lane markings
     ctx.strokeStyle = '#f8fafc'
     ctx.lineWidth = 6
     ctx.setLineDash([35, 25])
@@ -352,7 +332,6 @@ export default function CitizenReportingView() {
     ctx.stroke()
     ctx.setLineDash([])
 
-    // Roadside hazard triangle / crash scene silhouette
     ctx.fillStyle = '#ef4444'
     ctx.beginPath()
     ctx.moveTo(width * 0.5, height * 0.50)
@@ -361,7 +340,6 @@ export default function CitizenReportingView() {
     ctx.closePath()
     ctx.fill()
 
-    // Emergency amber beacon flare
     const flareGrad = ctx.createRadialGradient(width * 0.5, height * 0.56, 4, width * 0.5, height * 0.56, 90)
     flareGrad.addColorStop(0, 'rgba(239, 68, 68, 0.85)')
     flareGrad.addColorStop(0.4, 'rgba(245, 158, 11, 0.45)')
@@ -371,7 +349,6 @@ export default function CitizenReportingView() {
     ctx.arc(width * 0.5, height * 0.56, 90, 0, Math.PI * 2)
     ctx.fill()
 
-    // Authentic CMOS sensor grain / noise
     const imgData = ctx.getImageData(0, 0, width, height)
     const data = imgData.data
     for (let i = 0; i < data.length; i += 16) {
@@ -382,7 +359,6 @@ export default function CitizenReportingView() {
     }
     ctx.putImageData(imgData, 0, 0)
 
-    // Anti-tamper telemetry watermark
     const now = new Date()
     const timeStr = now.toISOString()
     const lat = (coords?.lat || 12.8452).toFixed(6)
@@ -403,7 +379,7 @@ export default function CitizenReportingView() {
     return canvas.toDataURL('image/jpeg', 0.95)
   }
 
-  // Mobile Native Camera Shutter Handler (capture="environment")
+  // Mobile Native Camera Shutter Handler
   const handleMobileCameraCapture = (e) => {
     const file = e.target.files?.[0]
     if (file) {
@@ -420,7 +396,6 @@ export default function CitizenReportingView() {
             const ctx = canvas.getContext('2d')
             ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
 
-            // Anti-tamper watermark with live coordinates
             const now = new Date()
             const timeStr = now.toISOString()
             const lat = citizenDraft.coordinates.lat.toFixed(6)
@@ -453,7 +428,7 @@ export default function CitizenReportingView() {
     }
   }
 
-  // Real-time camera snap at citizen's current coordinates (No static demo photo override)
+  // Test shutter
   const handleSimulateRoadsideCapture = () => {
     playCameraShutterSound()
     setShutterFlashing(true)
@@ -473,7 +448,7 @@ export default function CitizenReportingView() {
     })
   }
 
-  // Intercept any drag-and-drop file upload attempts to strictly enforce "No Pre-existing Uploads"
+  // Intercept drag/drop
   const handleDragDropAttempt = (e) => {
     e.preventDefault()
     e.stopPropagation()
@@ -483,11 +458,11 @@ export default function CitizenReportingView() {
 
   return (
     <div
-      className="space-y-4 max-w-xl mx-auto"
+      className="space-y-4 max-w-xl mx-auto text-slate-800"
       onDragOver={handleDragDropAttempt}
       onDrop={handleDragDropAttempt}
     >
-      {/* Hidden Mobile Shutter Input: Strictly capture="environment" (direct camera, no gallery) */}
+      {/* Hidden Mobile Shutter Input: Strictly capture="environment" */}
       <input
         type="file"
         accept="image/*"
@@ -499,99 +474,99 @@ export default function CitizenReportingView() {
       />
 
       {/* Device Mode Toggle Bar with Quick User Guide Link */}
-      <div className="flex items-center justify-between text-xs text-slate-400 bg-slate-900/50 p-2.5 rounded-lg border border-slate-800">
-        <span className="flex items-center gap-1.5 font-medium text-slate-300">
-          <Smartphone className="w-3.5 h-3.5 text-blue-400" />
-          <span>Citizen Live Reporting · Device Camera Node</span>
+      <div className="flex items-center justify-between text-xs text-slate-500 bg-white p-3 rounded-xl border border-slate-200 shadow-2xs">
+        <span className="flex items-center gap-1.5 font-medium text-slate-700">
+          <Smartphone className="w-4 h-4 text-blue-600" />
+          <span>Citizen Live Reporting · Device Camera Portal</span>
         </span>
         <div className="flex items-center gap-2">
           <button
             onClick={() => openUserGuides('citizen')}
-            className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-red-950/80 hover:bg-red-900 border border-red-800 text-red-200 text-[11px] font-semibold transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-700 text-xs font-medium transition-colors cursor-pointer"
             title="Open Citizen Reporting Step-by-Step User Guide"
           >
-            <BookOpen className="w-3.5 h-3.5 text-red-400" />
+            <BookOpen className="w-3.5 h-3.5 text-blue-600" />
             <span>User Guide</span>
           </button>
           <button
             onClick={() => setCitizenDeviceMode(citizenDeviceMode === 'mobile' ? 'full' : 'mobile')}
-            className="flex items-center gap-1.5 px-2 py-1 rounded bg-slate-800 text-slate-300 hover:text-white cursor-pointer text-[11px]"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 text-xs font-medium cursor-pointer shadow-2xs"
           >
-            <Smartphone className="w-3.5 h-3.5" />
-            <span>{citizenDeviceMode === 'mobile' ? 'Expand View' : 'Phone Bezel'}</span>
+            <Smartphone className="w-3.5 h-3.5 text-slate-500" />
+            <span>{citizenDeviceMode === 'mobile' ? 'Expand View' : 'Mobile Bezel'}</span>
           </button>
         </div>
       </div>
 
       {/* Main Container */}
       <div
-        className={`mx-auto transition-all bg-slate-950 rounded-2xl border border-slate-800 shadow-2xl p-5 sm:p-6 space-y-4 ${
-          citizenDeviceMode === 'mobile' ? 'max-w-md border-4 border-slate-800' : 'w-full'
+        className={`mx-auto transition-all bg-white rounded-2xl border border-slate-200 shadow-xs p-6 sm:p-7 space-y-4 ${
+          citizenDeviceMode === 'mobile' ? 'max-w-md border-4 border-slate-300' : 'w-full'
         }`}
       >
         {/* Main Heading */}
-        <div className="text-center space-y-1.5 border-b border-slate-800/80 pb-3">
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-red-950/80 border border-red-800/80 text-[10px] font-mono text-red-300 font-bold uppercase tracking-wider mb-1">
-            <Radio className="w-3 h-3 text-red-400 animate-pulse" />
-            <span>Direct Emergency Transmission</span>
+        <div className="text-center space-y-1.5 border-b border-slate-100 pb-4">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-xs font-mono text-blue-700 font-semibold uppercase tracking-wider mb-1">
+            <Radio className="w-3.5 h-3.5 text-blue-600" />
+            <span>Direct Emergency Grid Dispatch</span>
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-100">
-            Report an accident
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+            Report an Accident
           </h1>
-          <p className="text-xs text-slate-400 max-w-sm mx-auto leading-relaxed">
-            Click a new live photograph through your device camera. Pre-existing photos from gallery or files are disabled.
+          <p className="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
+            Click a live photo with your device camera. Pre-existing gallery uploads are disabled to prevent stale reports.
           </p>
         </div>
 
-        {/* SECURITY & ANTI-TAMPER POLICY BANNER (Pre-existing uploads prohibited) */}
-        <div className="p-2.5 rounded-lg bg-slate-900/90 border border-amber-900/60 text-xs flex items-start gap-2.5">
-          <div className="w-6 h-6 rounded bg-amber-950 border border-amber-800 text-amber-400 flex items-center justify-center shrink-0 mt-0.5">
-            <Lock className="w-3.5 h-3.5 text-amber-400" />
+        {/* SECURITY & ANTI-TAMPER POLICY BANNER */}
+        <div className="p-3 rounded-xl bg-blue-50 border border-blue-200 text-xs flex items-start gap-3">
+          <div className="w-6 h-6 rounded-md bg-white border border-blue-200 text-blue-600 flex items-center justify-center shrink-0 mt-0.5 shadow-2xs">
+            <Lock className="w-3.5 h-3.5 text-blue-600" />
           </div>
-          <div className="space-y-0.5 text-[11px] leading-snug">
-            <div className="font-semibold text-amber-300 flex items-center gap-1.5">
-              <span>LIVE CAMERA REQUIRED · GALLERY UPLOAD DISABLED</span>
+          <div className="space-y-0.5 text-xs leading-snug">
+            <div className="font-semibold text-blue-900">
+              Live Camera Verification Enforced
             </div>
-            <p className="text-slate-300">
-              To prevent false or outdated reports, pre-existing gallery photos cannot be uploaded. ResQVision requires live camera snapshots with verified satellite GPS telemetry.
+            <p className="text-slate-600">
+              To guarantee immediate authenticity, gallery uploads are disabled. ResQVision requires active camera snapshots paired with satellite GPS telemetry.
             </p>
           </div>
         </div>
 
         {/* Drag/Drop Attempt Blocked Warning */}
         {uploadBlockedWarning && (
-          <div className="p-3 rounded-lg bg-red-950 border-2 border-red-600 text-red-200 text-xs flex items-center gap-2 animate-in fade-in duration-100">
-            <Ban className="w-4 h-4 text-red-400 shrink-0" />
+          <div className="p-3 rounded-lg bg-amber-50 border border-amber-300 text-amber-900 text-xs flex items-center gap-2">
+            <Ban className="w-4 h-4 text-amber-700 shrink-0" />
             <span>
-              <strong>File upload blocked:</strong> Pre-existing images from disk or gallery are forbidden under emergency response protocol. Please click a live photo.
+              <strong>File upload disabled:</strong> Stored gallery files cannot be uploaded under emergency response guidelines. Please click a live photo.
             </span>
           </div>
         )}
 
         {/* Live Location Telemetry Badge */}
-        <div className="p-3 rounded-xl bg-slate-900/70 border border-slate-800 space-y-2 text-xs">
+        <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2.5 text-xs">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5 text-slate-200 font-semibold font-mono text-[11px]">
-              <MapPin className="w-3.5 h-3.5 text-red-400 shrink-0" />
+            <div className="flex items-center gap-1.5 text-slate-800 font-semibold font-mono text-xs">
+              <MapPin className="w-4 h-4 text-blue-600 shrink-0" />
               <span>INCIDENT LOCATION TELEMETRY</span>
             </div>
 
             <div className="flex items-center gap-2">
               <span
-                className={`flex items-center gap-1 px-2 py-0.5 rounded font-mono text-[10px] font-bold border ${
+                className={`flex items-center gap-1 px-2.5 py-0.5 rounded-md font-mono text-[10px] font-bold border ${
                   gpsStatus === 'live_device'
-                    ? 'bg-emerald-950/80 border-emerald-700 text-emerald-300'
+                    ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
                     : gpsStatus === 'acquiring'
-                    ? 'bg-amber-950/80 border-amber-700 text-amber-300 animate-pulse'
-                    : 'bg-blue-950/80 border-blue-700 text-blue-300'
+                    ? 'bg-amber-50 border-amber-200 text-amber-800'
+                    : 'bg-blue-50 border-blue-200 text-blue-700'
                 }`}
               >
-                <Crosshair className="w-2.5 h-2.5" />
+                <Crosshair className="w-3 h-3" />
                 <span>
                   {gpsStatus === 'live_device'
                     ? 'DEVICE SATELLITE LOCK'
                     : gpsStatus === 'acquiring'
-                    ? 'LOCKING SATELLITES...'
+                    ? 'ACQUIRING SATELLITES...'
                     : 'ACCURACY ±3.4M FIX'}
                 </span>
               </span>
@@ -599,7 +574,7 @@ export default function CitizenReportingView() {
               <button
                 onClick={acquireDeviceGps}
                 title="Refresh Device Geolocation"
-                className="text-[10px] text-slate-400 hover:text-slate-200 underline font-mono cursor-pointer"
+                className="text-xs text-blue-600 hover:text-blue-700 underline font-medium cursor-pointer"
               >
                 Sync
               </button>
@@ -607,16 +582,15 @@ export default function CitizenReportingView() {
           </div>
 
           {/* Current Fetched Location String */}
-          <div className="text-[11px] text-slate-300 bg-slate-950/80 p-2 rounded border border-slate-850 font-mono flex items-start gap-1.5">
-            <span className="text-emerald-400 shrink-0 mt-0.5">●</span>
+          <div className="text-xs text-slate-700 bg-white p-3 rounded-lg border border-slate-200 font-mono flex items-start gap-2 shadow-2xs">
+            <span className="text-emerald-600 shrink-0 mt-0.5">●</span>
             <div className="space-y-0.5 leading-snug">
-              <div className="text-slate-100 font-medium">
+              <div className="text-slate-900 font-medium font-sans">
                 {citizenDraft.locationDetected}
               </div>
-              <div className="text-[10px] text-slate-400 flex items-center gap-3">
+              <div className="text-[11px] text-slate-500 flex items-center gap-3">
                 <span>
-                  Lat: {citizenDraft.coordinates.lat.toFixed(5)}°, Lng:{' '}
-                  {citizenDraft.coordinates.lng.toFixed(5)}°
+                  Lat: {citizenDraft.coordinates.lat.toFixed(5)}°, Lng: {citizenDraft.coordinates.lng.toFixed(5)}°
                 </span>
                 <span>Accuracy: ±{citizenDraft.accuracyMeters || 3.4}m</span>
               </div>
@@ -625,8 +599,8 @@ export default function CitizenReportingView() {
 
           {/* Roadside Hotspot Selector */}
           {citizenDraft.step === 'camera' && !useLiveVideo && (
-            <div className="pt-1 space-y-1">
-              <span className="text-[10px] uppercase font-mono text-slate-400 block">
+            <div className="pt-1 space-y-1.5">
+              <span className="text-[11px] uppercase font-mono text-slate-500 block font-semibold">
                 Simulate Road Location Spot:
               </span>
               <div className="flex flex-wrap gap-1.5">
@@ -634,10 +608,10 @@ export default function CitizenReportingView() {
                   <button
                     key={idx}
                     onClick={() => handleSelectHotspot(idx)}
-                    className={`px-2 py-1 rounded text-[10px] font-mono transition-colors border cursor-pointer ${
+                    className={`px-2.5 py-1 rounded-md text-xs font-mono transition-colors border cursor-pointer ${
                       selectedHotspotIdx === idx && gpsStatus !== 'live_device'
-                        ? 'bg-red-950/80 border-red-700 text-red-200 font-bold'
-                        : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-slate-200'
+                        ? 'bg-blue-600 border-blue-600 text-white font-semibold shadow-2xs'
+                        : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-50'
                     }`}
                   >
                     {spot.shortLocation}
@@ -653,26 +627,26 @@ export default function CitizenReportingView() {
         {/* ======================================================== */}
         {citizenDraft.step === 'camera' && !useLiveVideo && (
           <div className="py-4 space-y-4 text-center">
-            {/* Camera Error Message if any */}
+            {/* Camera Error Message */}
             {cameraError && (
-              <div className="p-3 rounded-xl bg-red-950/60 border border-red-800 text-left text-xs space-y-1">
-                <div className="flex items-center gap-1.5 text-red-300 font-bold">
-                  <AlertTriangle className="w-4 h-4 text-red-400" />
+              <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-left text-xs space-y-1.5 text-amber-900">
+                <div className="flex items-center gap-1.5 font-bold">
+                  <AlertTriangle className="w-4 h-4 text-amber-600" />
                   <span>Camera Access Notice</span>
                 </div>
-                <p className="text-slate-300 text-[11px] leading-relaxed">
+                <p className="text-slate-700 text-xs leading-relaxed">
                   {cameraError}
                 </p>
                 <div className="pt-1 flex items-center gap-2">
                   <button
                     onClick={handleStartLiveCamera}
-                    className="px-3 py-1 rounded bg-red-700 hover:bg-red-600 text-white font-bold text-[11px] cursor-pointer"
+                    className="px-3 py-1.5 rounded-md bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs cursor-pointer shadow-2xs"
                   >
                     Retry Camera Access
                   </button>
                   <button
                     onClick={() => handleSimulateRoadsideCapture()}
-                    className="px-3 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] cursor-pointer"
+                    className="px-3 py-1.5 rounded-md bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 text-xs font-medium cursor-pointer shadow-2xs"
                   >
                     Use Simulated Shutter
                   </button>
@@ -680,35 +654,34 @@ export default function CitizenReportingView() {
               </div>
             )}
 
-            <div className="w-24 h-24 rounded-full bg-slate-900 border-2 border-slate-700 flex items-center justify-center mx-auto text-slate-300 shadow-inner group">
-              <Camera className="w-10 h-10 text-slate-300 group-hover:scale-110 transition-transform" />
+            <div className="w-20 h-20 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center mx-auto text-slate-600 shadow-inner group">
+              <Camera className="w-8 h-8 text-slate-600 group-hover:scale-105 transition-transform" />
             </div>
 
             {/* Primary Action: Open Device Camera */}
             <div className="space-y-2">
               <button
                 onClick={handleStartLiveCamera}
-                className="w-full py-4 px-6 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-base transition-colors shadow-lg shadow-red-950/40 cursor-pointer flex items-center justify-center gap-2.5 active:scale-98"
+                className="w-full py-3.5 px-6 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition-colors shadow-2xs cursor-pointer flex items-center justify-center gap-2.5 active:scale-98"
               >
-                <Camera className="w-5 h-5" />
+                <Camera className="w-4 h-4" />
                 <span>Open Device Camera to Take Photo</span>
               </button>
 
-              {/* Explicit indicator that pre-existing photos are not permitted */}
-              <div className="p-2 rounded bg-slate-900/50 border border-slate-800/80 text-[11px] text-slate-400 font-mono flex items-center justify-center gap-2">
-                <Ban className="w-3.5 h-3.5 text-red-400" />
-                <span>Gallery & File Upload Disabled by Emergency Protocol</span>
+              <div className="p-2 rounded bg-slate-50 border border-slate-200 text-xs text-slate-500 font-mono flex items-center justify-center gap-2">
+                <Ban className="w-3.5 h-3.5 text-slate-400" />
+                <span>Gallery & File Upload Disabled by Protocol</span>
               </div>
             </div>
 
-            {/* Secondary Option: Testing Simulator for environments without physical webcams */}
-            <div className="pt-2 border-t border-slate-850">
+            {/* Secondary Option: Testing Simulator */}
+            <div className="pt-2 border-t border-slate-100">
               <button
                 onClick={() => handleSimulateRoadsideCapture()}
-                className="w-full py-2.5 px-3 rounded-lg bg-slate-900 hover:bg-slate-850 border border-slate-800 text-xs text-slate-300 hover:text-slate-100 transition-colors font-mono flex items-center justify-center gap-1.5 cursor-pointer"
+                className="w-full py-2.5 px-3 rounded-lg bg-white hover:bg-slate-50 border border-slate-200 text-xs text-slate-700 transition-colors font-medium flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
               >
-                <Radio className="w-3.5 h-3.5 text-blue-400" />
-                <span>[Test Lab Shutter] Snap Live Camera Photo at Current Coordinates</span>
+                <Radio className="w-3.5 h-3.5 text-blue-600" />
+                <span>[Test Shutter] Snap Live Photo at Current Coordinates</span>
               </button>
             </div>
           </div>
@@ -718,9 +691,9 @@ export default function CitizenReportingView() {
         {/* LIVE CAMERA VIEWFINDER STREAM                            */}
         {/* ======================================================== */}
         {useLiveVideo && (
-          <div className="space-y-3 text-center animate-in fade-in duration-150">
+          <div className="space-y-3 text-center">
             {/* Viewfinder Frame with Live Overlays */}
-            <div className={`relative aspect-video rounded-xl overflow-hidden bg-black border-2 border-slate-700 shadow-2xl ${
+            <div className={`relative aspect-video rounded-xl overflow-hidden bg-black border-2 border-slate-700 shadow-md ${
               shutterFlashing ? 'bg-white opacity-80' : ''
             }`}>
               <video
@@ -731,14 +704,14 @@ export default function CitizenReportingView() {
                 className="w-full h-full object-cover"
               />
 
-              {/* Viewfinder Reticle / Crosshair */}
+              {/* Viewfinder Reticle */}
               <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
                 <div className="w-32 h-32 border border-white/30 rounded-lg relative">
-                  <div className="absolute -top-1 -left-1 w-3 h-3 border-t-2 border-l-2 border-red-500" />
-                  <div className="absolute -top-1 -right-1 w-3 h-3 border-t-2 border-r-2 border-red-500" />
-                  <div className="absolute -bottom-1 -left-1 w-3 h-3 border-b-2 border-l-2 border-red-500" />
-                  <div className="absolute -bottom-1 -right-1 w-3 h-3 border-b-2 border-r-2 border-red-500" />
-                  <div className="w-1.5 h-1.5 rounded-full bg-red-500 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                  <div className="absolute -top-1 -left-1 w-3 h-3 border-t-2 border-l-2 border-blue-500" />
+                  <div className="absolute -top-1 -right-1 w-3 h-3 border-t-2 border-r-2 border-blue-500" />
+                  <div className="absolute -bottom-1 -left-1 w-3 h-3 border-b-2 border-l-2 border-blue-500" />
+                  <div className="absolute -bottom-1 -right-1 w-3 h-3 border-b-2 border-r-2 border-blue-500" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-blue-500 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
                 </div>
               </div>
 
@@ -767,17 +740,17 @@ export default function CitizenReportingView() {
             <div className="grid grid-cols-3 gap-2 pt-1">
               <button
                 onClick={stopLiveStream}
-                className="py-3 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 text-xs font-semibold cursor-pointer"
+                className="py-3 px-3 rounded-xl bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 text-xs font-semibold cursor-pointer shadow-2xs"
               >
                 Cancel
               </button>
 
               <button
                 onClick={handleSnapFromVideo}
-                className="col-span-2 py-3.5 px-4 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-sm transition-colors shadow-lg shadow-red-950/40 cursor-pointer flex items-center justify-center gap-2 active:scale-98"
+                className="col-span-2 py-3.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition-colors shadow-2xs cursor-pointer flex items-center justify-center gap-2 active:scale-98"
               >
                 <Camera className="w-4 h-4" />
-                <span>Capture Live Incident Photo</span>
+                <span>Capture Live Photo</span>
               </button>
             </div>
           </div>
@@ -787,82 +760,75 @@ export default function CitizenReportingView() {
         {/* STEP 2: PHOTO TAKEN — PREVIEW & CONFIRMATION             */}
         {/* ======================================================== */}
         {citizenDraft.step === 'preview' && (
-          <div className="space-y-4 animate-in fade-in duration-150">
+          <div className="space-y-4">
             {/* Show the image */}
-            <div className="relative aspect-4/3 rounded-xl overflow-hidden border border-slate-800 bg-black">
+            <div className="relative aspect-4/3 rounded-xl overflow-hidden border border-slate-200 bg-slate-900 shadow-2xs">
               <img
                 src={citizenDraft.photo}
                 alt="Captured accident photo"
                 className="w-full h-full object-cover"
               />
-              <div className="absolute top-2 left-2 px-2 py-0.5 rounded bg-black/85 text-[10px] font-mono text-emerald-400 border border-emerald-800 flex items-center gap-1 backdrop-blur-xs">
+              <div className="absolute top-2 left-2 px-2.5 py-0.5 rounded bg-black/85 text-[10px] font-mono text-emerald-400 border border-white/20 flex items-center gap-1 backdrop-blur-xs">
                 <Check className="w-3 h-3 text-emerald-400 stroke-[3]" />
                 <span>LIVE CAMERA CAPTURE VERIFIED</span>
               </div>
 
-              <div className="absolute bottom-2 left-2 right-2 p-2 rounded bg-black/85 border border-slate-700 text-[10px] font-mono text-slate-200 backdrop-blur-xs flex items-center justify-between">
+              <div className="absolute bottom-2 left-2 right-2 p-2 rounded bg-black/85 border border-white/20 text-[10px] font-mono text-slate-200 backdrop-blur-xs flex items-center justify-between">
                 <span>Timestamp: {citizenDraft.timestamp || 'Just now'}</span>
                 <span className="text-emerald-400 font-bold">
-                  TAMPER-PROOF EXIF LOCK
+                  EXIF SATELLITE LOCK
                 </span>
               </div>
             </div>
 
             {/* Location Detected Section */}
-            <div className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2.5 text-xs">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-                <span className="font-bold text-slate-100 flex items-center gap-1.5 font-mono">
-                  <MapPin className="w-3.5 h-3.5 text-red-400" />
+            <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2.5 text-xs">
+              <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+                <span className="font-bold text-slate-900 flex items-center gap-1.5 font-mono">
+                  <MapPin className="w-4 h-4 text-blue-600" />
                   <span>ACTUAL INCIDENT LOCATION WHERE PHOTO WAS CLICKED</span>
                 </span>
-                <span className="font-mono text-[10px] text-emerald-400 font-bold">
+                <span className="font-mono text-[10px] text-emerald-700 font-bold">
                   GPS ±{citizenDraft.accuracyMeters || 3.4}m
                 </span>
               </div>
 
-              <p className="text-slate-200 text-xs font-medium">
+              <p className="text-slate-800 text-xs font-medium">
                 {citizenDraft.locationDetected}
               </p>
 
               {/* Exact Coordinates HUD */}
-              <div className="grid grid-cols-2 gap-2 text-[11px] font-mono">
-                <div className="p-2 rounded bg-slate-950 border border-slate-850">
-                  <span className="text-[10px] text-slate-400 block uppercase">
+              <div className="grid grid-cols-2 gap-2 text-xs font-mono">
+                <div className="p-2.5 rounded-lg bg-white border border-slate-200 shadow-2xs">
+                  <span className="text-[10px] text-slate-500 block uppercase font-sans">
                     Exact Latitude
                   </span>
-                  <span className="text-slate-100 font-bold">
+                  <span className="text-slate-900 font-bold">
                     {citizenDraft.coordinates.lat.toFixed(6)}° N
                   </span>
                 </div>
-                <div className="p-2 rounded bg-slate-950 border border-slate-850">
-                  <span className="text-[10px] text-slate-400 block uppercase">
+                <div className="p-2.5 rounded-lg bg-white border border-slate-200 shadow-2xs">
+                  <span className="text-[10px] text-slate-500 block uppercase font-sans">
                     Exact Longitude
                   </span>
-                  <span className="text-slate-100 font-bold">
+                  <span className="text-slate-900 font-bold">
                     {citizenDraft.coordinates.lng.toFixed(6)}° E
                   </span>
                 </div>
               </div>
 
               {/* Mini Map */}
-              <div className="relative h-28 bg-slate-950 rounded-lg border border-slate-800 overflow-hidden flex items-center justify-center">
+              <div className="relative h-28 bg-slate-100 rounded-lg border border-slate-200 overflow-hidden flex items-center justify-center">
                 <svg viewBox="0 0 320 90" className="w-full h-full">
-                  <defs>
-                    <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
-                      <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#1e293b" strokeWidth="0.5" />
-                    </pattern>
-                  </defs>
-                  <rect width="320" height="90" fill="url(#grid)" />
-                  <path d="M 10,45 L 310,45" stroke="#334155" strokeWidth="8" />
-                  <path d="M 110,10 L 110,80" stroke="#1e293b" strokeWidth="6" />
-                  <path d="M 40,45 L 160,45" stroke="#3b82f6" strokeWidth="2.5" strokeDasharray="3 3" />
-                  <circle cx="40" cy="45" r="5" fill="#10b981" />
-                  <circle cx="160" cy="45" r="14" fill="rgba(239, 68, 68, 0.25)" stroke="#ef4444" strokeWidth="1" className="animate-ping" />
-                  <circle cx="160" cy="45" r="7" fill="#ef4444" stroke="#fff" strokeWidth="1.5" />
-                  <text x="40" y="65" fill="#6ee7b7" fontSize="9" fontWeight="bold" textAnchor="middle">Ambulance 04</text>
-                  <text x="160" y="70" fill="#fca5a5" fontSize="9" fontWeight="bold" textAnchor="middle">Photo Spot</text>
+                  <path d="M 10,45 L 310,45" stroke="#cbd5e1" strokeWidth="8" />
+                  <path d="M 110,10 L 110,80" stroke="#94a3b8" strokeWidth="4" />
+                  <path d="M 40,45 L 160,45" stroke="#2563eb" strokeWidth="2.5" strokeDasharray="4 3" />
+                  <circle cx="40" cy="45" r="5" fill="#059669" />
+                  <circle cx="160" cy="45" r="7" fill="#dc2626" stroke="#fff" strokeWidth="1.5" />
+                  <text x="40" y="65" fill="#065f46" fontSize="9" fontWeight="bold" textAnchor="middle">Ambulance 04</text>
+                  <text x="160" y="70" fill="#991b1b" fontSize="9" fontWeight="bold" textAnchor="middle">Photo Spot</text>
                 </svg>
-                <div className="absolute bottom-1 right-2 text-[10px] font-mono text-slate-400 bg-slate-900/80 px-1.5 rounded">
+                <div className="absolute bottom-1 right-2 text-[10px] font-mono text-slate-600 bg-white/90 border border-slate-200 px-1.5 rounded">
                   {citizenDraft.shortLocation} Corridor
                 </div>
               </div>
@@ -872,15 +838,15 @@ export default function CitizenReportingView() {
             <div className="space-y-2 pt-1">
               <button
                 onClick={citizenSubmitReport}
-                className="w-full py-3.5 px-6 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-base transition-colors shadow-lg shadow-red-950/40 cursor-pointer flex items-center justify-center gap-2"
+                className="w-full py-3.5 px-6 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition-colors shadow-2xs cursor-pointer flex items-center justify-center gap-2"
               >
                 <Send className="w-4 h-4" />
-                <span>Send report to emergency grid</span>
+                <span>Send Report to Emergency Grid</span>
               </button>
 
               <button
                 onClick={citizenResetForm}
-                className="w-full py-2 text-xs text-slate-400 hover:text-slate-200 cursor-pointer"
+                className="w-full py-2 text-xs text-slate-500 hover:text-slate-800 cursor-pointer font-medium"
               >
                 Retake photo using camera
               </button>
@@ -892,114 +858,113 @@ export default function CitizenReportingView() {
         {/* STEP 3: AFTER SUBMISSION — REPORT RECEIVED               */}
         {/* ======================================================== */}
         {citizenDraft.step === 'submitted' && (
-          <div className="py-2 space-y-4 animate-in fade-in duration-150">
+          <div className="py-2 space-y-4">
             {/* Header: Report received */}
             <div className="text-center space-y-1">
-              <div className="w-12 h-12 rounded-full bg-emerald-950 border border-emerald-800 text-emerald-400 flex items-center justify-center mx-auto mb-2">
-                <CheckCircle2 className="w-6 h-6 text-emerald-400" />
+              <div className="w-12 h-12 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center mx-auto mb-2 shadow-2xs">
+                <CheckCircle2 className="w-6 h-6 text-emerald-600" />
               </div>
-              <h3 className="text-xl font-bold text-slate-100">
-                Report received & location dispatched
+              <h3 className="text-xl font-bold text-slate-900">
+                Report Received & Location Dispatched
               </h3>
-              <div className="font-mono text-sm font-bold text-blue-400">
+              <div className="font-mono text-sm font-semibold text-blue-700">
                 Incident ID: {citizenDraft.submittedIncidentId || 'RQ-1052'}
               </div>
-              <p className="text-xs text-slate-300 max-w-sm mx-auto">
+              <p className="text-xs text-slate-600 max-w-sm mx-auto">
                 The exact location where your photo was clicked has been propagated across ambulance, police, and traffic authorities.
               </p>
             </div>
 
             {/* Verified Location Box */}
-            <div className="p-3.5 rounded-xl bg-slate-900/80 border border-emerald-800/60 font-mono text-xs space-y-2">
-              <div className="flex items-center justify-between text-emerald-400 font-bold border-b border-slate-800 pb-1.5">
+            <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 font-mono text-xs space-y-2">
+              <div className="flex items-center justify-between text-emerald-900 font-bold border-b border-emerald-200 pb-1.5">
                 <span className="flex items-center gap-1.5">
-                  <MapPin className="w-3.5 h-3.5 text-emerald-400" />
+                  <MapPin className="w-3.5 h-3.5 text-emerald-700" />
                   <span>DISPATCHED INCIDENT LOCATION</span>
                 </span>
-                <span className="text-[10px] text-slate-400">
+                <span className="text-[11px] text-emerald-700">
                   GPS ±{citizenDraft.accuracyMeters || 3.4}m
                 </span>
               </div>
-              <div className="text-slate-200 font-sans text-xs">
+              <div className="text-slate-900 font-sans text-xs font-medium">
                 {citizenDraft.locationDetected}
               </div>
-              <div className="text-[11px] text-slate-400">
-                Coordinates: {citizenDraft.coordinates.lat.toFixed(5)}° N,{' '}
-                {citizenDraft.coordinates.lng.toFixed(5)}° E
+              <div className="text-[11px] text-slate-600">
+                Coordinates: {citizenDraft.coordinates.lat.toFixed(5)}° N, {citizenDraft.coordinates.lng.toFixed(5)}° E
               </div>
             </div>
 
             {/* Original Clicked Photo Sent to Authorities */}
             {citizenDraft.photo && (
-              <div className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
+              <div className="p-4 rounded-xl bg-white border border-slate-200 space-y-2 shadow-2xs">
                 <div className="flex items-center justify-between text-xs font-mono">
-                  <span className="text-slate-200 font-bold flex items-center gap-1.5">
-                    <Camera className="w-3.5 h-3.5 text-emerald-400" />
-                    <span>ORIGINAL CITIZEN CLICKED PHOTO (TRANSMITTED TO UNITS)</span>
+                  <span className="text-slate-900 font-bold flex items-center gap-1.5">
+                    <Camera className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>ORIGINAL CITIZEN PHOTO (TRANSMITTED TO UNITS)</span>
                   </span>
-                  <span className="text-[10px] text-emerald-400 font-bold bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-800">
-                    REAL PHOTO · NO DEMO FEED
+                  <span className="text-[10px] text-emerald-800 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                    REAL PHOTO ONLY
                   </span>
                 </div>
-                <div className="relative aspect-video rounded-lg overflow-hidden border border-slate-800 bg-black">
+                <div className="relative aspect-video rounded-xl overflow-hidden border border-slate-200 bg-slate-900">
                   <img
                     src={citizenDraft.photo}
                     alt="Original citizen clicked photo"
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-black/85 text-[10px] font-mono text-emerald-300 border border-emerald-900">
-                    GPS LOCK: {citizenDraft.coordinates.lat.toFixed(5)}° N, {citizenDraft.coordinates.lng.toFixed(5)}° E
+                  <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-black/80 text-[10px] font-mono text-emerald-400 border border-white/20">
+                    GPS: {citizenDraft.coordinates.lat.toFixed(5)}° N, {citizenDraft.coordinates.lng.toFixed(5)}° E
                   </div>
                 </div>
               </div>
             )}
 
             {/* Status Checklist across Authorities */}
-            <div className="p-3.5 rounded-xl bg-slate-900/60 border border-slate-800 font-mono text-xs space-y-2">
-              <div className="flex items-center justify-between text-emerald-400">
+            <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 font-mono text-xs space-y-2">
+              <div className="flex items-center justify-between text-slate-700">
                 <div className="flex items-center gap-2">
-                  <span className="font-bold text-sm">✓</span>
+                  <span className="font-bold text-sm text-emerald-600">✓</span>
                   <span>Photo received via device camera</span>
                 </div>
-                <span className="text-[10px] text-slate-400">Verified</span>
+                <span className="text-[11px] text-slate-500 font-sans">Verified</span>
               </div>
 
-              <div className="flex items-center justify-between text-emerald-400">
+              <div className="flex items-center justify-between text-slate-700">
                 <div className="flex items-center gap-2">
-                  <span className="font-bold text-sm">✓</span>
+                  <span className="font-bold text-sm text-emerald-600">✓</span>
                   <span>Incident location locked to GPS coordinates</span>
                 </div>
-                <span className="text-[10px] text-emerald-400">Locked</span>
+                <span className="text-[11px] text-emerald-700 font-sans font-medium">Locked</span>
               </div>
 
-              <div className="flex items-center justify-between text-emerald-400">
+              <div className="flex items-center justify-between text-slate-700">
                 <div className="flex items-center gap-2">
-                  <span className="font-bold text-sm">✓</span>
+                  <span className="font-bold text-sm text-emerald-600">✓</span>
                   <span>Ambulance 04 assigned and routed</span>
                 </div>
-                <span className="text-[10px] text-slate-400">ETA 03:45</span>
+                <span className="text-[11px] text-slate-500 font-sans">ETA 03:45</span>
               </div>
 
-              <div className="flex items-center justify-between text-emerald-400">
+              <div className="flex items-center justify-between text-slate-700">
                 <div className="flex items-center gap-2">
-                  <span className="font-bold text-sm">✓</span>
+                  <span className="font-bold text-sm text-emerald-600">✓</span>
                   <span>Police BTP Patrol 11 alerted (Sec 134A)</span>
                 </div>
-                <span className="text-[10px] text-slate-400">En route</span>
+                <span className="text-[11px] text-slate-500 font-sans">En route</span>
               </div>
 
-              <div className="flex items-center justify-between text-emerald-400">
+              <div className="flex items-center justify-between text-slate-700">
                 <div className="flex items-center gap-2">
-                  <span className="font-bold text-sm">✓</span>
+                  <span className="font-bold text-sm text-emerald-600">✓</span>
                   <span>Traffic Corridor VMS warning broadcast</span>
                 </div>
-                <span className="text-[10px] text-amber-400">Active</span>
+                <span className="text-[11px] text-amber-800 font-sans font-medium">Active</span>
               </div>
             </div>
 
             {/* Direct Inspection Actions for User */}
             <div className="space-y-2 pt-1">
-              <div className="text-[11px] font-mono text-slate-400 text-center uppercase tracking-wider">
+              <div className="text-xs font-mono text-slate-500 text-center uppercase tracking-wider">
                 Inspect Real-Time Authority Response:
               </div>
 
@@ -1009,35 +974,35 @@ export default function CitizenReportingView() {
                     setSelectedAmbulanceUnitId('AMB-04')
                     setActiveView('ambulances')
                   }}
-                  className="p-2.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 font-semibold flex items-center justify-between transition-colors cursor-pointer group"
+                  className="p-3 rounded-lg bg-white hover:bg-slate-50 border border-slate-200 text-slate-800 font-medium flex items-center justify-between transition-colors cursor-pointer group shadow-2xs"
                 >
                   <span className="flex items-center gap-1.5">
-                    <Truck className="w-3.5 h-3.5 text-blue-400" />
+                    <Truck className="w-3.5 h-3.5 text-blue-600" />
                     <span>Ambulance 04 Terminal</span>
                   </span>
-                  <ExternalLink className="w-3 h-3 text-slate-400 group-hover:text-white" />
+                  <ExternalLink className="w-3 h-3 text-slate-400 group-hover:text-slate-700" />
                 </button>
 
                 <button
                   onClick={() => setActiveView('police')}
-                  className="p-2.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 font-semibold flex items-center justify-between transition-colors cursor-pointer group"
+                  className="p-3 rounded-lg bg-white hover:bg-slate-50 border border-slate-200 text-slate-800 font-medium flex items-center justify-between transition-colors cursor-pointer group shadow-2xs"
                 >
                   <span className="flex items-center gap-1.5">
-                    <Shield className="w-3.5 h-3.5 text-amber-400" />
+                    <Shield className="w-3.5 h-3.5 text-slate-700" />
                     <span>Police Dispatch Grid</span>
                   </span>
-                  <ExternalLink className="w-3 h-3 text-slate-400 group-hover:text-white" />
+                  <ExternalLink className="w-3 h-3 text-slate-400 group-hover:text-slate-700" />
                 </button>
 
                 <button
                   onClick={() => setActiveView('traffic')}
-                  className="p-2.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 font-semibold flex items-center justify-between transition-colors cursor-pointer group"
+                  className="p-3 rounded-lg bg-white hover:bg-slate-50 border border-slate-200 text-slate-800 font-medium flex items-center justify-between transition-colors cursor-pointer group shadow-2xs"
                 >
                   <span className="flex items-center gap-1.5">
-                    <Activity className="w-3.5 h-3.5 text-emerald-400" />
+                    <Activity className="w-3.5 h-3.5 text-amber-600" />
                     <span>Traffic Operations</span>
                   </span>
-                  <ExternalLink className="w-3 h-3 text-slate-400 group-hover:text-white" />
+                  <ExternalLink className="w-3 h-3 text-slate-400 group-hover:text-slate-700" />
                 </button>
 
                 <button
@@ -1045,13 +1010,13 @@ export default function CitizenReportingView() {
                     setSelectedIncidentId('RQ-1052')
                     setActiveView('map')
                   }}
-                  className="p-2.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 font-semibold flex items-center justify-between transition-colors cursor-pointer group"
+                  className="p-3 rounded-lg bg-white hover:bg-slate-50 border border-slate-200 text-slate-800 font-medium flex items-center justify-between transition-colors cursor-pointer group shadow-2xs"
                 >
                   <span className="flex items-center gap-1.5">
-                    <Navigation className="w-3.5 h-3.5 text-red-400" />
+                    <Navigation className="w-3.5 h-3.5 text-blue-600" />
                     <span>Live Map Marker</span>
                   </span>
-                  <ExternalLink className="w-3 h-3 text-slate-400 group-hover:text-white" />
+                  <ExternalLink className="w-3 h-3 text-slate-400 group-hover:text-slate-700" />
                 </button>
               </div>
             </div>
@@ -1059,7 +1024,7 @@ export default function CitizenReportingView() {
             <div className="text-center pt-2">
               <button
                 onClick={citizenResetForm}
-                className="px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-xs text-slate-300 cursor-pointer"
+                className="px-4 py-2 rounded-lg bg-white hover:bg-slate-50 border border-slate-300 text-xs text-slate-700 cursor-pointer font-medium shadow-2xs"
               >
                 File another incident report
               </button>

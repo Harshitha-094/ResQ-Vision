@@ -1,19 +1,9 @@
 import React from 'react'
 import {
-  AlertTriangle,
-  Ambulance,
-  Building2,
-  Clock,
-  ArrowRight,
-  Shield,
-  Radio,
-  Camera,
-  Smartphone,
-  Eye
+  ArrowRight
 } from 'lucide-react'
 import { useEmergencyStore } from '../store/emergencyStore'
 import LiveMap from './LiveMap'
-import ResponseTimer from './ResponseTimer'
 
 export default function ControlCenterView() {
   const {
@@ -34,62 +24,65 @@ export default function ControlCenterView() {
   const hospitalsAlertedCount = 3
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       {/* Header and Supporting Text */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-3">
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-slate-100">
+          <h1 className="text-xl font-bold tracking-tight text-slate-900">
             Emergency Control Center
           </h1>
-          <p className="text-xs text-slate-400 mt-0.5">
-            Monitoring active incidents and emergency response.
+          <p className="text-xs text-slate-500 mt-0.5">
+            Real-time monitoring of active incidents and inter-agency dispatch status.
           </p>
         </div>
 
         {/* Small live broadcast indicator */}
-        <div className="flex items-center gap-2 text-xs font-mono text-slate-400">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+        <div className="flex items-center gap-2 text-xs font-mono text-slate-500">
+          <span className="w-2 h-2 rounded-full bg-emerald-500" />
           <span>Real-time dispatch telemetry</span>
         </div>
       </div>
 
-      {/* Simple Operational Summary at the Top (NOT giant statistic cards) */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-        <div className="px-3.5 py-2.5 rounded border border-slate-800 bg-slate-900/60 flex flex-col justify-between">
+      {/* Operational Summary Metric Cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="px-4 py-3 rounded-xl border border-slate-200 bg-white shadow-2xs flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-xs text-slate-400 font-medium">Active incidents</span>
-            <span className="font-mono font-bold text-slate-100 text-base">
+            <span className="text-xs text-slate-500 font-medium">Active Incidents</span>
+            <span className="font-mono font-bold text-slate-900 text-lg">
               {String(activeCount).padStart(2, '0')}
             </span>
           </div>
-          <span className="text-[10px] text-slate-400 font-mono mt-0.5">1 Severe · 1 Mod · 1 Mild · 1 Citizen</span>
+          <span className="text-[11px] text-slate-500 mt-1">1 Severe · 1 Mod · 1 Mild · 1 Citizen</span>
         </div>
-        <div className="px-3.5 py-2.5 rounded border border-slate-800 bg-slate-900/60 flex flex-col justify-between">
+
+        <div className="px-4 py-3 rounded-xl border border-slate-200 bg-white shadow-2xs flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-xs text-slate-400 font-medium">Ambulances available</span>
-            <span className="font-mono font-bold text-emerald-400 text-base">
+            <span className="text-xs text-slate-500 font-medium">Ambulances Available</span>
+            <span className="font-mono font-bold text-emerald-700 text-lg">
               {String(availableAmbulancesCount).padStart(2, '0')}
             </span>
           </div>
-          <span className="text-[10px] text-emerald-400/80 font-mono mt-0.5">12 / 16 Fleet Units Ready</span>
+          <span className="text-[11px] text-emerald-700 font-medium mt-1">12 / 16 Units Ready</span>
         </div>
-        <div className="px-3.5 py-2.5 rounded border border-slate-800 bg-slate-900/60 flex flex-col justify-between">
+
+        <div className="px-4 py-3 rounded-xl border border-slate-200 bg-white shadow-2xs flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-xs text-slate-400 font-medium">En route</span>
-            <span className="font-mono font-bold text-blue-400 text-base">
+            <span className="text-xs text-slate-500 font-medium">En Route</span>
+            <span className="font-mono font-bold text-blue-700 text-lg">
               {String(enRouteCount).padStart(2, '0')}
             </span>
           </div>
-          <span className="text-[10px] text-blue-400/80 font-mono mt-0.5">07 Active Dispatches</span>
+          <span className="text-[11px] text-blue-700 font-medium mt-1">07 Active Dispatches</span>
         </div>
-        <div className="px-3.5 py-2.5 rounded border border-slate-800 bg-slate-900/60 flex flex-col justify-between">
+
+        <div className="px-4 py-3 rounded-xl border border-slate-200 bg-white shadow-2xs flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-xs text-slate-400 font-medium">Hospitals alerted</span>
-            <span className="font-mono font-bold text-slate-200 text-base">
+            <span className="text-xs text-slate-500 font-medium">Hospitals Alerted</span>
+            <span className="font-mono font-bold text-slate-900 text-lg">
               {String(hospitalsAlertedCount).padStart(2, '0')}
             </span>
           </div>
-          <span className="text-[10px] text-slate-400 font-mono mt-0.5">Trauma Bays On Standby</span>
+          <span className="text-[11px] text-slate-500 mt-1">Trauma Bays On Standby</span>
         </div>
       </div>
 
@@ -98,24 +91,24 @@ export default function ControlCenterView() {
         <LiveMap onSelectIncident={handleIncidentClick} />
       </div>
 
-      {/* Active Incidents List (Realistic rows rather than giant cards) */}
-      <div className="space-y-2">
+      {/* Active Incidents List */}
+      <div className="space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <h2 className="text-sm font-semibold text-slate-200">
-              Active incidents
+            <h2 className="text-sm font-semibold text-slate-900">
+              Active Incidents
             </h2>
-            <span className="px-1.5 py-0.2 rounded bg-slate-800 text-[10px] font-mono text-slate-400 border border-slate-700">
+            <span className="px-2 py-0.5 rounded-full bg-slate-100 text-[10px] font-mono text-slate-600 border border-slate-200">
               {incidents.length} total
             </span>
           </div>
-          <span className="text-[11px] text-slate-400 font-mono hidden sm:inline">
-            Click row to open detailed view
+          <span className="text-xs text-slate-500 hidden sm:inline">
+            Click an incident to open dispatch docket
           </span>
         </div>
 
         {/* Table / List of Realistic Incident Rows */}
-        <div className="border border-slate-800 rounded-lg overflow-hidden bg-slate-900/40 divide-y divide-slate-800/80">
+        <div className="border border-slate-200 rounded-xl overflow-hidden bg-white shadow-2xs divide-y divide-slate-100">
           {incidents.map((incident) => {
             const isSevere = incident.severity === 'Severe'
             const isModerate = incident.severity === 'Moderate'
@@ -130,54 +123,54 @@ export default function ControlCenterView() {
               <div
                 key={incident.id}
                 onClick={() => handleIncidentClick(incident.id)}
-                className="p-3 sm:px-4 hover:bg-slate-800/60 transition-colors cursor-pointer flex flex-col gap-1.5 text-xs group"
+                className="p-3.5 sm:px-5 hover:bg-slate-50 transition-colors cursor-pointer flex flex-col gap-1.5 text-xs group"
               >
-                {/* Row 1: RQ-1048    Severe     NH 44, Bengaluru */}
+                {/* Row 1: ID, Severity, Location, Citizen Tag */}
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <span className="font-mono font-bold text-slate-100 group-hover:text-blue-400 transition-colors text-sm w-20">
+                    <span className="font-mono font-bold text-slate-900 group-hover:text-blue-600 transition-colors text-sm w-20">
                       {incident.id}
                     </span>
 
                     <span
-                      className={`px-2 py-0.5 rounded text-[11px] font-semibold border ${
+                      className={`px-2 py-0.5 rounded-md text-[11px] font-semibold border ${
                         isSevere
-                          ? 'bg-red-950/80 border-red-800 text-red-400'
+                          ? 'bg-red-50 border-red-200 text-red-700'
                           : isModerate
-                          ? 'bg-amber-950/80 border-amber-800 text-amber-400'
+                          ? 'bg-amber-50 border-amber-200 text-amber-800'
                           : isMild
-                          ? 'bg-slate-800 border-slate-700 text-slate-300'
-                          : 'bg-blue-950/80 border-blue-800 text-blue-400'
+                          ? 'bg-slate-100 border-slate-200 text-slate-700'
+                          : 'bg-blue-50 border-blue-200 text-blue-700'
                       }`}
                     >
                       {incident.severity}
                     </span>
 
-                    <span className="text-slate-200 font-medium truncate">
+                    <span className="text-slate-800 font-medium truncate">
                       {incident.shortLocation || incident.location}
                     </span>
 
                     {incident.source?.includes('CITIZEN') && (
-                      <span className="px-1.5 py-0.2 rounded bg-blue-950/80 border border-blue-800 text-blue-300 text-[10px] font-mono hidden md:inline">
-                        📸 GPS Locked
+                      <span className="px-2 py-0.5 rounded-md bg-blue-50 border border-blue-200 text-blue-700 text-[10px] font-mono hidden md:inline">
+                        GPS Verified
                       </span>
                     )}
                   </div>
 
-                  <div className="flex items-center gap-1 text-slate-400 group-hover:text-slate-200 shrink-0">
-                    <span className="text-[11px] font-medium hidden sm:inline">Inspect</span>
-                    <ArrowRight className="w-3.5 h-3.5 text-slate-500 group-hover:text-slate-200 group-hover:translate-x-0.5 transition-transform" />
+                  <div className="flex items-center gap-1.5 text-slate-400 group-hover:text-blue-600 shrink-0">
+                    <span className="text-xs font-medium hidden sm:inline">Inspect</span>
+                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
                   </div>
                 </div>
 
-                {/* Row 2: Ambulance en route / 02:14 remaining */}
-                <div className="flex items-center justify-between sm:pl-24 text-slate-400 text-[11px]">
+                {/* Row 2: Status & Time Remaining */}
+                <div className="flex items-center justify-between sm:pl-23 text-slate-500 text-xs">
                   <div className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-slate-500 inline-block" />
-                    <span className="text-slate-300 font-medium">{incident.status}</span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-slate-400 inline-block" />
+                    <span className="text-slate-600 font-medium">{incident.status}</span>
                   </div>
 
-                  <span className="font-mono text-slate-400 text-[11px]">
+                  <span className="font-mono text-slate-500 text-[11px]">
                     {incident.remainingSeconds !== undefined ? timeStr : '--:--'}
                   </span>
                 </div>

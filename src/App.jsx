@@ -15,10 +15,12 @@ import CameraMonitoringView from './components/CameraMonitoringView'
 import CitizenReportingView from './components/CitizenReportingView'
 import ReportsView from './components/ReportsView'
 import UserGuideManualView from './components/UserGuideManualView'
+import SecurityPrivacyView from './components/SecurityPrivacyView'
 import UserGuidesModal from './components/UserGuidesModal'
 import FloatingGuidesButton from './components/FloatingGuidesButton'
 import ConfirmModal from './components/ConfirmModal'
 import SettingsModal from './components/SettingsModal'
+import DeskAuthModal from './components/DeskAuthModal'
 import AccessRestrictedView from './components/AccessRestrictedView'
 import { useEmergencyStore } from './store/emergencyStore'
 import { checkViewAuthorization } from './data/rolesConfig'
@@ -26,13 +28,13 @@ import { checkViewAuthorization } from './data/rolesConfig'
 export default function App() {
   const {
     activeView,
-    setActiveView,
     userRole,
     tickTimer
   } = useEmergencyStore()
 
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const [authModalOpen, setAuthModalOpen] = useState(false)
 
   // Real-time response timer interval
   useEffect(() => {
@@ -46,7 +48,7 @@ export default function App() {
   const authCheck = checkViewAuthorization(activeView, userRole)
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col md:flex-row font-sans selection:bg-red-500/20 w-full overflow-x-hidden">
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col md:flex-row font-sans selection:bg-blue-600/10 w-full overflow-x-hidden">
       {/* Left Sidebar */}
       <Sidebar
         mobileOpen={mobileSidebarOpen}
@@ -55,10 +57,11 @@ export default function App() {
       />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 bg-[#0b0f19]">
+      <div className="flex-1 flex flex-col min-w-0 bg-slate-50">
         {/* Top App Header with Department Credentials Switcher */}
         <TopBar
           onToggleMobileSidebar={() => setMobileSidebarOpen(!mobileSidebarOpen)}
+          onOpenAuthModal={() => setAuthModalOpen(true)}
         />
 
         {/* Demo Mode 12-Stage Simulation Controller */}
@@ -77,13 +80,13 @@ export default function App() {
               {activeView === 'incidents' && <IncidentsListView />}
               {activeView === 'incident_detail' && <IncidentDetailView />}
               {activeView === 'map' && (
-                <div className="space-y-4 max-w-5xl mx-auto">
+                <div className="space-y-4 max-w-6xl mx-auto">
                   <div>
-                    <h1 className="text-xl font-bold tracking-tight text-slate-100">
+                    <h1 className="text-xl font-bold tracking-tight text-slate-900">
                       Full GIS Operations Map
                     </h1>
-                    <p className="text-xs text-slate-400 mt-0.5">
-                      High-definition monitoring grid for Bangalore South and National Highway Corridors
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      Real-time spatial monitoring grid for South Bengaluru and National Highway Corridors
                     </p>
                   </div>
                   <LiveMap />
@@ -98,6 +101,7 @@ export default function App() {
               {activeView === 'citizen' && <CitizenReportingView />}
               {activeView === 'reports' && <ReportsView />}
               {activeView === 'manual' && <UserGuideManualView />}
+              {activeView === 'security' && <SecurityPrivacyView />}
             </>
           )}
         </main>
@@ -110,6 +114,10 @@ export default function App() {
       <SettingsModal
         isOpen={settingsOpen}
         onClose={() => setSettingsOpen(false)}
+      />
+      <DeskAuthModal
+        isOpen={authModalOpen}
+        onClose={() => setAuthModalOpen(false)}
       />
     </div>
   )

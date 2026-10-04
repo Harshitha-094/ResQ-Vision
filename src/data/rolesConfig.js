@@ -155,15 +155,15 @@ export const DEPARTMENT_ROLES = [
 ]
 
 export function checkViewAuthorization(viewId, roleId) {
-  // Operational Manual is open to all personnel and citizens
-  if (viewId === 'manual') return { allowed: true }
+  // Operational Manual and Security & Privacy Dashboard are open to all personnel and citizens
+  if (viewId === 'manual' || viewId === 'security') return { allowed: true }
 
   // Central dispatcher has supervisory clearance
   if (roleId === 'dispatcher') return { allowed: true }
 
-  // Citizen can ONLY access the citizen portal and manual
+  // Citizen can ONLY access citizen portal, manual, and security privacy dashboard
   if (roleId === 'citizen') {
-    if (viewId === 'citizen' || viewId === 'manual') return { allowed: true }
+    if (viewId === 'citizen' || viewId === 'manual' || viewId === 'security') return { allowed: true }
     return {
       allowed: false,
       reason: 'Citizen Public credentials cannot access restricted government and emergency services dispatch consoles.'
@@ -171,7 +171,7 @@ export function checkViewAuthorization(viewId, roleId) {
   }
 
   // Common shared situational views (accessible by emergency responders for shared coordination)
-  const sharedViews = ['overview', 'incidents', 'incident_detail', 'map', 'manual']
+  const sharedViews = ['overview', 'incidents', 'incident_detail', 'map', 'manual', 'security']
   if (sharedViews.includes(viewId)) {
     return { allowed: true }
   }

@@ -1,14 +1,7 @@
 import React, { useState } from 'react'
 import {
   AlertTriangle,
-  Clock,
   ArrowRight,
-  Filter,
-  CheckCircle2,
-  Camera,
-  Smartphone,
-  Shield,
-  Ambulance,
   Search
 } from 'lucide-react'
 import { useEmergencyStore } from '../store/emergencyStore'
@@ -45,18 +38,18 @@ export default function IncidentsListView() {
   return (
     <div className="space-y-4 max-w-5xl mx-auto">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-3">
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-slate-100 flex items-center gap-2">
-            <AlertTriangle className="w-5 h-5 text-red-500" />
+          <h1 className="text-xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
+            <AlertTriangle className="w-5 h-5 text-blue-600" />
             <span>Live Incidents Queue</span>
           </h1>
-          <p className="text-xs text-slate-400 mt-0.5">
-            Active highway & urban road collision callouts currently monitored by dispatch
+          <p className="text-xs text-slate-500 mt-0.5">
+            Active highway & urban collision alerts currently managed by dispatchers.
           </p>
         </div>
 
-        <div className="flex items-center gap-2 font-mono text-xs text-slate-400">
+        <div className="flex items-center gap-2 font-mono text-xs text-slate-500">
           <span>Total Recorded: {incidents.length}</span>
         </div>
       </div>
@@ -64,15 +57,15 @@ export default function IncidentsListView() {
       {/* Filter and Search Bar */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 text-xs">
         {/* Severity Tabs */}
-        <div className="flex items-center gap-1 bg-slate-900/80 p-1 rounded-lg border border-slate-800 overflow-x-auto">
+        <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200 overflow-x-auto">
           {['ALL', 'Severe', 'Moderate', 'Mild', 'Pending Review'].map((sev) => (
             <button
               key={sev}
               onClick={() => setFilterSeverity(sev)}
-              className={`px-3 py-1 rounded text-xs font-medium transition-colors shrink-0 ${
+              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors shrink-0 cursor-pointer ${
                 filterSeverity === sev
-                  ? 'bg-slate-800 text-slate-100 font-bold border border-slate-700'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-white text-slate-900 font-semibold shadow-2xs border border-slate-200'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               {sev === 'ALL' ? 'All Incidents' : sev}
@@ -81,22 +74,22 @@ export default function IncidentsListView() {
         </div>
 
         {/* Search Input */}
-        <div className="relative min-w-[200px]">
-          <Search className="w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-1/2 -translate-y-1/2" />
+        <div className="relative min-w-[220px]">
+          <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             placeholder="Search incident ID, road..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-900 border border-slate-800 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500"
+            className="w-full bg-white border border-slate-300 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-800 placeholder-slate-400 focus:outline-hidden focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
           />
         </div>
       </div>
 
       {/* Incidents Table */}
-      <div className="border border-slate-800 rounded-xl overflow-hidden bg-slate-900/40 divide-y divide-slate-800">
+      <div className="border border-slate-200 rounded-xl overflow-hidden bg-white shadow-2xs divide-y divide-slate-100">
         {filteredIncidents.length === 0 ? (
-          <div className="p-8 text-center text-slate-400 text-xs">
+          <div className="p-8 text-center text-slate-500 text-xs">
             No incidents found matching current filter.
           </div>
         ) : (
@@ -108,54 +101,54 @@ export default function IncidentsListView() {
             return (
               <div
                 key={incident.id}
-                className="p-4 hover:bg-slate-800/40 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-4 text-xs"
+                className="p-4 hover:bg-slate-50 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-4 text-xs"
               >
                 {/* Left Info: ID, Severity, Location, Source */}
                 <div className="space-y-1 md:max-w-md">
                   <div className="flex items-center gap-2">
-                    <span className="font-mono font-bold text-sm text-slate-100">
+                    <span className="font-mono font-bold text-sm text-slate-900">
                       {incident.id}
                     </span>
 
                     <span
-                      className={`px-2 py-0.2 rounded text-[10px] font-mono font-bold border uppercase ${
+                      className={`px-2 py-0.5 rounded-md text-[10px] font-mono font-bold border uppercase ${
                         isSevere
-                          ? 'bg-red-950 text-red-400 border-red-800'
+                          ? 'bg-red-50 text-red-700 border-red-200'
                           : isModerate
-                          ? 'bg-amber-950 text-amber-400 border-amber-800'
+                          ? 'bg-amber-50 text-amber-800 border-amber-200'
                           : isPending
-                          ? 'bg-blue-950 text-blue-400 border-blue-800'
-                          : 'bg-slate-800 text-slate-300 border-slate-700'
+                          ? 'bg-blue-50 text-blue-700 border-blue-200'
+                          : 'bg-slate-100 text-slate-700 border-slate-200'
                       }`}
                     >
                       {incident.severity}
                     </span>
 
-                    <span className="text-[11px] text-slate-400 font-mono">
+                    <span className="text-[11px] text-slate-500 font-mono">
                       {incident.source}
                     </span>
                   </div>
 
-                  <div className="text-slate-200 font-medium text-xs">
+                  <div className="text-slate-800 font-medium text-xs">
                     {incident.location}
                   </div>
 
-                  <div className="text-[11px] text-slate-400 font-mono">
-                    Detected: {incident.detectedTime} IST · Status: <span className="text-slate-300">{incident.status}</span>
+                  <div className="text-[11px] text-slate-500">
+                    Detected: {incident.detectedTime} IST · Status: <span className="text-slate-700 font-medium">{incident.status}</span>
                   </div>
                 </div>
 
                 {/* Middle Info: Response Assets */}
-                <div className="grid grid-cols-2 gap-2 text-[11px] font-mono bg-slate-950/60 p-2.5 rounded-lg border border-slate-850 md:min-w-[280px]">
+                <div className="grid grid-cols-2 gap-2 text-[11px] font-mono bg-slate-50 p-3 rounded-lg border border-slate-200 md:min-w-[280px]">
                   <div>
-                    <span className="text-slate-400 block text-[10px]">Ambulance:</span>
-                    <span className="text-emerald-400 font-semibold">
+                    <span className="text-slate-500 block text-[10px] font-sans">Ambulance:</span>
+                    <span className="text-emerald-700 font-semibold">
                       {incident.response?.ambulance?.unit || 'Unassigned'}
                     </span>
                   </div>
                   <div>
-                    <span className="text-slate-400 block text-[10px]">Police Unit:</span>
-                    <span className="text-slate-300">
+                    <span className="text-slate-500 block text-[10px] font-sans">Police Unit:</span>
+                    <span className="text-slate-700 font-medium">
                       {incident.response?.police?.unit || 'Queued'}
                     </span>
                   </div>
@@ -166,7 +159,7 @@ export default function IncidentsListView() {
                   {isPending && incident.status === 'Waiting for confirmation' && (
                     <button
                       onClick={() => confirmCitizenIncident(incident.id)}
-                      className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-xs transition-colors"
+                      className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs transition-colors cursor-pointer shadow-2xs"
                     >
                       Verify & Dispatch
                     </button>
@@ -174,7 +167,7 @@ export default function IncidentsListView() {
 
                   <button
                     onClick={() => handleInspect(incident.id)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-medium transition-colors"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 text-xs font-medium transition-colors cursor-pointer shadow-2xs"
                   >
                     <span>Inspect</span>
                     <ArrowRight className="w-3.5 h-3.5 text-slate-400" />

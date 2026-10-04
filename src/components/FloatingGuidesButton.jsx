@@ -1,5 +1,5 @@
 import React from 'react'
-import { BookOpen, Sparkles, HelpCircle } from 'lucide-react'
+import { BookOpen } from 'lucide-react'
 import { useEmergencyStore } from '../store/emergencyStore'
 
 export default function FloatingGuidesButton() {
@@ -38,20 +38,18 @@ export default function FloatingGuidesButton() {
     >
       <button
         onClick={handleOpenGuide}
-        className="group relative pl-3.5 pr-4 py-2.5 rounded-full bg-slate-900/95 hover:bg-slate-850 text-slate-100 font-semibold text-xs border border-red-500/40 hover:border-red-500 shadow-xl shadow-red-950/40 backdrop-blur-md flex items-center gap-2.5 transition-all hover:scale-105 active:scale-95 cursor-pointer"
+        className="group relative pl-3.5 pr-4 py-2 rounded-full bg-white hover:bg-slate-50 text-slate-800 font-semibold text-xs border border-slate-300 hover:border-slate-400 shadow-md flex items-center gap-2.5 transition-all hover:scale-102 active:scale-98 cursor-pointer"
         title="Open Interactive User Guides & Step-by-Step SOPs"
       >
         <div className="relative flex items-center justify-center">
-          <span className="w-2 h-2 rounded-full bg-red-500 absolute -top-0.5 -right-0.5 animate-ping" />
-          <span className="w-2 h-2 rounded-full bg-red-500 absolute -top-0.5 -right-0.5" />
-          <BookOpen className="w-4 h-4 text-red-400 group-hover:rotate-6 transition-transform" />
+          <BookOpen className="w-4 h-4 text-blue-600 group-hover:scale-105 transition-transform" />
         </div>
 
-        <span className="tracking-tight">
+        <span className="tracking-tight text-slate-800">
           User Guides
         </span>
 
-        <span className="px-1.5 py-0.5 rounded bg-red-950/80 text-[10px] font-mono text-red-300 border border-red-800/80 hidden sm:inline">
+        <span className="px-1.5 py-0.5 rounded bg-slate-100 text-[10px] font-mono text-slate-600 border border-slate-200 hidden sm:inline">
           SOP-802
         </span>
       </button>

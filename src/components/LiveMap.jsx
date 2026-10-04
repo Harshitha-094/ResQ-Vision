@@ -105,33 +105,33 @@ export default function LiveMap({ compact = false, focusedIncidentId = null, onS
   }
 
   return (
-    <div className={`relative w-full bg-slate-900/90 border border-slate-800 rounded-lg overflow-hidden flex flex-col ${
+    <div className={`relative w-full bg-white border border-slate-200 rounded-xl overflow-hidden shadow-2xs flex flex-col ${
       compact ? 'h-[280px]' : 'h-[360px] sm:h-[440px] lg:h-[500px]'
     }`}>
       {/* Map Header / Layer Bar */}
-      <div className="px-3 py-2 bg-slate-950 border-b border-slate-800 flex items-center justify-between text-xs select-none z-10">
-        <div className="flex items-center gap-2 text-slate-300 font-medium">
-          <Crosshair className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+      <div className="px-3.5 py-2.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between text-xs select-none z-10">
+        <div className="flex items-center gap-2 text-slate-800 font-semibold">
+          <Crosshair className="w-4 h-4 text-blue-600 shrink-0" />
           <span>Live Operations Map</span>
-          <span className="text-slate-500 font-mono text-[11px] hidden sm:inline">
+          <span className="text-slate-500 font-mono text-xs hidden sm:inline font-normal">
             · Bengaluru South & Highway Corridors
           </span>
         </div>
 
         {/* Layer Toggles & Focus Shortcuts */}
         {!compact && (
-          <div className="flex items-center gap-1.5 text-[11px]">
-            <div className="flex items-center gap-1 border-r border-slate-800 pr-2 mr-1 hidden md:flex">
+          <div className="flex items-center gap-1.5 text-xs">
+            <div className="flex items-center gap-1 border-r border-slate-200 pr-2 mr-1 hidden md:flex">
               <button
                 onClick={focusIncident}
-                className="px-2 py-0.5 rounded bg-slate-900 hover:bg-slate-800 border border-red-900/50 text-red-300 text-[10px] font-mono"
+                className="px-2.5 py-1 rounded-md bg-white hover:bg-slate-50 border border-red-200 text-red-700 text-[11px] font-mono font-medium shadow-2xs cursor-pointer transition-colors"
                 title="Focus on Incident RQ-1048"
               >
                 Focus RQ-1048
               </button>
               <button
                 onClick={focusAmbulance}
-                className="px-2 py-0.5 rounded bg-slate-900 hover:bg-slate-800 border border-emerald-900/50 text-emerald-300 text-[10px] font-mono"
+                className="px-2.5 py-1 rounded-md bg-white hover:bg-slate-50 border border-emerald-200 text-emerald-800 text-[11px] font-mono font-medium shadow-2xs cursor-pointer transition-colors"
                 title="Focus on Ambulance 07"
               >
                 Focus Amb 07
@@ -140,32 +140,32 @@ export default function LiveMap({ compact = false, focusedIncidentId = null, onS
 
             <button
               onClick={() => toggleLayer('incidents')}
-              className={`px-2 py-0.5 rounded border transition-colors ${
-                activeLayers.incidents ? 'bg-red-950/60 border-red-800/80 text-red-300' : 'bg-slate-900 border-slate-800 text-slate-500'
+              className={`px-2.5 py-1 rounded-md border text-xs font-medium transition-colors cursor-pointer ${
+                activeLayers.incidents ? 'bg-red-50 border-red-200 text-red-700' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800'
               }`}
             >
               Incidents (4)
             </button>
             <button
               onClick={() => toggleLayer('ambulances')}
-              className={`px-2 py-0.5 rounded border transition-colors ${
-                activeLayers.ambulances ? 'bg-emerald-950/60 border-emerald-800/80 text-emerald-300' : 'bg-slate-900 border-slate-800 text-slate-500'
+              className={`px-2.5 py-1 rounded-md border text-xs font-medium transition-colors cursor-pointer ${
+                activeLayers.ambulances ? 'bg-emerald-50 border-emerald-200 text-emerald-800' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800'
               }`}
             >
               Ambulances (4)
             </button>
             <button
               onClick={() => toggleLayer('hospitals')}
-              className={`px-2 py-0.5 rounded border transition-colors ${
-                activeLayers.hospitals ? 'bg-blue-950/60 border-blue-800/80 text-blue-300' : 'bg-slate-900 border-slate-800 text-slate-500'
+              className={`px-2.5 py-1 rounded-md border text-xs font-medium transition-colors cursor-pointer ${
+                activeLayers.hospitals ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800'
               }`}
             >
               Hospitals (3)
             </button>
             <button
               onClick={() => toggleLayer('police')}
-              className={`px-2 py-0.5 rounded border transition-colors ${
-                activeLayers.police ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-slate-900 border-slate-800 text-slate-500'
+              className={`px-2.5 py-1 rounded-md border text-xs font-medium transition-colors cursor-pointer ${
+                activeLayers.police ? 'bg-slate-100 border-slate-300 text-slate-800' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800'
               }`}
             >
               Police (3)
@@ -180,12 +180,12 @@ export default function LiveMap({ compact = false, focusedIncidentId = null, onS
         <div className="absolute inset-0 bg-map-grid opacity-60 pointer-events-none" />
 
         {/* Tactical HUD Coordinates Overlay */}
-        <div className="absolute top-2 left-2 pointer-events-none flex flex-col gap-0.5 text-[10px] font-mono text-slate-400 bg-slate-950/85 px-2.5 py-1.5 rounded border border-slate-800/80 z-10 backdrop-blur-xs">
+        <div className="absolute top-2.5 left-2.5 pointer-events-none flex flex-col gap-0.5 text-[10px] font-mono text-slate-300 bg-black/80 px-3 py-1.5 rounded-lg border border-white/10 z-10 backdrop-blur-xs">
           <div className="flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-slate-200 font-semibold">GRID: BANGALORE-SOUTH / NH-44</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="text-white font-semibold">GRID: BANGALORE-SOUTH / NH-44</span>
           </div>
-          <div className="text-[9px] text-slate-500">
+          <div className="text-[10px] text-slate-400">
             GPS: 12.8452° N, 77.6601° E · DGPS: 14 SATS FIXED
           </div>
         </div>
@@ -622,17 +622,17 @@ export default function LiveMap({ compact = false, focusedIncidentId = null, onS
 
         {/* Selected Marker Operational Info Overlay */}
         {selectedMarker && (
-          <div className="absolute bottom-3 left-3 max-w-xs bg-slate-900/95 border border-slate-700 rounded-lg p-3 text-xs shadow-lg backdrop-blur-sm z-20 space-y-2">
-            <div className="flex items-start justify-between gap-2 mb-1">
+          <div className="absolute bottom-3 left-3 max-w-xs bg-white/95 border border-slate-200 rounded-xl p-3.5 text-xs shadow-xl backdrop-blur-sm z-20 space-y-2.5">
+            <div className="flex items-start justify-between gap-2">
               <div>
-                <span className="font-semibold text-slate-100">{selectedMarker.title}</span>
+                <span className="font-bold text-slate-900 text-xs">{selectedMarker.title}</span>
                 {selectedMarker.severity && (
-                  <span className={`ml-1.5 px-1.5 py-0.2 rounded text-[10px] uppercase font-bold ${
+                  <span className={`ml-1.5 px-2 py-0.5 rounded-full text-[10px] uppercase font-bold ${
                     selectedMarker.severity === 'Severe'
-                      ? 'bg-red-950 text-red-400 border border-red-800'
+                      ? 'bg-red-50 text-red-700 border border-red-200'
                       : selectedMarker.severity === 'Moderate'
-                      ? 'bg-amber-950 text-amber-400 border border-amber-800'
-                      : 'bg-slate-800 text-slate-300'
+                      ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                      : 'bg-slate-100 text-slate-700 border border-slate-200'
                   }`}>
                     {selectedMarker.severity}
                   </span>
@@ -640,7 +640,7 @@ export default function LiveMap({ compact = false, focusedIncidentId = null, onS
               </div>
               <button
                 onClick={() => setSelectedMarker(null)}
-                className="text-slate-400 hover:text-slate-200"
+                className="text-slate-400 hover:text-slate-700 cursor-pointer p-0.5"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -648,31 +648,31 @@ export default function LiveMap({ compact = false, focusedIncidentId = null, onS
 
             {/* Thumbnail if Citizen Report */}
             {selectedMarker.isCitizen && selectedMarker.image && (
-              <div className="relative aspect-video rounded overflow-hidden border border-slate-800 bg-black">
+              <div className="relative aspect-video rounded-lg overflow-hidden border border-slate-200 bg-slate-900">
                 <img
                   src={selectedMarker.image}
                   alt="Citizen report thumbnail"
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute top-1 left-1 px-1.5 py-0.5 rounded bg-black/80 text-[9px] font-mono text-emerald-300">
+                <div className="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded bg-black/80 text-[9px] font-mono text-emerald-400 border border-white/20">
                   PHOTO CLICKED AT SCENE
                 </div>
               </div>
             )}
 
-            <p className="text-slate-300 text-[11px] leading-relaxed">
+            <p className="text-slate-600 text-xs leading-relaxed">
               {selectedMarker.location || selectedMarker.info}
             </p>
 
             {selectedMarker.coordinates && (
-              <div className="text-[10px] font-mono text-emerald-400 bg-slate-950 p-1.5 rounded border border-slate-850">
+              <div className="text-[10px] font-mono text-emerald-800 bg-emerald-50 p-2 rounded-lg border border-emerald-200 font-medium">
                 GPS: {selectedMarker.coordinates.lat.toFixed(5)}° N, {selectedMarker.coordinates.lng.toFixed(5)}° E (±{selectedMarker.accuracyMeters || 3.4}m)
               </div>
             )}
 
             {selectedMarker.status && (
-              <div className="text-[11px] font-mono text-slate-400">
-                Status: <span className="text-slate-200">{selectedMarker.status}</span>
+              <div className="text-[11px] font-mono text-slate-500">
+                Status: <span className="text-slate-800 font-semibold">{selectedMarker.status}</span>
               </div>
             )}
 
@@ -683,10 +683,10 @@ export default function LiveMap({ compact = false, focusedIncidentId = null, onS
                     setSelectedIncidentId(selectedMarker.id)
                     setActiveView('incident_detail')
                   }}
-                  className="w-full flex items-center justify-center gap-1.5 py-1 px-2 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-medium border border-slate-700 cursor-pointer"
+                  className="w-full flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
                 >
-                  <span>Open Incident Detail</span>
-                  <ArrowRight className="w-3 h-3 text-slate-400" />
+                  <span>Open Incident Docket</span>
+                  <ArrowRight className="w-3 h-3 text-white" />
                 </button>
               )}
 
@@ -696,9 +696,9 @@ export default function LiveMap({ compact = false, focusedIncidentId = null, onS
                     setSelectedAmbulanceUnitId('AMB-04')
                     setActiveView('ambulances')
                   }}
-                  className="w-full flex items-center justify-center gap-1.5 py-1 px-2 rounded bg-blue-900/80 hover:bg-blue-800 text-blue-200 text-[11px] font-medium border border-blue-700 cursor-pointer"
+                  className="w-full flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg bg-white hover:bg-slate-50 text-slate-800 text-xs font-medium border border-slate-300 shadow-2xs transition-colors cursor-pointer"
                 >
-                  <Ambulance className="w-3 h-3 text-blue-300" />
+                  <Ambulance className="w-3.5 h-3.5 text-blue-600" />
                   <span>Inspect Ambulance 04 Console</span>
                 </button>
               )}
@@ -707,18 +707,18 @@ export default function LiveMap({ compact = false, focusedIncidentId = null, onS
         )}
 
         {/* Small Bottom Map Legend */}
-        <div className="absolute bottom-2 right-2 bg-slate-950/85 border border-slate-800/80 rounded px-2.5 py-1 text-[10px] text-slate-400 flex items-center gap-3 backdrop-blur-sm pointer-events-none">
-          <span className="flex items-center gap-1">
+        <div className="absolute bottom-2.5 right-2.5 bg-white/90 border border-slate-200 rounded-lg px-3 py-1.5 text-[11px] text-slate-700 flex items-center gap-3 backdrop-blur-sm pointer-events-none shadow-2xs">
+          <span className="flex items-center gap-1.5 font-medium">
             <span className="w-2 h-2 rounded-full bg-red-500 inline-block" /> Accident
           </span>
-          <span className="flex items-center gap-1">
+          <span className="flex items-center gap-1.5 font-medium">
             <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" /> Ambulance
           </span>
-          <span className="flex items-center gap-1">
-            <span className="w-2 h-2 rounded-full bg-blue-500 inline-block" /> Hospital
+          <span className="flex items-center gap-1.5 font-medium">
+            <span className="w-2 h-2 rounded-full bg-blue-600 inline-block" /> Hospital
           </span>
-          <span className="flex items-center gap-1">
-            <span className="w-2 h-2 rounded-full bg-slate-400 inline-block" /> Police
+          <span className="flex items-center gap-1.5 font-medium">
+            <span className="w-2 h-2 rounded-full bg-slate-500 inline-block" /> Police
           </span>
         </div>
       </div>

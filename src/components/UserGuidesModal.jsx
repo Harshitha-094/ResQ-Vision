@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import {
   X,
   BookOpen,
-  Camera,
   Ambulance,
   Building2,
   Shield,
@@ -11,17 +10,10 @@ import {
   Lock,
   ChevronRight,
   ChevronLeft,
-  CheckCircle2,
-  AlertTriangle,
   ArrowRight,
-  HelpCircle,
   ExternalLink,
   Sparkles,
-  Compass,
-  Radio,
-  FileText,
   Smartphone,
-  Eye,
   Check
 } from 'lucide-react'
 import { useEmergencyStore } from '../store/emergencyStore'
@@ -32,7 +24,6 @@ const USER_GUIDES_DATA = [
     title: 'Citizen Live Reporting Guide',
     shortTitle: 'Citizen Report',
     icon: Smartphone,
-    color: 'rose',
     targetRole: 'citizen',
     targetDesk: 'citizen',
     summary: 'How bystanders report road crashes with verified live camera photos and real-time GPS coordinates.',
@@ -84,7 +75,6 @@ const USER_GUIDES_DATA = [
     title: '108 Ambulance Field Response Guide',
     shortTitle: 'Ambulance 108',
     icon: Ambulance,
-    color: 'emerald',
     targetRole: 'ambulance',
     targetDesk: 'ambulances',
     summary: 'Turn-by-turn emergency navigation, on-scene casualty triage, and clinical hospital handover procedures.',
@@ -136,7 +126,6 @@ const USER_GUIDES_DATA = [
     title: 'Hospital Emergency Trauma Desk Guide',
     shortTitle: 'Hospital Desk',
     icon: Building2,
-    color: 'blue',
     targetRole: 'hospital',
     targetDesk: 'hospitals',
     summary: 'Inbound patient telemetry monitoring, trauma bay allocation, blood priming, and admission signoff.',
@@ -180,7 +169,6 @@ const USER_GUIDES_DATA = [
     title: 'Police Highway Interceptor Guide',
     shortTitle: 'Police Patrol',
     icon: Shield,
-    color: 'indigo',
     targetRole: 'police',
     targetDesk: 'police',
     summary: 'Crash scene perimeter security, traffic diversion cordons, and digital FIR evidence dockets.',
@@ -224,7 +212,6 @@ const USER_GUIDES_DATA = [
     title: 'Traffic Management Center (TMC) Guide',
     shortTitle: 'Traffic Desk',
     icon: Activity,
-    color: 'amber',
     targetRole: 'traffic',
     targetDesk: 'traffic',
     summary: 'Automated Green Corridor signal preemption, VMS signboards, and junction queue management.',
@@ -260,7 +247,6 @@ const USER_GUIDES_DATA = [
     title: 'Toll Plaza Emergency Bypass Guide',
     shortTitle: 'Toll Authority',
     icon: CreditCard,
-    color: 'cyan',
     targetRole: 'toll',
     targetDesk: 'toll',
     summary: 'Automated FASTag RFID auto-lift barriers and zero-delay emergency lane clearance.',
@@ -288,7 +274,6 @@ const USER_GUIDES_DATA = [
     title: 'Desk Isolation & RBAC Security Guide',
     shortTitle: 'Desk Isolation',
     icon: Lock,
-    color: 'purple',
     targetRole: 'dispatcher',
     targetDesk: 'manual',
     summary: 'Why departmental consoles are isolated and how to switch credentials during drills.',
@@ -359,23 +344,23 @@ export default function UserGuidesModal() {
   )
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 animate-in fade-in duration-200">
-      <div className="bg-slate-900 border border-slate-700/80 rounded-2xl w-full max-w-4xl h-[90vh] max-h-[720px] flex flex-col shadow-2xl overflow-hidden">
+    <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5">
+      <div className="bg-white border border-slate-200 rounded-2xl w-full max-w-4xl h-[90vh] max-h-[720px] flex flex-col shadow-xl overflow-hidden">
         {/* Header Bar */}
-        <div className="px-5 py-4 border-b border-slate-800 bg-slate-950/80 flex items-center justify-between gap-4 shrink-0">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-red-600/90 text-white flex items-center justify-center shadow-md">
+        <div className="px-6 py-4 border-b border-slate-200 bg-white flex items-center justify-between gap-4 shrink-0">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center shadow-2xs">
               <BookOpen className="w-4 h-4" />
             </div>
             <div>
-              <div className="text-base font-bold text-slate-100 flex items-center gap-2">
+              <div className="text-base font-bold text-slate-900 flex items-center gap-2">
                 <span>ResQVision Interactive User Guides</span>
-                <span className="px-2 py-0.5 rounded-full bg-emerald-950 border border-emerald-800 text-emerald-300 font-mono text-[10px] font-bold">
-                  SOP-802 INTERACTIVE
+                <span className="px-2 py-0.5 rounded-md bg-blue-50 border border-blue-200 text-blue-700 font-mono text-[10px] font-bold">
+                  SOP-802
                 </span>
               </div>
-              <p className="text-xs text-slate-400">
-                Step-by-step operational walkthroughs for all 5 emergency consoles and public reporting
+              <p className="text-xs text-slate-500">
+                Step-by-step operational workflows for all 5 emergency consoles and public reporting
               </p>
             </div>
           </div>
@@ -383,7 +368,7 @@ export default function UserGuidesModal() {
           <div className="flex items-center gap-2">
             <button
               onClick={closeUserGuides}
-              className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-slate-100 transition-colors cursor-pointer"
+              className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-800 transition-colors cursor-pointer"
               aria-label="Close guide modal"
             >
               <X className="w-5 h-5" />
@@ -394,15 +379,15 @@ export default function UserGuidesModal() {
         {/* Modal Body: Left Sidebar Topics + Right Interactive Content */}
         <div className="flex-1 flex flex-col md:flex-row min-h-0 overflow-hidden">
           {/* Left Topic Sidebar */}
-          <div className="w-full md:w-64 border-b md:border-b-0 md:border-r border-slate-800 bg-slate-950/50 flex flex-col shrink-0">
+          <div className="w-full md:w-64 border-b md:border-b-0 md:border-r border-slate-200 bg-slate-50 flex flex-col shrink-0">
             {/* Search filter */}
-            <div className="p-3 border-b border-slate-800">
+            <div className="p-3 border-b border-slate-200">
               <input
                 type="text"
                 placeholder="Filter guides..."
                 value={searchFilter}
                 onChange={(e) => setSearchFilter(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 placeholder:text-slate-500 focus:outline-hidden focus:border-red-500"
+                className="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-blue-600"
               />
             </div>
 
@@ -415,60 +400,60 @@ export default function UserGuidesModal() {
                   <button
                     key={topic.id}
                     onClick={() => handleSelectTopic(topic.id)}
-                    className={`w-full p-2.5 rounded-xl text-left transition-all cursor-pointer flex items-center gap-2.5 ${
+                    className={`w-full p-2.5 rounded-lg text-left transition-all cursor-pointer flex items-center gap-2.5 ${
                       isSelected
-                        ? 'bg-red-600 text-white font-bold shadow-md shadow-red-950/40'
-                        : 'hover:bg-slate-850 text-slate-400 hover:text-slate-200'
+                        ? 'bg-blue-50 text-blue-700 font-semibold border border-blue-200 shadow-2xs'
+                        : 'hover:bg-slate-100 text-slate-600 hover:text-slate-900'
                     }`}
                   >
-                    <Icon className="w-4 h-4 shrink-0" />
+                    <Icon className={`w-4 h-4 shrink-0 ${isSelected ? 'text-blue-600' : 'text-slate-400'}`} />
                     <div className="min-w-0 flex-1">
                       <div className="text-xs truncate font-medium">
                         {topic.shortTitle}
                       </div>
-                      <div className={`text-[10px] truncate ${isSelected ? 'text-red-100' : 'text-slate-500'}`}>
+                      <div className={`text-[10px] truncate ${isSelected ? 'text-blue-600' : 'text-slate-400'}`}>
                         {topic.steps.length} operational steps
                       </div>
                     </div>
-                    {isSelected && <ChevronRight className="w-3.5 h-3.5 shrink-0" />}
+                    {isSelected && <ChevronRight className="w-3.5 h-3.5 shrink-0 text-blue-600" />}
                   </button>
                 )
               })}
             </div>
 
             {/* Quick Link to Full Manual */}
-            <div className="p-3 border-t border-slate-800 bg-slate-950">
+            <div className="p-3 border-t border-slate-200 bg-slate-50">
               <button
                 onClick={() => {
                   setActiveView('manual')
                   closeUserGuides()
                 }}
-                className="w-full py-2 px-3 rounded-lg bg-slate-900 hover:bg-slate-850 border border-slate-800 text-[11px] text-slate-300 hover:text-slate-100 font-semibold flex items-center justify-between transition-colors cursor-pointer"
+                className="w-full py-2 px-3 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-xs text-slate-700 font-medium flex items-center justify-between transition-colors cursor-pointer shadow-2xs"
               >
                 <span>Read Full SOP Manual</span>
-                <ExternalLink className="w-3 h-3 text-slate-400" />
+                <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
               </button>
             </div>
           </div>
 
           {/* Right Interactive Walkthrough Area */}
-          <div className="flex-1 flex flex-col min-h-0 bg-slate-900/40 overflow-y-auto p-4 sm:p-6 space-y-5">
+          <div className="flex-1 flex flex-col min-h-0 bg-white overflow-y-auto p-5 sm:p-6 space-y-5">
             {/* Topic Title & Action Banner */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-4">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] uppercase font-mono tracking-wider text-red-400 font-bold">
+                  <span className="text-[10px] uppercase font-mono tracking-wider text-blue-600 font-bold">
                     OPERATIONAL FIELD GUIDE
                   </span>
-                  <span className="text-slate-500">·</span>
-                  <span className="text-[10px] font-mono text-slate-400">
+                  <span className="text-slate-300">·</span>
+                  <span className="text-[11px] font-mono text-slate-500">
                     Target: {currentTopic.targetRole.toUpperCase()}
                   </span>
                 </div>
-                <h2 className="text-xl font-black text-slate-100 mt-0.5">
+                <h2 className="text-lg font-bold text-slate-900 mt-0.5">
                   {currentTopic.title}
                 </h2>
-                <p className="text-xs text-slate-300 mt-1 max-w-xl">
+                <p className="text-xs text-slate-600 mt-1 max-w-xl">
                   {currentTopic.summary}
                 </p>
               </div>
@@ -476,7 +461,7 @@ export default function UserGuidesModal() {
               {/* Action Button: Jump straight into the Desk */}
               <button
                 onClick={handleLaunchDesk}
-                className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs flex items-center gap-2 transition-colors cursor-pointer shrink-0 shadow-lg shadow-red-950/30"
+                className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs flex items-center gap-2 transition-colors cursor-pointer shrink-0 shadow-2xs"
               >
                 <span>Open {currentTopic.shortTitle} Desk</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -484,20 +469,20 @@ export default function UserGuidesModal() {
             </div>
 
             {/* Toggle between Step-by-Step and View All Steps */}
-            <div className="flex items-center justify-between text-xs font-mono">
-              <div className="flex items-center gap-1.5 text-slate-400">
-                <span className="font-bold text-slate-200">
+            <div className="flex items-center justify-between text-xs">
+              <div className="flex items-center gap-2 text-slate-600">
+                <span className="font-semibold text-slate-900">
                   Step {activeStepIdx + 1} of {totalSteps}
                 </span>
                 <span>·</span>
-                <span className="text-emerald-400">{currentStep.badge}</span>
+                <span className="text-blue-700 font-medium">{currentStep.badge}</span>
               </div>
 
               <button
                 onClick={() => setViewAllSteps(!viewAllSteps)}
-                className="text-slate-400 hover:text-slate-200 underline cursor-pointer text-[11px]"
+                className="text-blue-600 hover:text-blue-700 font-medium cursor-pointer text-xs"
               >
-                {viewAllSteps ? 'Switch to Step-by-Step' : 'Show All Steps Overview'}
+                {viewAllSteps ? 'Switch to Step-by-Step' : 'Show All Steps'}
               </button>
             </div>
 
@@ -512,10 +497,10 @@ export default function UserGuidesModal() {
                       onClick={() => setActiveStepIdx(idx)}
                       className={`h-2 rounded-full transition-all cursor-pointer ${
                         idx === activeStepIdx
-                          ? 'w-8 bg-red-500'
+                          ? 'w-8 bg-blue-600'
                           : idx < activeStepIdx
-                          ? 'w-3 bg-emerald-500/80'
-                          : 'w-3 bg-slate-800'
+                          ? 'w-3 bg-blue-200'
+                          : 'w-3 bg-slate-200'
                       }`}
                       title={`Go to Step ${idx + 1}: ${s.title}`}
                     />
@@ -523,34 +508,34 @@ export default function UserGuidesModal() {
                 </div>
 
                 {/* Main Step Detail Card */}
-                <div className="p-5 rounded-2xl bg-slate-950 border border-slate-800 space-y-4 shadow-xl relative overflow-hidden">
+                <div className="p-5 rounded-xl bg-slate-50 border border-slate-200 space-y-4">
                   <div className="flex items-start justify-between gap-3">
                     <div className="space-y-1">
-                      <span className="px-2.5 py-0.5 rounded-full bg-red-950 text-red-300 font-mono text-[10px] font-bold border border-red-800">
+                      <span className="px-2 py-0.5 rounded-md bg-white text-blue-700 font-mono text-[10px] font-bold border border-slate-200">
                         STEP {currentStep.stepNumber} OF {totalSteps}
                       </span>
-                      <h3 className="text-lg font-bold text-slate-100">
+                      <h3 className="text-base font-bold text-slate-900">
                         {currentStep.title}
                       </h3>
-                      <div className="text-xs text-slate-400 font-medium">
+                      <div className="text-xs text-slate-500 font-medium">
                         {currentStep.subtitle}
                       </div>
                     </div>
 
-                    <div className="w-10 h-10 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-300 font-mono font-black text-sm shrink-0">
+                    <div className="w-9 h-9 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-700 font-mono font-bold text-sm shrink-0">
                       0{currentStep.stepNumber}
                     </div>
                   </div>
 
-                  <p className="text-xs sm:text-sm text-slate-300 leading-relaxed bg-slate-900/60 p-3.5 rounded-xl border border-slate-850">
+                  <p className="text-xs text-slate-700 leading-relaxed bg-white p-4 rounded-lg border border-slate-200">
                     {currentStep.description}
                   </p>
 
                   {/* Pro Tip Box */}
-                  <div className="p-3 rounded-xl bg-amber-950/30 border border-amber-900/50 text-xs text-amber-200/90 flex items-start gap-2">
-                    <Sparkles className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                  <div className="p-3 rounded-lg bg-amber-50 border border-amber-200 text-xs text-amber-900 flex items-start gap-2.5">
+                    <Sparkles className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
                     <div>
-                      <strong className="text-amber-100 font-semibold">Field Operator Tip: </strong>
+                      <strong className="font-semibold text-amber-950">Field Operator Tip: </strong>
                       {currentStep.tip}
                     </div>
                   </div>
@@ -561,7 +546,7 @@ export default function UserGuidesModal() {
                   <button
                     onClick={() => setActiveStepIdx(Math.max(0, activeStepIdx - 1))}
                     disabled={activeStepIdx === 0}
-                    className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 disabled:opacity-40 disabled:pointer-events-none text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                    className="px-4 py-2 rounded-lg bg-white hover:bg-slate-50 border border-slate-300 disabled:opacity-40 disabled:pointer-events-none text-slate-700 text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
                   >
                     <ChevronLeft className="w-4 h-4" />
                     <span>Previous Step</span>
@@ -570,7 +555,7 @@ export default function UserGuidesModal() {
                   {activeStepIdx < totalSteps - 1 ? (
                     <button
                       onClick={() => setActiveStepIdx(activeStepIdx + 1)}
-                      className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer shadow-md shadow-red-950/30"
+                      className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
                     >
                       <span>Next Step</span>
                       <ChevronRight className="w-4 h-4" />
@@ -578,7 +563,7 @@ export default function UserGuidesModal() {
                   ) : (
                     <button
                       onClick={handleLaunchDesk}
-                      className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer shadow-md shadow-emerald-950/30"
+                      className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
                     >
                       <Check className="w-4 h-4" />
                       <span>Ready! Launch {currentTopic.shortTitle}</span>
@@ -592,23 +577,23 @@ export default function UserGuidesModal() {
                 {currentTopic.steps.map((step) => (
                   <div
                     key={step.stepNumber}
-                    className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2 text-xs"
+                    className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2 text-xs"
                   >
-                    <div className="flex items-center justify-between border-b border-slate-850 pb-2">
-                      <span className="font-bold text-slate-100 flex items-center gap-2">
-                        <span className="w-5 h-5 rounded-full bg-red-600 text-white font-mono text-[10px] font-bold flex items-center justify-center">
+                    <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+                      <span className="font-bold text-slate-900 flex items-center gap-2">
+                        <span className="w-5 h-5 rounded-md bg-blue-600 text-white font-mono text-[10px] font-bold flex items-center justify-center">
                           {step.stepNumber}
                         </span>
                         <span>{step.title}</span>
                       </span>
-                      <span className="font-mono text-[10px] text-emerald-400 font-bold">
+                      <span className="font-mono text-[10px] text-blue-700 font-bold">
                         {step.badge}
                       </span>
                     </div>
-                    <p className="text-slate-300 leading-relaxed">
+                    <p className="text-slate-600 leading-relaxed">
                       {step.description}
                     </p>
-                    <div className="text-[11px] text-amber-300/80 font-mono">
+                    <div className="text-xs text-amber-800">
                       Tip: {step.tip}
                     </div>
                   </div>
