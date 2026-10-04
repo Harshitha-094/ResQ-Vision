@@ -16,7 +16,9 @@ import {
   Key,
   Globe,
   Satellite,
-  ExternalLink
+  ExternalLink,
+  Sun,
+  Moon
 } from 'lucide-react'
 import { useEmergencyStore } from '../store/emergencyStore'
 
@@ -134,7 +136,9 @@ export default function LiveMap({ compact = false, focusedIncidentId = null, onS
     simulationStage,
     setActiveView,
     setSelectedIncidentId,
-    setSelectedAmbulanceUnitId
+    setSelectedAmbulanceUnitId,
+    theme,
+    toggleTheme
   } = useEmergencyStore()
 
   // API Key state: reads from localStorage, env var, or user input
@@ -144,7 +148,6 @@ export default function LiveMap({ compact = false, focusedIncidentId = null, onS
   const [keyInput, setKeyInput] = useState('')
   const [showKeyModal, setShowKeyModal] = useState(false)
   const [mapType, setMapType] = useState('roadmap') // 'roadmap' | 'satellite' | 'hybrid'
-  const [mapTheme, setMapTheme] = useState('dark') // 'dark' | 'light'
   const [renderMode, setRenderMode] = useState('google') // 'google' | 'vector'
   const [apiLoadError, setApiLoadError] = useState(false)
 
@@ -387,23 +390,38 @@ export default function LiveMap({ compact = false, focusedIncidentId = null, onS
 
             {/* Mode & Key Toggle */}
             <div className="flex items-center gap-1 border-l border-slate-200 pl-2 ml-1">
+              {/* System Night / Day Mode Toggle */}
+              <button
+                onClick={toggleTheme}
+                className={`px-2 py-0.5 rounded-md border text-[11px] font-mono font-medium cursor-pointer shadow-2xs transition-colors flex items-center gap-1 ${
+                  theme === 'dark'
+                    ? 'bg-slate-900 border-slate-700 text-amber-400 hover:bg-slate-800'
+                    : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+                }`}
+                title={theme === 'dark' ? 'Currently in Night Mode · Click to switch whole system to Bright Day Mode' : 'Currently in Day Mode · Click to switch whole system to Dark Night Mode'}
+                aria-label="Toggle Night/Day System Theme"
+              >
+                {theme === 'dark' ? (
+                  <>
+                    <Moon className="w-3 h-3 text-blue-400 shrink-0" />
+                    <span>Night</span>
+                  </>
+                ) : (
+                  <>
+                    <Sun className="w-3 h-3 text-amber-500 shrink-0" />
+                    <span>Day</span>
+                  </>
+                )}
+              </button>
+
               {renderMode === 'google' && (
-                <>
-                  <button
-                    onClick={() => setMapType(mapType === 'satellite' ? 'roadmap' : 'satellite')}
-                    className="p-1 rounded-md bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 cursor-pointer shadow-2xs transition-colors"
-                    title={mapType === 'satellite' ? 'Switch to Tactical Roadmap' : 'Switch to Satellite Imagery'}
-                  >
-                    <Satellite className="w-3.5 h-3.5 text-slate-600" />
-                  </button>
-                  <button
-                    onClick={() => setMapTheme(mapTheme === 'dark' ? 'light' : 'dark')}
-                    className="px-2 py-0.5 rounded-md bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-[11px] font-mono cursor-pointer shadow-2xs transition-colors"
-                    title="Toggle Dark / Light Tactical Theme"
-                  >
-                    {mapTheme === 'dark' ? 'Night' : 'Day'}
-                  </button>
-                </>
+                <button
+                  onClick={() => setMapType(mapType === 'satellite' ? 'roadmap' : 'satellite')}
+                  className="p-1 rounded-md bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 cursor-pointer shadow-2xs transition-colors"
+                  title={mapType === 'satellite' ? 'Switch to Tactical Roadmap' : 'Switch to Satellite Imagery'}
+                >
+                  <Satellite className="w-3.5 h-3.5 text-slate-600" />
+                </button>
               )}
 
               <button
@@ -495,7 +513,7 @@ export default function LiveMap({ compact = false, focusedIncidentId = null, onS
               defaultCenter={DEFAULT_CENTER}
               defaultZoom={DEFAULT_ZOOM}
               mapTypeId={mapType}
-              colorScheme={mapTheme === 'dark' ? 'DARK' : 'LIGHT'}
+              colorScheme={theme === 'dark' ? 'DARK' : 'LIGHT'}
               disableDefaultUI={compact}
               zoomControl={!compact}
               streetViewControl={!compact}

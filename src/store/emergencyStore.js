@@ -153,7 +153,7 @@ export const useEmergencyStore = create((set, get) => ({
   notificationsOpen: false,
   demoPanelOpen: false,
   soundEnabled: true,
-  theme: (typeof window !== 'undefined' && (localStorage.getItem('resqvision-theme') || (document.documentElement.classList.contains('dark') ? 'dark' : 'light'))) || 'light',
+  theme: (typeof window !== 'undefined' && (localStorage.getItem('resqvision-theme') || (document.documentElement.classList.contains('light') ? 'light' : 'dark'))) || 'dark',
   confirmModal: {
     isOpen: false,
     title: '',
