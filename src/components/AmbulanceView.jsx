@@ -162,23 +162,30 @@ export default function AmbulanceView() {
       {/* Main Ambulance Device Frame */}
       <div className={`mx-auto transition-all duration-200 ${
         ambulanceDeviceMode === 'mobile'
-          ? 'max-w-md bg-white rounded-2xl border-4 border-slate-300 p-5 shadow-lg space-y-4'
-          : 'w-full bg-white rounded-xl border border-slate-200 p-6 shadow-xs space-y-4'
+          ? 'max-w-md bg-white rounded-2xl border-2 sm:border-4 border-slate-300 p-4 sm:p-5 shadow-lg space-y-4'
+          : 'w-full bg-white rounded-xl border border-slate-200 p-4 sm:p-6 shadow-xs space-y-4'
       }`}>
         {/* At the top: AMBULANCE Unit ID & Status */}
-        <div className="flex items-center justify-between border-b border-slate-200 pb-3">
-          <div>
-            <h2 className="text-base sm:text-lg font-bold font-mono tracking-tight text-slate-900">
-              {isUnit07 ? 'AMBULANCE 07' : 'AMBULANCE 04'}
-            </h2>
-            <div className="text-[11px] text-slate-500 font-mono">
-              {isUnit07 ? 'KA 01 AB 1234 · ALS Crew (Electronic City Depot)' : 'KA 04 E 2211 · BLS Crew (Bommanahalli Bay)'}
+        <div className="flex items-center justify-between gap-2.5 border-b border-slate-200 pb-3">
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <h2 className="text-base sm:text-lg font-bold font-mono tracking-tight text-slate-900 shrink-0">
+                {isUnit07 ? 'AMBULANCE 07' : 'AMBULANCE 04'}
+              </h2>
+              <span className="text-[10px] font-mono font-bold px-1.5 py-0.2 rounded bg-blue-50 text-blue-700 border border-blue-200 shrink-0">
+                {isUnit07 ? 'ALS UNIT' : 'BLS UNIT'}
+              </span>
+            </div>
+            <div className="text-[11px] text-slate-500 font-mono mt-0.5 truncate" title={isUnit07 ? 'KA 01 AB 1234 · ALS Crew (Electronic City Depot)' : 'KA 04 E 2211 · BLS Crew (Bommanahalli Bay)'}>
+              <span className="font-semibold text-slate-700">{isUnit07 ? 'KA 01 AB 1234' : 'KA 04 E 2211'}</span>
+              <span className="hidden sm:inline">{isUnit07 ? ' · ALS Crew (Electronic City Depot)' : ' · BLS Crew (Bommanahalli Bay)'}</span>
+              <span className="sm:hidden">{isUnit07 ? ' · Electronic City' : ' · Bommanahalli'}</span>
             </div>
           </div>
 
-          <div className="text-right">
-            <span className="text-[10px] text-slate-500 block uppercase font-mono">Status</span>
-            <span className={`px-2 py-0.5 rounded-md text-xs font-mono font-bold border ${unitStatusColor}`}>
+          <div className="text-right shrink-0 flex flex-col items-end">
+            <span className="text-[10px] text-slate-500 block uppercase font-mono tracking-wider font-semibold">Status</span>
+            <span className={`inline-flex items-center justify-center px-2.5 py-1 rounded-md text-xs font-mono font-bold border whitespace-nowrap shadow-2xs mt-0.5 ${unitStatusColor}`}>
               {unitStatus}
             </span>
           </div>
